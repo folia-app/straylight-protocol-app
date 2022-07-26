@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html style="background:#fafafa">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!-- preconnect -->
+    <!-- <link rel="prefetch" href="/fonts/Hershey-Noailles-HelpMe-Regular.woff2"> -->
+    <style>
+      *{ margin: 0; padding:0; }
+
+      article {
+        position: fixed;
+        top: 0;
+        left:  0;
+        width: 100%;
+        height:  100%;
+        display: flex;
+        align-items: center ;
+        justify-content: center;
+      }
+
+      figure{
+        position: relative;
+        max-width: 61vmin;
+      }
+
+      img.output{
+        display: block;
+        width: auto;
+        max-width: 100%;
+      }
+
+      img.input{
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: contain; object-position: center;
+        animation:  flip infinite 4s;
+      }
+
+      @keyframes flip {
+        0% { opacity: 0; }
+        50%{ opacity: 0 }
+        51%{ opacity: 1 }
+        100%{ opacity: 1 }
+      }
+    </style>
+  </head>
+  <body>
+    <article>
+      <figure>
+        <img class="output" src="/promo/output1.png" />
+        <img class="input" src="/promo/input1.png" />        
+      </figure>
+    </article>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+@import './variables';
+@import './fonts';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html{
+  font-size:10px;
+}
+
+a, button{
+  &:focus{
+    outline:none;
+  }
+}
+
+button {
+  text-transform: inherit;
+  letter-spacing: inherit;
+  &[disabled] {
+    @apply cursor-not-allowed;
+  }
+}
+
+.overlay{
+  @apply w-full h-full top-0 left-0;
+}
+.overlay-px{
+  top:-1px; left:-1px;
+  width:calc(100% + 2px);
+  height:calc(100% + 2px);
+}
+.scrollbars-hidden::-webkit-scrollbar{ display: none; }
+
+.btn-theme-darken{
+  &:hover, &:focus{ @apply bg-black-a03 }
+  &:focus{ @apply outline-none; }
+}
+
+.border-dotted{
+  border-style: dotted;
+}
+@media (hover:hover) {
+  .hover_border-solid:hover{
+    border-style: solid;
+  }  
+}
+
+.backdrop-blur{
+  backdrop-filter:blur(10px);
+}
+
+
+.children-mt-em > * + *{ margin-top: 1.2em; }
+
+.links-underline a {
+  @apply border-b border-current;
+  border-style: dashed;
+  &:hover, &:focus{
+    border-style:solid;
+  }
+}
+
+.image-render-crisp{
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}

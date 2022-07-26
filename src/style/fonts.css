@@ -1,0 +1,30 @@
+@font-face {
+  font-family: 'Help Me';
+  src: url('/fonts/Hershey-Noailles-HelpMe-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: normal;
+}
+@font-face {
+  font-family: 'Help Me';
+  src: url('/fonts/Hershey-Noailles-HelpMe-Bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: bold;
+}
+@font-face {
+  font-family: 'Karrik';
+  src: url('/fonts/karrik/Karrik-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: normal;
+}
+@font-face {
+  font-family: 'Karrik';
+  src: url('/fonts/karrik/Karrik-Italic.woff2') format('woff2');
+  font-style: italic;
+  font-weight: normal;
+}
+
+/*@font-face {
+  font-family: 'Help Me';
+  src: url('~@/assets/fonts/Hershey-Noailles-help-me.ttf') format('truetype');
+  font-style: normal;
+}*/

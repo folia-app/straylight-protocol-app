@@ -1,0 +1,871 @@
+const plugin = require('tailwindcss/plugin')
+
+module.exports = {
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true
+  },
+  target: 'relaxed',
+  prefix: '',
+  important: false,
+  separator: '_',
+  presets: [],
+  theme: {
+    screens: {
+      sm: '568px',
+      md: '768px',
+      lg: '1024px', // TODO - consider 960 for tiles to go 3col
+      xl: '1440px',
+      mouse: { raw: '(hover:hover)' }
+    },
+    spacing: {
+      px: '1px',
+      em: '1.35em',
+      0: '0',
+      1: '0.25rem',
+      2: '0.5rem',
+      3: '0.75rem',
+      4: '1rem',
+      5: '1.25rem',
+      6: '1.5rem',
+      7: '1.75rem',
+      8: '2rem',
+      9: '2.25rem',
+      10: '2.5rem',
+      12: '3rem',
+      14: '3.5rem',
+      16: '4rem',
+      20: '5rem',
+      22: '5.5rem',
+      24: '6rem',
+      26: '6.5rem',
+      28: '7rem',
+      32: '8rem',
+      36: '9rem',
+      40: '10rem',
+      48: '12rem',
+      52: '13rem',
+      56: '14rem',
+      64: '16rem',
+      'lh-snug': '1.375em'
+    },
+    fontSize: {
+      '3xs': '1.2rem',
+      xxs: '1.3rem',
+      xs: '1.4rem',
+      sm: '1.5rem',
+      smm: '1.6rem',
+      md: '1.7rem',
+      base: '1.8rem',
+      lg: '2rem',
+      xl: '2.1rem',
+      '2xl': '2.4rem',
+      '3xl': '2.8rem',
+      '4xl': '3rem',
+      '5xl': '3.4rem',
+      '6xl': '4.8rem',
+      // '3xl': '1.875rem',
+      // '4xl': '2.25rem',
+      // '5xl': '3rem',
+      // '6xl': '4rem',
+      60: '6rem',
+      72: '7.2rem',
+      96: '9.6rem'
+    },
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+
+      white: '#fff',
+      black: '#000',
+      'black-a03': 'rgba(0,0,0,0.03)',
+      'black-a08': 'rgba(0,0,0,0.08)',
+      'black-a15': 'rgba(0,0,0,0.15)',
+      'black-a30': 'rgba(0,0,0,0.30)',
+      // 'black-a40': 'rgba(0,0,0,0.40)',
+      'black-a45': 'rgba(0,0,0,0.45)',
+      'black-a60': 'rgba(0,0,0,0.60)',
+      paper: 'rgb(248,248,248)',
+
+      gray: {
+        50: '#fafafa',
+        100: '#f5f5f5',
+        150: '#eaeaea',
+        200: '#e5e5e5',
+        300: '#d4d4d4',
+        350: '#c6c6c6',
+        400: '#a3a3a3',
+        500: '#737373',
+        600: '#525252',
+        700: '#404040',
+        800: '#262626',
+        900: '#171717',
+        950: '#0D0D0D'
+      },
+      'gray-700-a15': 'rgba(100,100,100,0.15)',
+
+      yellow: {
+        500: 'yellow',
+        600: '#f5f500'
+      },
+      red: 'red',
+      'red-duller': '#ce1212', // soldout
+      green: {
+        400: '#30cb5f'
+      }
+    },
+    backgroundColor: theme => theme('colors'),
+    backgroundImage: {
+      none: 'none',
+      'gradient-to-t': 'linear-gradient(to top, var(--gradient-color-stops))',
+      'gradient-to-tr': 'linear-gradient(to top right, var(--gradient-color-stops))',
+      'gradient-to-r': 'linear-gradient(to right, var(--gradient-color-stops))',
+      'gradient-to-br': 'linear-gradient(to bottom right, var(--gradient-color-stops))',
+      'gradient-to-b': 'linear-gradient(to bottom, var(--gradient-color-stops))',
+      'gradient-to-bl': 'linear-gradient(to bottom left, var(--gradient-color-stops))',
+      'gradient-to-l': 'linear-gradient(to left, var(--gradient-color-stops))',
+      'gradient-to-tl': 'linear-gradient(to top left, var(--gradient-color-stops))'
+    },
+    gradientColorStops: theme => theme('colors'),
+    backgroundOpacity: theme => theme('opacity'),
+    backgroundPosition: {
+      bottom: 'bottom',
+      center: 'center',
+      left: 'left',
+      'left-bottom': 'left bottom',
+      'left-top': 'left top',
+      right: 'right',
+      'right-bottom': 'right bottom',
+      'right-top': 'right top',
+      top: 'top'
+    },
+    backgroundSize: {
+      auto: 'auto',
+      cover: 'cover',
+      contain: 'contain'
+    },
+    borderColor: theme => ({
+      ...theme('colors'),
+      default: theme('colors.gray.300', 'currentColor')
+    }),
+    borderOpacity: theme => theme('opacity'),
+    borderRadius: {
+      none: '0',
+      sm: '0.125rem',
+      default: '0.25rem',
+      md: '0.375rem',
+      lg: '0.5rem',
+      xl: '0.75rem',
+      '2xl': '1rem',
+      '3xl': '1.5rem',
+      '4xl': '2rem',
+      full: '9999px'
+    },
+    borderWidth: {
+      default: '1px',
+      0: '0',
+      2: '2px',
+      4: '4px',
+      8: '8px'
+    },
+    boxShadow: {
+      xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
+      sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+      default: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      '-md': '0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+      '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+      outline: '0 0 0 3px rgba(66, 153, 225, 0.5)',
+      'inner-red': '0 0 8px red inset',
+      none: 'none'
+    },
+    container: {},
+    cursor: {
+      auto: 'auto',
+      default: 'default',
+      pointer: 'pointer',
+      wait: 'wait',
+      text: 'text',
+      move: 'move',
+      'not-allowed': 'not-allowed'
+    },
+    divideColor: theme => theme('borderColor'),
+    divideOpacity: theme => theme('borderOpacity'),
+    divideWidth: theme => theme('borderWidth'),
+    fill: {
+      current: 'currentColor'
+    },
+    flex: {
+      1: '1 1 0%',
+      '1x2': '0 0 50%',
+      full: '1 0 100%',
+      auto: '1 1 auto',
+      initial: '0 1 auto',
+      none: 'none'
+    },
+    flexGrow: {
+      0: '0',
+      default: '1'
+    },
+    flexShrink: {
+      0: '0',
+      default: '1'
+    },
+    fontFamily: {
+      sans: [
+        // === demo local system === :
+        // 'Karrik', // sick but logo...
+        // 'Hershey-Noailles-Times', // too dorky
+        // 'Hershey-Noailles-OldFrench', // nice for serif option, maybe tighter tracking
+        // 'CMU Serif', // too sharp
+        // === loaded woff === :
+        'Help Me',
+        // 'Violet Sans',
+        // === fallback === :
+        'system-ui',
+        '-apple-system',
+        'sans-serif'
+        // 'system-ui',
+        // '-apple-system',
+        // 'BlinkMacSystemFont',
+        // '"Segoe UI"',
+        // 'Roboto',
+        // '"Helvetica Neue"',
+        // 'Arial',
+        // '"Noto Sans"',
+        // 'sans-serif',
+        // '"Apple Color Emoji"',
+        // '"Segoe UI Emoji"',
+        // '"Segoe UI Symbol"',
+        // '"Noto Color Emoji"',
+      ],
+      karrik: ['Karrik', 'system-ui', '"Helvetica"', 'sans-serif'],
+      serif: ['Times New Roman', 'serif'], // Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+      mono: ['monospace']
+    },
+    fontWeight: {
+      hairline: '100',
+      thin: '200',
+      light: '300',
+      normal: '400',
+      medium: '500',
+      semibold: '600',
+      bold: '700',
+      extrabold: '800',
+      black: '900'
+    },
+    height: theme => ({
+      auto: 'auto',
+      ...theme('spacing'),
+      full: '100%',
+      screen: '100vh',
+      '90vh': '90vh',
+      '93vh': '93.5vh'
+    }),
+    inset: {
+      0: '0',
+      auto: 'auto'
+    },
+    letterSpacing: {
+      tighter: '-0.05em',
+      tight: '-0.025em',
+      normal: '0',
+      wide: '0.025em',
+      wider: '0.05em',
+      widest: '0.1em'
+    },
+    lineHeight: {
+      none: '1',
+      // tighter: '1.125',
+      tight: '1.25',
+      snug: '1.375',
+      normal: '1.45',
+      relaxed: '1.625',
+      loose: '2',
+      3: '.75rem',
+      4: '1rem',
+      5: '1.25rem',
+      6: '1.5rem',
+      7: '1.75rem',
+      8: '2rem',
+      9: '2.25rem',
+      10: '2.5rem'
+    },
+    listStyleType: {
+      none: 'none',
+      disc: 'disc',
+      decimal: 'decimal'
+    },
+    margin: (theme, { negative }) => ({
+      auto: 'auto',
+      ...theme('spacing'),
+      ...negative(theme('spacing'))
+    }),
+    maxHeight: (theme) => ({
+      ...theme('spacing'),
+      full: '100%',
+      screen: '100vh'
+    }),
+    maxWidth: (theme, { breakpoints }) => ({
+      none: 'none',
+      xs: '20rem',
+      sm: '24rem',
+      md: '28rem',
+      lg: '32rem',
+      xl: '36rem',
+      '2xl': '42rem',
+      '3xl': '48rem',
+      '4xl': '56rem',
+      '5xl': '64rem',
+      '6xl': '72rem',
+      full: '100%',
+      '1x2': '50%',
+      '3x4': '75%',
+      ...breakpoints(theme('screens'))
+    }),
+    minHeight: (theme) => ({
+      0: '0',
+      ...theme('spacing'),
+      '25vw': '25vw',
+      '33vw': '33vw',
+      '50vw': '50vw',
+      '100vw': '100vw',
+      full: '100%',
+      screen: '100vh'
+    }),
+    minWidth: {
+      0: '0',
+      '1x8': 'calc(100% / 8)',
+      '33vw': '33vw',
+      full: '100%'
+    },
+    objectPosition: {
+      bottom: 'bottom',
+      center: 'center',
+      left: 'left',
+      'left-bottom': 'left bottom',
+      'left-top': 'left top',
+      right: 'right',
+      'right-bottom': 'right bottom',
+      'right-top': 'right top',
+      top: 'top'
+    },
+    opacity: {
+      0: '0',
+      10: '0.1',
+      25: '0.25',
+      33: '0.33',
+      50: '0.5',
+      60: '0.6',
+      75: '0.75',
+      90: '0.9',
+      100: '1'
+    },
+    order: {
+      first: '-9999',
+      last: '9999',
+      none: '0',
+      1: '1',
+      2: '2',
+      3: '3',
+      4: '4',
+      5: '5',
+      6: '6',
+      7: '7',
+      8: '8',
+      9: '9',
+      10: '10',
+      11: '11',
+      12: '12'
+    },
+    outline: {
+      none: ['2px solid transparent', '2px'],
+      white: ['2px dotted white', '2px'],
+      black: ['2px dotted black', '2px']
+    },
+    padding: theme => ({
+      ...theme('spacing'),
+      full: '100%',
+      'ar-1x1': '100%',
+      'ar-2x1': 'calc(100% * 1/2)',
+      '1x4': '25%',
+      '1x5': '22%'
+    }),
+    placeholderColor: theme => theme('colors'),
+    placeholderOpacity: theme => theme('opacity'),
+    space: (theme, { negative }) => ({
+      ...theme('spacing'),
+      ...negative(theme('spacing'))
+    }),
+    stroke: {
+      current: 'currentColor'
+    },
+    strokeWidth: {
+      0: '0',
+      1: '1',
+      2: '2'
+    },
+    textColor: theme => theme('colors'),
+    textOpacity: theme => theme('opacity'),
+    width: theme => ({
+      auto: 'auto',
+      ...theme('spacing'),
+      '1x2': '50%',
+      '1x3': '33.333333%',
+      '2x3': '66.666667%',
+      '1x4': '25%',
+      '2x4': '50%',
+      '3x4': '75%',
+      '1x5': '20%',
+      '2x5': '40%',
+      '3x5': '60%',
+      '4x5': '80%',
+      '1x6': '16.666667%',
+      '2x6': '33.333333%',
+      '3x6': '50%',
+      '4x6': '66.666667%',
+      '5x6': '83.333333%',
+      '1x8': 'calc(100% / 8)',
+      '9x10': '90%',
+      '1x12': '8.333333%',
+      '2x12': '16.666667%',
+      '3x12': '25%',
+      '4x12': '33.333333%',
+      '5x12': '41.666667%',
+      '6x12': '50%',
+      '7x12': '58.333333%',
+      '8x12': '66.666667%',
+      '9x12': '75%',
+      '10x12': '83.333333%',
+      '11x12': '91.666667%',
+      '19x20': 'calc(100% * 19/20)',
+      full: '100%',
+      screen: '100vw'
+    }),
+    zIndex: {
+      auto: 'auto',
+      0: '0',
+      10: '10',
+      20: '20',
+      30: '30',
+      40: '40',
+      50: '50'
+    },
+    gap: theme => theme('spacing'),
+    gridTemplateColumns: {
+      none: 'none',
+      1: 'repeat(1, minmax(0, 1fr))',
+      2: 'repeat(2, minmax(0, 1fr))',
+      3: 'repeat(3, minmax(0, 1fr))',
+      4: 'repeat(4, minmax(0, 1fr))',
+      5: 'repeat(5, minmax(0, 1fr))',
+      6: 'repeat(6, minmax(0, 1fr))',
+      7: 'repeat(7, minmax(0, 1fr))',
+      8: 'repeat(8, minmax(0, 1fr))',
+      9: 'repeat(9, minmax(0, 1fr))',
+      10: 'repeat(10, minmax(0, 1fr))',
+      11: 'repeat(11, minmax(0, 1fr))',
+      12: 'repeat(12, minmax(0, 1fr))'
+    },
+    gridAutoColumns: {
+      auto: 'auto',
+      min: 'min-content',
+      max: 'max-content',
+      fr: 'minmax(0, 1fr)'
+    },
+    gridColumn: {
+      auto: 'auto',
+      'span-1': 'span 1 / span 1',
+      'span-2': 'span 2 / span 2',
+      'span-3': 'span 3 / span 3',
+      'span-4': 'span 4 / span 4',
+      'span-5': 'span 5 / span 5',
+      'span-6': 'span 6 / span 6',
+      'span-7': 'span 7 / span 7',
+      'span-8': 'span 8 / span 8',
+      'span-9': 'span 9 / span 9',
+      'span-10': 'span 10 / span 10',
+      'span-11': 'span 11 / span 11',
+      'span-12': 'span 12 / span 12',
+      'span-full': '1 / -1'
+    },
+    gridColumnStart: {
+      auto: 'auto',
+      1: '1',
+      2: '2',
+      3: '3',
+      4: '4',
+      5: '5',
+      6: '6',
+      7: '7',
+      8: '8',
+      9: '9',
+      10: '10',
+      11: '11',
+      12: '12',
+      13: '13'
+    },
+    gridColumnEnd: {
+      auto: 'auto',
+      1: '1',
+      2: '2',
+      3: '3',
+      4: '4',
+      5: '5',
+      6: '6',
+      7: '7',
+      8: '8',
+      9: '9',
+      10: '10',
+      11: '11',
+      12: '12',
+      13: '13'
+    },
+    gridTemplateRows: {
+      none: 'none',
+      1: 'repeat(1, minmax(0, 1fr))',
+      2: 'repeat(2, minmax(0, 1fr))',
+      3: 'repeat(3, minmax(0, 1fr))',
+      4: 'repeat(4, minmax(0, 1fr))',
+      5: 'repeat(5, minmax(0, 1fr))',
+      6: 'repeat(6, minmax(0, 1fr))'
+    },
+    gridAutoRows: {
+      auto: 'auto',
+      min: 'min-content',
+      max: 'max-content',
+      fr: 'minmax(0, 1fr)'
+    },
+    gridRow: {
+      auto: 'auto',
+      'span-1': 'span 1 / span 1',
+      'span-2': 'span 2 / span 2',
+      'span-3': 'span 3 / span 3',
+      'span-4': 'span 4 / span 4',
+      'span-5': 'span 5 / span 5',
+      'span-6': 'span 6 / span 6',
+      'span-full': '1 / -1'
+    },
+    gridRowStart: {
+      auto: 'auto',
+      1: '1',
+      2: '2',
+      3: '3',
+      4: '4',
+      5: '5',
+      6: '6',
+      7: '7'
+    },
+    gridRowEnd: {
+      auto: 'auto',
+      1: '1',
+      2: '2',
+      3: '3',
+      4: '4',
+      5: '5',
+      6: '6',
+      7: '7'
+    },
+    transformOrigin: {
+      center: 'center',
+      top: 'top',
+      'top-right': 'top right',
+      right: 'right',
+      'bottom-right': 'bottom right',
+      bottom: 'bottom',
+      'bottom-left': 'bottom left',
+      left: 'left',
+      'top-left': 'top left'
+    },
+    scale: {
+      0: '0',
+      5: '0.05',
+      10: '.1',
+      20: '.2',
+      25: '.25',
+      33: '.3333333',
+      50: '.5',
+      60: '.60',
+      75: '.75',
+      80: '.80',
+      90: '.9',
+      95: '.95',
+      100: '1',
+      105: '1.05',
+      110: '1.1',
+      125: '1.25',
+      150: '1.5',
+      180: '1.80'
+    },
+    rotate: {
+      '-180': '-180deg',
+      '-90': '-90deg',
+      '-45': '-45deg',
+      '-12': '-12deg',
+      '-6': '-6deg',
+      '-3': '-3deg',
+      '-2': '-2deg',
+      '-1': '-1deg',
+      0: '0',
+      1: '1deg',
+      2: '2deg',
+      3: '3deg',
+      6: '6deg',
+      12: '12deg',
+      45: '45deg',
+      90: '90deg',
+      135: '135deg',
+      180: '180deg'
+    },
+    translate: (theme, { negative }) => ({
+      ...theme('spacing'),
+      ...negative(theme('spacing')),
+      '-full': '-100%',
+      '-1/2': '-50%',
+      '1/2': '50%',
+      full: '100%'
+    }),
+    skew: {
+      '-12': '-12deg',
+      '-6': '-6deg',
+      '-3': '-3deg',
+      '-2': '-2deg',
+      '-1': '-1deg',
+      0: '0',
+      1: '1deg',
+      2: '2deg',
+      3: '3deg',
+      6: '6deg',
+      12: '12deg'
+    },
+    transitionProperty: {
+      none: 'none',
+      all: 'all',
+      default: 'background-color, border-color, color, fill, stroke, opacity, box-shadow, transform',
+      colors: 'background-color, border-color, color, fill, stroke',
+      opacity: 'opacity',
+      shadow: 'box-shadow',
+      transform: 'transform'
+    },
+    transitionTimingFunction: {
+      linear: 'linear',
+      in: 'cubic-bezier(0.4, 0, 1, 1)',
+      out: 'cubic-bezier(0, 0, 0.2, 1)',
+      'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)'
+    },
+    transitionDuration: {
+      75: '75ms',
+      100: '100ms',
+      150: '150ms',
+      200: '200ms',
+      300: '300ms',
+      400: '400ms',
+      500: '500ms',
+      700: '700ms',
+      1000: '1000ms'
+    },
+    transitionDelay: {
+      75: '75ms',
+      100: '100ms',
+      150: '150ms',
+      200: '200ms',
+      300: '300ms',
+      500: '500ms',
+      700: '700ms',
+      1000: '1000ms'
+    },
+    animation: {
+      none: 'none',
+      spin: 'spin 1s linear infinite',
+      ping: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+      pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      pulse2: 'pulse2 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      bounce: 'bounce 1s infinite'
+    },
+    keyframes: {
+      spin: {
+        to: { transform: 'rotate(360deg)' }
+      },
+      ping: {
+        '75%, 100%': { transform: 'scale(2)', opacity: '0' }
+      },
+      pulse: {
+        '50%': { opacity: '.5' }
+      },
+      pulse2: {
+        '0%': { opacity: '0.1' },
+        '50%': { opacity: '.95' },
+        '100%': { opacity: '0.1' }
+      },
+      bounce: {
+        '0%, 100%': {
+          transform: 'translateY(-25%)',
+          animationTimingFunction: 'cubic-bezier(0.8,0,1,1)'
+        },
+        '50%': {
+          transform: 'none',
+          animationTimingFunction: 'cubic-bezier(0,0,0.2,1)'
+        }
+      }
+    }
+  },
+  variants: {
+    accessibility: ['responsive', 'focus'],
+    alignContent: ['responsive'],
+    alignItems: ['responsive'],
+    alignSelf: ['responsive'],
+    appearance: ['responsive'],
+    backgroundAttachment: ['responsive'],
+    backgroundClip: ['responsive'],
+    backgroundColor: ['responsive', 'hover', 'focus', 'group-hover'],
+    backgroundImage: ['responsive'],
+    gradientColorStops: ['responsive', 'hover', 'focus'],
+    backgroundOpacity: ['responsive', 'hover', 'focus'],
+    backgroundPosition: ['responsive'],
+    backgroundRepeat: ['responsive'],
+    backgroundSize: ['responsive'],
+    borderCollapse: ['responsive'],
+    borderColor: ['responsive', 'hover', 'focus'],
+    borderOpacity: ['responsive', 'hover', 'focus'],
+    borderRadius: ['responsive'],
+    borderStyle: ['responsive'],
+    borderWidth: ['responsive'],
+    boxShadow: ['responsive', 'hover', 'focus'],
+    boxSizing: ['responsive'],
+    container: ['responsive'],
+    cursor: ['responsive'],
+    display: ['responsive', 'group-hover'],
+    divideColor: ['responsive'],
+    divideOpacity: ['responsive'],
+    divideStyle: ['responsive'],
+    divideWidth: ['responsive'],
+    fill: ['responsive'],
+    flex: ['responsive'],
+    flexDirection: ['responsive'],
+    flexGrow: ['responsive'],
+    flexShrink: ['responsive'],
+    flexWrap: ['responsive'],
+    float: ['responsive'],
+    clear: ['responsive'],
+    fontFamily: ['responsive'],
+    fontSize: ['responsive'],
+    fontSmoothing: ['responsive'],
+    fontVariantNumeric: ['responsive'],
+    fontStyle: ['responsive'],
+    fontWeight: ['responsive', 'hover', 'focus'],
+    height: ['responsive'],
+    inset: ['responsive'],
+    justifyContent: ['responsive'],
+    justifyItems: ['responsive'],
+    justifySelf: ['responsive'],
+    letterSpacing: ['responsive'],
+    lineHeight: ['responsive'],
+    listStylePosition: ['responsive'],
+    listStyleType: ['responsive'],
+    margin: ['responsive'],
+    maxHeight: ['responsive'],
+    maxWidth: ['responsive'],
+    minHeight: ['responsive'],
+    minWidth: ['responsive'],
+    objectFit: ['responsive'],
+    objectPosition: ['responsive'],
+    opacity: ['responsive', 'hover', 'focus', 'group-hover'],
+    order: ['responsive'],
+    outline: ['responsive', 'focus'],
+    overflow: ['responsive'],
+    overscrollBehavior: ['responsive'],
+    padding: ['responsive'],
+    placeContent: ['responsive'],
+    placeItems: ['responsive'],
+    placeSelf: ['responsive'],
+    placeholderColor: ['responsive', 'focus'],
+    placeholderOpacity: ['responsive', 'focus'],
+    pointerEvents: ['responsive'],
+    position: ['responsive'],
+    resize: ['responsive'],
+    space: ['responsive'],
+    stroke: ['responsive'],
+    strokeWidth: ['responsive'],
+    tableLayout: ['responsive'],
+    textAlign: ['responsive'],
+    textColor: ['responsive', 'hover', 'focus'],
+    textOpacity: ['responsive', 'hover', 'focus'],
+    textDecoration: ['responsive', 'hover', 'focus'],
+    textTransform: ['responsive'],
+    userSelect: ['responsive'],
+    verticalAlign: ['responsive'],
+    visibility: ['responsive'],
+    whitespace: ['responsive'],
+    width: ['responsive'],
+    wordBreak: ['responsive'],
+    zIndex: ['responsive'],
+    gap: ['responsive'],
+    gridAutoFlow: ['responsive'],
+    gridTemplateColumns: ['responsive'],
+    gridAutoColumns: ['responsive'],
+    gridColumn: ['responsive'],
+    gridColumnStart: ['responsive'],
+    gridColumnEnd: ['responsive'],
+    gridTemplateRows: ['responsive'],
+    gridAutoRows: ['responsive'],
+    gridRow: ['responsive'],
+    gridRowStart: ['responsive'],
+    gridRowEnd: ['responsive'],
+    transform: ['responsive'],
+    transformOrigin: ['responsive'],
+    scale: ['responsive', 'hover', 'focus'],
+    rotate: ['responsive', 'hover', 'focus'],
+    translate: ['responsive', 'hover', 'focus'],
+    skew: ['responsive', 'hover', 'focus'],
+    transitionProperty: ['responsive'],
+    transitionTimingFunction: ['responsive'],
+    transitionDuration: ['responsive'],
+    transitionDelay: ['responsive'],
+    animation: ['responsive', 'group-hover']
+  },
+  corePlugins: {},
+  plugins: [
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {
+        '.blend-difference': {
+          'mix-blend-mode': 'difference'
+        },
+        '.text-columns-4': { columns: '4' },
+        '.text-columns-3': { columns: '3' },
+        '.text-columns-2': { columns: '2' }
+      }
+
+      addUtilities(newUtilities, { variants: ['responsive', 'group-hover'] })
+    })
+  ],
+  purge: {
+    // Learn more on https://tailwindcss.com/docs/controlling-file-size/#removing-unused-css
+    enabled: process.env.NODE_ENV === 'production',
+    mode: 'layers',
+    layers: ['base', 'components', 'utilities'],
+    content: [
+      'src/**/*.vue'
+      // 'src/plugins/**/*.js'
+    ],
+    options: {
+      whitelistPatterns: [
+        // pug classes
+        // https://github.com/tailwindlabs/tailwindcss/pull/1639#issuecomment-623703605
+        /^.[^\.]*\.[^\. "']*/, // eslint-disable-line
+        // vue transition classes
+        /-enter-active$/,
+        /-leave-active$/,
+        /-enter$/,
+        /-leave-to$/,
+        // content-dynamic classes
+        /object-/,
+        /grid-cols-/
+        // /^col-span-/,
+        // /x12$/, // dynamic widths (w-5x12, md-w-6x12)
+      ]
+    }
+  }
+}
