@@ -50,10 +50,9 @@ export default {
   },
   created () {
     this.$store.dispatch('init')
-    this.$store.dispatch('getCollectionsList')
   },
   mounted () {
-    this.$store.dispatch('listenForMints')
+    // this.$store.dispatch('listenForMints')
     // hide loading overlay
     return document.getElementById('loading')?.remove()
   }

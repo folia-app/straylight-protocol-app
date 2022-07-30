@@ -216,6 +216,7 @@ module.exports = {
     },
     fontFamily: {
       sans: [
+        // 'Dosis',
         // === demo local system === :
         // 'Karrik', // sick but logo...
         // 'Hershey-Noailles-Times', // too dorky

@@ -73,12 +73,12 @@ export default new Router({
 
     // work
     {
-      path: '/tokens/:token',
+      path: '/boards/:board',
       component: Index,
       children: [
         {
           path: '',
-          name: 'token',
+          name: 'board',
           meta: { layout: 'panel' }
           // component: WorkTokens
         }

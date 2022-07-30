@@ -1,6 +1,6 @@
 <template lang="pug">
   section.minted-results.flex.flex-col.w-full
-    template(v-if="!mints")
+    template(v-if="boardCount === undefined")
       .fixed.z-50.bottom-0.left-0.animate-pulse.text-black.px-6.py-4.text-md Loading...
 
     template(v-else)
@@ -8,8 +8,12 @@
         //- template(v-for="n in 111")
 
         //- mints...
-        template(v-for="(mint, i) in mintsFiltered")
-          mint-thumb.mt-32.text-xs.md_text-md(:mint="mint", :key="mint.newTokenId")
+        //- template(v-for="(mint, i) in mintsFiltered")
+        template(v-for="n in boardCount")
+          //- board index starts at 1 lol
+          //- reverse
+          board-thumb(:boardId="boardCount - (n - 1)")
+            //- mint-thumb.mt-32.text-xs.md_text-md(:mint="mint", :key="mint.newTokenId")
 
         //- DEMO ITEMS
 
@@ -33,7 +37,7 @@
 
       //- filters btn (sticky)
       .sticky.z-10.bottom-0.left-0.w-full.pointer-events-none
-        chart
+        //- chart
 
         .absolute.bottom-0.left-0.w-full.h-20.flex.justify-end
           .w-1x2.lg_w-1x4.flex.overflow-hidden.pointer-events-auto
@@ -49,7 +53,7 @@
 
             //- (open filters btn)
             template(v-else)
-              button.w-full.flex.items-center.justify-center.bg-gray-200.relative.mouse_hover_bg-yellow-600(to="/filter", @click="$emit('showFilters')")
+              button.w-full.flex.items-center.justify-center.bg-gray-800.relative.mouse_hover_bg-yellow-600.mouse_hover_text-black(to="/filter", @click="$emit('showFilters')")
                 div.text-sm.uppercase.tracking-wide Filter
                 .absolute.top-0.right-0.h-full.flex.items-center.w-20.pt-2.text-lg.flex.items-center.justify-center ⍆
 
@@ -59,11 +63,16 @@
 import { mapState } from 'vuex'
 import SvgX from '@/components/SVG-X'
 import Chart from '@/components/Chart'
-import MintThumb from '@/components/MintThumb'
+import BoardThumb from '@/components/BoardThumb'
 import Observer from '@/components/Observer'
 export default {
   name: 'MintedResults',
-  components: { SvgX, Chart, MintThumb, Observer },
+  components: { SvgX, Chart, BoardThumb, Observer },
+  data () {
+    return {
+      boardCount: undefined
+    }
+  },
   computed: {
     ...mapState(['mints']),
 
@@ -81,7 +90,8 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getMints', { cached: false })
+    // this.$store.dispatch('getMints', { cached: false })
+    this.$store.dispatch('getBoardCount').then(val => { this.boardCount = val })
   }
 }
 </script>

@@ -10,7 +10,7 @@
 
     //- (RIGHT PANEL)
     .fixed.z-20.top-0.right-0.w-full.h-full.pointer-events-none
-      .absolute.z-10.top-0.right-0.transition-all.duration-500.transform.origin-right.bg-white.min-h-screen.pointer-events-auto(:class="[panelWidths[1], {'scale-x-0': !panelOpen}]")
+      .absolute.z-10.top-0.right-0.transition-all.duration-500.transform.origin-right.bg-gray-900.min-h-screen.pointer-events-auto(:class="[panelWidths[1], {'scale-x-0': !panelOpen}]")
         //- panels
         transition-group(name="pagesfade", @before-enter="setPanelWidths")
           //- info(v-show="$route.name === 'info'", key="info")
@@ -18,7 +18,7 @@
           stats(v-if="$route.name === 'stats'", key="stats")
           //- set-view(v-if="$route.name === 'set'", key="set")
           mint-view(v-if="$route.name === 'mint'", key="mint")
-          nft-view(v-else-if="$route.name === 'token'", :key="$route.params.token")
+          board-view(v-else-if="$route.name === 'board'", :key="$route.params.board")
 
       //- (close panel overlay)
       transition(name="fade")
@@ -141,7 +141,7 @@ import svgFleuron from '@/components/SVG-Fleuron'
 import Btn from '@/components/Btn'
 // import WorkView from '@/views/Work'
 import MintView from '@/views/Mint'
-import NftView from '@/views/NFT'
+import BoardView from '@/views/Board'
 // import Info from '@/views/Info'
 import Filters from '@/views/Filters'
 import Stats from '@/views/Stats'
@@ -163,7 +163,7 @@ import whitelist from '@/whitelist'
 // let lastRt
 export default {
   name: 'Index',
-  components: { Stats, MintView, NftView, Filters, svgFleuron, Btn, Observer, ConnectDisconnectBtn, SvgX, MintedResults, Chart },
+  components: { Stats, BoardView, MintView, Filters, svgFleuron, Btn, Observer, ConnectDisconnectBtn, SvgX, MintedResults, Chart },
   data () {
     return {
       squish: false,
@@ -230,10 +230,12 @@ export default {
 
     setPanelWidths () {
       // [body, work-panel]
+      const extraWide = ['scale-x-5 sm_scale-x-20 lg_scale-x-20', 'w-19x20 sm_w-4x5 lg_w-4x5']
       const wide = ['scale-x-5 sm_scale-x-20 lg_scale-x-33', 'w-19x20 sm_w-4x5 lg_w-2x3']
       const narrow = ['scale-x-5 sm_scale-x-20 lg_scale-x-60', 'w-19x20 sm_w-4x5 lg_w-2x5']
       const isNarrow = this.filtersVisible || ['stats'].includes(this.$route.name)
-      this.panelWidths = isNarrow ? narrow : wide
+      const isExtraWide = this.$route.name === 'board'
+      this.panelWidths = isExtraWide ? extraWide : isNarrow ? narrow : wide
     },
     openPanel () {
       this.setPanelWidths()

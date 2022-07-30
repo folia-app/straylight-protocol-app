@@ -1,0 +1,44 @@
+<template lang="pug">
+  observer.board-image.relative.group(@visible="onVisible", @hidden="visible = false")
+
+    //- (placeholder)
+    template(v-if="!imgSrc")
+      .w-full.pb-full.bg-gray-150
+        .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-white
+          .py-1.pl-3.pr-2.bg-blackff Loading...
+
+    template(v-else)
+      img.block.w-full(:src="imgSrc")
+
+</template>
+
+<script>
+import Observer from '@/components/Observer'
+export default {
+  name: 'BoardImage',
+  props: ['boardId'],
+  components: { Observer },
+  data () {
+    return {
+      visible: false,
+      imgSrc: undefined,
+    }
+  },
+  methods: {
+    onVisible () {
+      this.visible = true
+      this.loadImage()
+    },
+    onHidden () {
+      this.visible = true
+    },
+    loadImage () {
+      this.$store.dispatch('getBoardImage', { id: this.boardId.toString() })
+        .then(imgSrc => this.imgSrc = imgSrc)
+    }
+  }
+}
+</script>
+
+<style>
+</style>

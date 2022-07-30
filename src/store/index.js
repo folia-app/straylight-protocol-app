@@ -19,14 +19,15 @@ const infuraProjectID = '1363143c08464562ba87cc807ac77020' // process.env.VUE_AP
 
 const networks = {
   1: { name: 'mainnet', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
-  4: { name: 'rinkeby', layer: 'ethereum', infura: `https://rinkeby.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://rinkeby.etherscan.io' } }
+  // 4: { name: 'rinkeby', layer: 'ethereum', infura: `https://rinkeby.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://rinkeby.etherscan.io' } }
+  69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } }
 }
 const appNetworkId = process.env.VUE_APP_FALLBACK_NETWORK_ID || 1
 
 // setup web3 modal
 const web3Modal = new Web3Modal({
   // network: 'mainnet', // optional
-  cacheProvider: true, // optional
+  cacheProvider: false, // optional
   providerOptions: { // required
     walletconnect: {
       package: WalletConnectProvider, // required
@@ -338,12 +339,6 @@ export default new Vuex.Store({
       })
     },
 
-    // remove eventually
-    getWeb3 () {
-      // TODO better handler for this
-      return web3
-    },
-
     async getControllerDeployBlock ({ state, dispatch }) {
       let block = networks[state.networkId].controllerDeployBlock
       if (!block) {
@@ -361,6 +356,26 @@ export default new Vuex.Store({
       return block
     },
 
+    async getBoardCount ({ state, dispatch }) {
+      try {
+        if (!state.nftContract) await dispatch('init')
+        const count = await state.nftContract.boardcounter() // starts at 0
+        return count.add(1).toNumber()
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    
+    async getBoardImage ({ state, dispatch }, { id }) {
+      try {
+        if (!state.nftContract) await dispatch('init')
+        return state.nftContract.renderBoard(id)
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
     async getMintedEvents ({ state, dispatch }) {
       try {
         if (!state.controllerContract) await dispatch('init')
@@ -372,7 +387,6 @@ export default new Vuex.Store({
         const mintEvents = await state.controllerContract.queryFilter('mint', fromBlock)
         // console.log({ mintEvents })
         // console.timeEnd('getEvents')
-        // console.log({ mintEvents })
 
         return mintEvents
       } catch (e) {
@@ -388,6 +402,7 @@ export default new Vuex.Store({
         }
         // get all mint events...
         const events = await dispatch('getMintedEvents')
+        console.log({ events })
         // format
         const mints = events.reverse().map(event => ({
           getTx: event.getTransaction,
@@ -395,6 +410,7 @@ export default new Vuex.Store({
           tokenId: event.args[1].toString().toLowerCase(),
           newTokenId: event.args[2].toString().toLowerCase()
         }))
+        console.log({ mints })
         commit('SAVE_MINTS', mints)
         return mints
       } catch (e) {
@@ -731,16 +747,17 @@ export default new Vuex.Store({
     async getNFTOwnerByTokenId ({ state, commit, dispatch }, tokenId) {
       try {
         // saved?
-        const token = state.tokens.find(token => token[0] === tokenId) || []
-        let owner = token && token[1]
-        if (owner) return owner
+        // const token = state.tokens.find(token => token[0] === tokenId) || []
+        // let owner = token && token[1]
+        // if (owner) return owner
         // fetch...
         if (!state.nftContract) await dispatch('init')
-        owner = await state.nftContract.ownerOf(tokenId)
+        let owner = await state.nftContract.ownerOf(tokenId)
         // save
-        commit('SAVE_TOKEN', [tokenId, owner])
+        // commit('SAVE_TOKEN', [tokenId, owner])
         return owner
-      } catch {
+      } catch (e) {
+        console.error(e)
         // seems to error if token doesn't exist...
         console.warn(`get owner error / token doesn't exist? (${tokenId})`)
         return null
@@ -831,7 +848,9 @@ export default new Vuex.Store({
         }
 
         // fetch new...
-        if (!provider) await dispatch('init')
+        // if (!provider) await dispatch('init')
+        // lookup on mainnet
+        const provider = new ethers.getDefaultProvider(networks[1].infura)
         const ens = await provider.lookupAddress(address)
 
         // fetch from opensea...
