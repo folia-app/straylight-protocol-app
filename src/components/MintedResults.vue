@@ -62,12 +62,11 @@
 <script>
 import { mapState } from 'vuex'
 import SvgX from '@/components/SVG-X'
-import Chart from '@/components/Chart'
 import BoardThumb from '@/components/BoardThumb'
 import Observer from '@/components/Observer'
 export default {
   name: 'MintedResults',
-  components: { SvgX, Chart, BoardThumb, Observer },
+  components: { SvgX, BoardThumb, Observer },
   data () {
     return {
       boardCount: undefined

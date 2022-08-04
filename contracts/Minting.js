@@ -1,10 +1,18 @@
+// joined from paul's starylight repo
 export default {
   "networks": {
-    69: {
-      "address": "0x820226867468D5825f9D38e3Dd969A6a38e673E7"
+    // 69: {
+    //   "address": "0x820226867468D5825f9D38e3Dd969A6a38e673E7"
+    // }
+    // goerli
+    420: {
+      "address": "0x7b2bBee1cF5d1Ab795999F9D8AB4D25dF5FC9c3c"
     }
   },
-  "abi":[
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Minting",
+  "sourceName": "contracts/minting.sol",
+  "abi": [
     {
       "inputs": [
         {

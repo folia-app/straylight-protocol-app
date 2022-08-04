@@ -1,9 +1,17 @@
+// joined from paul's starylight repo
 export default {
   "networks": {
-    69: {
-      "address": "0x3cF2D51787Ca95E4b6917B3EDDDBd9f72A3D75Ca"
+    // 69: {
+    //   "address": "0x3cF2D51787Ca95E4b6917B3EDDDBd9f72A3D75Ca"
+    // }
+    // goerli
+    420: {
+      "address": "0x5DFc8AC1782572f29654107CbB7Ae3939549ec05"
     }
   },
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Straylight",
+  "sourceName": "contracts/straylight.sol",
   "abi": [
     {
       "inputs": [
@@ -108,6 +116,31 @@ export default {
         }
       ],
       "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes12",
+          "name": "rule",
+          "type": "bytes12"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "boardId",
+          "type": "uint256"
+        }
+      ],
+      "name": "turmiteMint",
       "type": "event"
     },
     {
@@ -628,6 +661,49 @@ export default {
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenByIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenOfOwnerByIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "id",
           "type": "uint256"
         }
@@ -638,6 +714,19 @@ export default {
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -657,7 +746,7 @@ export default {
         },
         {
           "internalType": "uint256",
-          "name": "id",
+          "name": "tokenId",
           "type": "uint256"
         }
       ],

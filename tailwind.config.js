@@ -37,6 +37,7 @@ module.exports = {
       12: '3rem',
       14: '3.5rem',
       16: '4rem',
+      18: '4.4rem',
       20: '5rem',
       22: '5.5rem',
       24: '6rem',
@@ -450,7 +451,7 @@ module.exports = {
       '11x12': '91.666667%',
       '19x20': 'calc(100% * 19/20)',
       full: '100%',
-      screen: '100vw'
+      screen: '100vw',
     }),
     zIndex: {
       auto: 'auto',
@@ -831,7 +832,7 @@ module.exports = {
     transitionTimingFunction: ['responsive'],
     transitionDuration: ['responsive'],
     transitionDelay: ['responsive'],
-    animation: ['responsive', 'group-hover']
+    animation: ['responsive', 'hover', 'group-hover']
   },
   corePlugins: {},
   plugins: [

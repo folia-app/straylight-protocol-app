@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 // contracts
-import NFTContract from '../../contracts/Token'
-import Controller from '../../contracts/Controller'
-import whitelist from '@/whitelist'
+import NFTContract from '../../contracts/Straylight'
+import Controller from '../../contracts/Minting'
 // ethers
 import { ethers } from 'ethers'
 // import Web3 from 'web3'
@@ -15,12 +14,13 @@ import assets from './assets' // connected wallet assets
 
 let provider, signer, walletProvider, initializing, web3
 
-const infuraProjectID = '1363143c08464562ba87cc807ac77020' // process.env.VUE_APP_INFURA_PROJECT_ID
+const infuraProjectID = process.env.VUE_APP_INFURA_PROJECT_ID
 
 const networks = {
   1: { name: 'mainnet', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
   // 4: { name: 'rinkeby', layer: 'ethereum', infura: `https://rinkeby.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://rinkeby.etherscan.io' } }
-  69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } }
+  69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } },
+  420: { name: 'goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli/' } },
 }
 const appNetworkId = process.env.VUE_APP_FALLBACK_NETWORK_ID || 1
 
@@ -111,24 +111,6 @@ export default new Vuex.Store({
       // meta.push({ property: 'og:url', content: ##ADDCANNONICAL## })
       return meta
     },
-    mintedChartDataset (state) {
-      let dataset
-      if (state.mints) {
-        let mintedContracts = state.mints.map(mint => mint.contractAddress)
-        mintedContracts = [...new Set(mintedContracts)] // de-dupe
-        // fill...
-        dataset = mintedContracts.map(addr => {
-          addr = addr.toLowerCase()
-          const contractInfo = whitelist.find(collection => collection[2].toLowerCase() === addr || collection[3]?.toLowerCase() === addr)
-          return {
-            label: contractInfo ? contractInfo[0] : addr,
-            color: '#' + addr.slice(-6),
-            count: state.mints.filter(mint => mint.contractAddress.toLowerCase() === addr.toLowerCase()).length
-          }
-        })
-      }
-      return dataset
-    }
   },
   mutations: {
     SIGN_IN (state, address) {

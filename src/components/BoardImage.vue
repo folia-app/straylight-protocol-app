@@ -4,8 +4,8 @@
     //- (placeholder)
     template(v-if="!imgSrc")
       .w-full.pb-full
-        .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-white
-          .py-1.pl-3.pr-2 Loading...
+        .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-accent3.text-smm
+          .py-1.pl-3.pr-2 loading...
 
     template(v-else)
       img.block.w-full(:src="imgSrc")

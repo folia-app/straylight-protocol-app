@@ -4,30 +4,33 @@
     .min-h-screen.flex.flex-col
 
       //- title row
-      header.h-20.flex.w-full.items-center.justify-center
+      header.mt-48.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
         h1 world_{{ boardId }}
 
-      .flex-1.relative.flex.items-center.justify-center.py-24
+      .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-8.lg_py-24
         //- board image
-        img.sm_border.border-gray-800(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage}")
+        img.border.border-gray-800(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage}")
 
       //- turmite list
       ul.flex.flex-wrap.items-end.sticky.bottom-0.left-0.w-full.bg-black(style="mix-blend-mode:difference; ")
-        template(v-for="(owner, i) in owners", v-if="owner !== null")
-          li.px-9.pt-5.pb-5.w-1x2.lg_w-1x4
-            div turmite_{{ ['W', 'N', 'S', 'E'][i] }} 
-            .pt-6.text-smm
-              //- owner
-              div
-                .inline-block.opacity-33(style="min-width:3.5em") owner
-                .inline-block
-                  template(v-if="owner === undefined")
-                    span.animate-pulse ...
-                  template(v-else)
-                    addr(:address="owner")
-              div
-                .inline-block.opacity-33(style="min-width:3.5em") moves
-                .inline-block 8
+        template(v-for="(owner, i) in owners")
+          li.px-9.pt-5.pb-5.w-1x2.lg_w-1x4.flex.flex-col
+            .pb-6(:class="{'opacity-33': !owner}") turmite_{{ ['W', 'N', 'S', 'E'][i] }} 
+            template(v-if="owner")
+              .text-smm
+                //- owner
+                div
+                  .inline-block.opacity-33(style="min-width:3.5em") owner
+                  .inline-block
+                    template(v-if="owner === undefined")
+                      span.animate-pulse ...
+                    template(v-else)
+                      addr(:address="owner")
+                div
+                  .inline-block.opacity-33(style="min-width:3.5em") moves
+                  .inline-block 8
+            template(v-else)
+              router-link.block.border.border-dashed.rounded-xl.h-16.mt-2.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/mint") JOIN / MINT
 
         
     //- (related assets)

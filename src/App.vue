@@ -8,9 +8,11 @@
         //- top bar
         .flex.flex-wrap.w-full.items-start
           //- h1.sr-only Straylight Protocol
-
-          .w-full.lg_w-auto.lg_flex-1.flex
-            a.block.borderff.opacity-33.mouse_hover_opacity-100.mouse_hover_bg-current(href="https://folia.app", target="_blank", title="folia.app ↗")
+          
+          //- laptop left
+          .flex
+            //- folia logo link
+            a.block.borderff.opacity-33.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
               .w-20.h-20.flex.items-center.justify-center.mouse_hover_text-black.pb-2.pr-2
                 svg-fleuron(style="height:1.35em")
 
@@ -19,18 +21,19 @@
               router-link(to="/")
                 svg-logo.h-10
 
-          //- nav
-          nav.h-20.flex.items-center.px-12
-            .border.rounded-full.border-current.flex.leading-none.overflow-hidden.bg-black
+          //- laptop right
+          nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12
+            //- border cell
+            .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.leading-none.overflow-hidden.bg-accent1.text-center
               //- (info btn)
-              button.px-12.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(@click="openInfoOverlay")
+              button.w-1x6.lg_w-auto.lg_px-12.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(@click="openInfoOverlay")
                 | info
 
               //- mint link
-              router-link.px-12.-mx-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(to="/mint")
+              router-link.w-1x6.lg_w-auto.lg_px-12.lg_-mx-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(to="/mint")
                 div mint
 
-              div.px-10.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full
+              div.w-1x6.lg_w-auto.lg_px-10.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full
                 div connect
                 //- connect/disconnect btn
                 //- connect-disconnect-btn.h-20.shadow-md.relative.z-10(connectLbl="connect", iconWidth="w-20")
@@ -38,7 +41,7 @@
               
 
       //- (info overlay)
-      .fixed.pt-20.z-40.overlay.overflow-y-scroll.scrollbars-hidden(ref="infoEl", :class="{'pointer-events-none': !infoVisible}")
+      .fixed.pt-36.md_pt-20.z-40.overlay.overflow-y-scroll.scrollbars-hidden(ref="infoEl", :class="{'pointer-events-none': !infoVisible}")
         //- (reveals as background fades in)
         .relative.px-6
           .flex.justify-end.items-start
