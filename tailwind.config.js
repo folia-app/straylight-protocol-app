@@ -20,9 +20,11 @@ module.exports = {
     },
     spacing: {
       px: '1px',
+      '3px': '3px',
       em: '1.35em',
       0: '0',
       1: '0.25rem',
+      '1b': '0.3rem',
       2: '0.5rem',
       3: '0.75rem',
       4: '1rem',
@@ -55,12 +57,12 @@ module.exports = {
       xs: '1.4rem',
       sm: '1.5rem',
       smm: '1.6rem',
-      md: '1.7rem',
-      base: '1.8rem',
-      lg: '2rem',
-      xl: '2.1rem',
-      '2xl': '2.4rem',
-      '3xl': '2.8rem',
+      md: '1.8rem',
+      base: '1.9rem',
+      lg: '2.1rem',
+      xl: '2.2rem',
+      '2xl': '2.3rem',
+      '3xl': '2.9rem',
       '4xl': '3rem',
       '5xl': '3.4rem',
       '6xl': '4.8rem',
@@ -76,7 +78,7 @@ module.exports = {
       transparent: 'transparent',
       current: 'currentColor',
 
-      white: '#fff',
+      white: 'white',
       black: '#000',
       'black-a03': 'rgba(0,0,0,0.03)',
       'black-a08': 'rgba(0,0,0,0.08)',
@@ -86,6 +88,10 @@ module.exports = {
       'black-a45': 'rgba(0,0,0,0.45)',
       'black-a60': 'rgba(0,0,0,0.60)',
       paper: 'rgb(248,248,248)',
+
+      accent1: 'var(--color-bg)',
+      accent2: 'var(--color-text)',
+      accent3: 'var(--color-accent)',
 
       gray: {
         50: '#fafafa',
@@ -146,7 +152,7 @@ module.exports = {
     },
     borderColor: theme => ({
       ...theme('colors'),
-      default: theme('colors.gray.300', 'currentColor')
+      default: theme('currentColor')
     }),
     borderOpacity: theme => theme('opacity'),
     borderRadius: {
@@ -216,7 +222,7 @@ module.exports = {
     },
     fontFamily: {
       sans: [
-        // 'Dosis',
+        'Dosis',
         // === demo local system === :
         // 'Karrik', // sick but logo...
         // 'Hershey-Noailles-Times', // too dorky
@@ -280,7 +286,7 @@ module.exports = {
     },
     lineHeight: {
       none: '1',
-      // tighter: '1.125',
+      tighter: '1.1',
       tight: '1.25',
       snug: '1.375',
       normal: '1.45',

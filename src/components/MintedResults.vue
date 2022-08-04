@@ -4,16 +4,16 @@
       .fixed.z-50.bottom-0.left-0.animate-pulse.text-black.px-6.py-4.text-md Loading...
 
     template(v-else)
-      .flex-1.w-full.grid.grid-cols-2.sm_grid-cols-3.lg_grid-cols-4.items-end.bg-black
-        //- template(v-for="n in 111")
+      .flex-1.w-full.grid.grid-cols-2.sm_grid-cols-3.lg_grid-cols-4.xl_grid-cols-5.items-end.bg-black
+        template(v-for="n in 128")
 
-        //- mints...
-        //- template(v-for="(mint, i) in mintsFiltered")
-        template(v-for="n in boardCount")
-          //- board index starts at 1 lol
-          //- reverse
-          board-thumb(:boardId="boardCount - (n - 1)")
-            //- mint-thumb.mt-32.text-xs.md_text-md(:mint="mint", :key="mint.newTokenId")
+          //- mints...
+          //- template(v-for="(mint, i) in mintsFiltered")
+          template(v-for="n in boardCount")
+            //- board index starts at 1 lol
+            //- reverse
+            board-thumb(:boardId="boardCount - (n - 1)")
+              //- mint-thumb.mt-32.text-xs.md_text-md(:mint="mint", :key="mint.newTokenId")
 
         //- DEMO ITEMS
 
@@ -36,7 +36,7 @@
           //- | End
 
       //- filters btn (sticky)
-      .sticky.z-10.bottom-0.left-0.w-full.pointer-events-none
+      //- .sticky.z-10.bottom-0.left-0.w-full.pointer-events-none
         //- chart
 
         .absolute.bottom-0.left-0.w-full.h-20.flex.justify-end

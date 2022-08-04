@@ -1,11 +1,11 @@
 <template lang="pug">
-  observer.board-image.relative.group(@visible="onVisible", @hidden="visible = false")
+  observer.board-image.relative.group(:threshold="0.01", @visible="onVisible", @hidden="visible = false")
 
     //- (placeholder)
     template(v-if="!imgSrc")
-      .w-full.pb-full.bg-gray-150
+      .w-full.pb-full
         .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-white
-          .py-1.pl-3.pr-2.bg-blackff Loading...
+          .py-1.pl-3.pr-2 Loading...
 
     template(v-else)
       img.block.w-full(:src="imgSrc")

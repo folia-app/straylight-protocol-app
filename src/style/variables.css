@@ -16,6 +16,10 @@
   --gray:#666;
   --ltgray:#ccc;
   --red:red;
+
+  --color-bg: black;
+  --color-text: #CCFF01;
+  --color-accent: #f72d8e;
   
   --h1:2.75em;
   --h2:1.375em;
