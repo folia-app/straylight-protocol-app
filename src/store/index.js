@@ -9,7 +9,7 @@ import Web3Modal from 'web3modal'
 // see: https://github.com/vitejs/vite/issues/7257
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
 
-let provider, signer, walletProvider, initializing, web3
+let provider, signer, walletProvider, initializing, nftContract, controllerContract
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
@@ -25,7 +25,7 @@ const appNetworkId = import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1
 // let web3Modal = {}
 const web3Modal = new Web3Modal({
   // network: deployNetwork.name, // optional - NOTE, doesn't seem to work with "polygon" as name...
-  cacheProvider: false, // optional
+  cacheProvider: true, // optional
   providerOptions: { // required
     walletconnect: {
       package: WalletConnectProvider, // required
@@ -47,9 +47,6 @@ export default createStore({
       address: null,
       networkId: null, // wallet network
       appNetworkId,
-
-      nftContract: null,
-      controllerContract: null,
 
       mintPrice: undefined,
       collectionsList: undefined,
@@ -79,7 +76,7 @@ export default createStore({
     },
     addrShort: () => (addr) => addr ? addr.slice(0, 6) + '...' + addr.slice(-4) : '...',
     userBalance: (state) => (addr) => provider?.getBalance(addr || state.address) || '0', // wei
-    contractAddr: (state) => state.nftContract?.address,
+    contractAddr: (state) => nftContract?.address,
     isSoldOut: () => (work) => {
       return work && Number(work.editions) && Number(work.printed) >= Number(work.editions)
     },
@@ -148,11 +145,11 @@ export default createStore({
         chainId = appNetworkId
       }
       // nft
-      state.nftContract = new ethers.Contract(NFTContract.networks[chainId].address, NFTContract.abi, provider)
+      nftContract = new ethers.Contract(NFTContract.networks[chainId].address, NFTContract.abi, provider)
       console.log('token:', NFTContract.networks[chainId].address)
 
       // controller
-      state.controllerContract = new ethers.Contract(Controller.networks[chainId].address, Controller.abi, provider)
+      controllerContract = new ethers.Contract(Controller.networks[chainId].address, Controller.abi, provider)
       console.log('controller:', Controller.networks[chainId].address)
     },
 
@@ -342,8 +339,8 @@ export default createStore({
 
     async getBoardCount ({ state, dispatch }) {
       try {
-        if (!state.nftContract) await dispatch('init')
-        const count = await state.nftContract.boardcounter() // starts at 0
+        if (!nftContract) await dispatch('init')
+        const count = await nftContract.boardcounter() // starts at 0
         return count.add(1).toNumber()
       } catch (e) {
         console.error(e)
@@ -352,8 +349,8 @@ export default createStore({
     
     async getBoardImage ({ state, dispatch }, { id }) {
       try {
-        if (!state.nftContract) await dispatch('init')
-        return state.nftContract.renderBoard(id)
+        if (!nftContract) await dispatch('init')
+        return nftContract.renderBoard(id)
       } catch (e) {
         console.error(e)
         throw e
@@ -362,13 +359,13 @@ export default createStore({
 
     async getMintedEvents ({ state, dispatch }) {
       try {
-        if (!state.controllerContract) await dispatch('init')
+        if (!controllerContract) await dispatch('init')
 
         const fromBlock = await dispatch('getControllerDeployBlock')
 
         // get events...
         // console.time('getEvents')
-        const mintEvents = await state.controllerContract.queryFilter('mint', fromBlock)
+        const mintEvents = await controllerContract.queryFilter('mint', fromBlock)
         // console.log({ mintEvents })
         // console.timeEnd('getEvents')
 
@@ -417,34 +414,14 @@ export default createStore({
       }
     },
 
-    async getCollectionsList ({ state, commit, dispatch }) {
-      try {
-        if (!state.controllerContract) await dispatch('init')
-
-        const fromBlock = await dispatch('getControllerDeployBlock')
-
-        // fetch all events
-        const events = await state.controllerContract.queryFilter('newContract', fromBlock)
-        // console.log({ newContractEvents: events.map(e => e.args[0]).filter(addr => addr.toLowerCase() === '0x059EDD72Cd353dF5106D2B9cC5ab83a52287aC3a'.toLowerCase()) })
-        // TODO factor REMOVE CONTRACT?
-
-        // format
-        const list = events.map(event => event.args)
-        commit('SAVE_COLLECTIONS_LIST', list)
-        return list
-      } catch (e) {
-        console.error(e)
-      }
-    },
-
     async getMintPrice ({ state, commit, dispatch }) {
       try {
         // saved?
         if (state.mintPrice) return state.mintPrice
         //
-        if (!state.controllerContract) await dispatch('init')
+        if (!controllerContract) await dispatch('init')
         // fetch...
-        const price = await state.controllerContract.mintPrice()
+        const price = await controllerContract.mintPrice()
         // save
         commit('SET_MINT_PRICE', price)
         return price
@@ -456,8 +433,8 @@ export default createStore({
 
     async getEditionsLeft ({ state, dispatch }, contract) {
       try {
-        if (!state.controllerContract) await dispatch('init')
-        const resp = await state.controllerContract.aC(contract)
+        if (!controllerContract) await dispatch('init')
+        const resp = await controllerContract.aC(contract)
         return resp?.editionsLeft?.toString() ?? -1
       } catch (e) {
         console.error(e)
@@ -466,8 +443,8 @@ export default createStore({
 
     async getMintCount ({ state, commit, dispatch }) {
       try {
-        if (!state.nftContract) await dispatch('init')
-        const count = await state.nftContract.totalSupply()
+        if (!nftContract) await dispatch('init')
+        const count = await nftContract.totalSupply()
         commit('SET_MINT_COUNT', count)
         return count
       } catch (e) {
@@ -478,9 +455,9 @@ export default createStore({
 
     async listenForMints ({ state, dispatch }) {
       try {
-        if (!state.controllerContract) await dispatch('init')
+        if (!controllerContract) await dispatch('init')
         // TODO - cancel if sold out?
-        state.controllerContract.on('editionBought', (contractAddress, tokenId, newTokenId) => {
+        controllerContract.on('editionBought', (contractAddress, tokenId, newTokenId) => {
           console.log('new mint!', { contractAddress, tokenId, newTokenId })
           dispatch('getMintCount')
           dispatch('getMints', {})
@@ -495,19 +472,34 @@ export default createStore({
     async mint ({ state, dispatch }, { rule }) {
       try {
         // wait for init?
-        if (!state.controllerContract) await dispatch('init')
+        if (!controllerContract) await dispatch('init')
         // connect wallet?
         if (!state.address || !signer) await dispatch('connect')
 
         // setup
-        const contractSigner = state.controllerContract.connect(signer)
+        const contractSigner = controllerContract.connect(signer)
         console.log({rule})
-        rule = ethers.utils.hexZeroPad(ethers.utils.hexlify(Number(rule)), 12)
+        // rule = ethers.utils.hexZeroPad(ethers.utils.hexlify(Number(rule)), 12)
         console.log({rule})
         const price = await dispatch('getMintPrice')
         // confirm...
-        const tx = await contractSigner.publicMint(rule.toString(), { value: price.toString() })
+        const tx = await contractSigner.publicMint(rule, { value: price.toString() })
         console.log('my new mint tx:', tx)
+        return tx
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
+    async turmiteMove ({ state, dispatch }, { tokenId, moves }) {
+      try {
+        if (!nftContract) await dispatch('init')
+
+        const contractSigner = nftContract.connect(signer)
+
+        const tx = await contractSigner.moveTurmite(tokenId, moves)
+
         return tx
       } catch (e) {
         console.error(e)
@@ -517,8 +509,8 @@ export default createStore({
 
     // async getPaused ({ state, dispatch }) {
     //   try {
-    //     if (!state.controllerContract) await dispatch('init')
-    //     return state.controllerContract.paused()
+    //     if (!controllerContract) await dispatch('init')
+    //     return controllerContract.paused()
     //   } catch (e) {
     //     console.error(e)
     //     throw e
@@ -544,7 +536,7 @@ export default createStore({
     //     if (bn.from(balance).lt(work.price)) throw new Error(`!! Insufficient funds in your wallet\n${state.address}`)
 
     //     // sign...
-    //     const contractSigner = state.controllerContract.connect(signer)
+    //     const contractSigner = controllerContract.connect(signer)
     //     // tx
     //     return contractSigner.buy(state.address, workId, { value: work.price })
 
@@ -586,7 +578,7 @@ export default createStore({
     //     if (insufficientFunds) throw new Error(`!! Insufficient funds in your wallet\n${state.address}`)
 
     //     // buy
-    //     await state.controllerContract.methods
+    //     await controllerContract.methods
     //       .buyByID(state.address, workId, editionId)
     //       .send({ from: state.address, value: work.price })
     //     // refresh work data for app
@@ -625,7 +617,7 @@ export default createStore({
     //     if (bn.from(balance).lt(work.price)) throw new Error(`!! Insufficient funds in your wallet\n${state.address}`)
 
     //     // sign...
-    //     const contractSigner = state.controllerContract.connect(signer)
+    //     const contractSigner = controllerContract.connect(signer)
     //     // tx
     //     return contractSigner.buyByID(state.address, workId, editionId, { value: work.price })
 
@@ -647,14 +639,14 @@ export default createStore({
     //   let work = state.works.find(work => work.id === id)
     //   if (!flush && work) return work
 
-    //   if (!state.controllerContract) {
+    //   if (!controllerContract) {
     //     console.warn('controller not set yet')
     //     return
     //   }
     //   // get new data
     //   if (id && !isNaN(id)) {
     //     try {
-    //       work = await state.controllerContract.methods.works(id).call()
+    //       work = await controllerContract.methods.works(id).call()
     //       work = { id, ...work } // add id
     //       commit('SAVE_WORK', work)
     //     } catch (e) {
@@ -676,12 +668,12 @@ export default createStore({
     //       throw new Error(`invalid work id: ${id}`)
     //     }
 
-    //     if (!state.controllerContract) {
+    //     if (!controllerContract) {
     //       await dispatch('init')
     //     }
 
     //     // fetch...
-    //     work = await state.controllerContract.works(id)
+    //     work = await controllerContract.works(id)
     //     work = { id, ...work } // add id
     //     // save
     //     commit('SAVE_WORK', work)
@@ -738,8 +730,8 @@ export default createStore({
         // let owner = token && token[1]
         // if (owner) return owner
         // fetch...
-        if (!state.nftContract) await dispatch('init')
-        let owner = await state.nftContract.ownerOf(tokenId)
+        if (!nftContract) await dispatch('init')
+        let owner = await nftContract.ownerOf(tokenId)
         // save
         // commit('SAVE_TOKEN', [tokenId, owner])
         return owner

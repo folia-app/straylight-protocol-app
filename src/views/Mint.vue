@@ -43,7 +43,31 @@ article
           //- (colletions)
           template(v-if="isConnected")
             .flex.justify-center.py-12.w-full
-              input.border.text-center(v-model="selection", type="number", step="1", min="0", required, placeholder="0")
+              //- input.border.text-center(v-model="selection", type="number", step="1", min="0", required, placeholder="0")
+              select(v-model="selection")
+                option(value="ff0801ff0201ff0000000001") spiral
+                option(value="ff0800ff0201ff0800000001") cloud
+                option(value="ff0801ff0801ff0201000000") fibbonacci
+                option(value="ff0201ff0801ff0201000200") worms
+                option(value= "000201ff0201ff0801ff0800") burn
+                option(value="ff0801000200000800ff0800") ornament
+                option(value="ff0001000200ff0801ff0200") fort
+                option(value="ff0201000201000201ff0400") snowflake
+                option(value= "ff0201000801ff0401000000") storm
+                option(value= "ff0201000200ff0801ff0800") brain
+                option(value= "ff0201000201ff0400000000") cavetec
+                option(value="ff0201000801ff0000000201") moss
+                option(value= "ff0201000800ff0200000200") phonk
+                option(value= "0xff0201000801ff0000000000") cross
+                option(value= "ff0201000800ff0000000000") castle
+                option(value= "ff0201000800ff0000000401") spacer
+                option(value= "ff0201000800ff0801ff0200") battery
+                option(value= "ff0201000800000000ff0001") zersetzung
+                option(value= "ff0201000800ff0000000801") chutullu
+                option(value="ff0801ff0201ff0000000001") eyes
+                option(value= "ff0801ff0201ff0000000000000000") freezer
+
+            div.text-center(v-if="selection") {{ selection }}
 
         //- (selection overlay)
         //- button.absolute.overlay.bg-black-a60(v-if="selection", @click="clearSelection")
@@ -146,7 +170,7 @@ export default {
         this.myMint = null
         this.status = { msg: 'Confirm transaction in your wallet...' }
 
-        const rule = this.selection
+        const rule = '0x' + this.selection
 
         // confirm...
         tx = await this.$store.dispatch('mint', { rule })

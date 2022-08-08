@@ -9,13 +9,14 @@ article.board
 
     .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-8.lg_py-24
       //- board image
-      img.border.border-gray-800(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage}")
+      img.border.border-gray-700(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage}")
 
     //- turmite list
-    ul.flex.flex-wrap.items-end.sticky.bottom-0.left-0.w-full.bg-black(style="mix-blend-mode:difference; ")
+    ul.flex.flex-wrap.items-start.sticky.bottom-0.left-0.w-full.bg-black.pb-1(style="mix-blend-mode:difference; ")
+      //- turmites...
       template(v-for="(owner, i) in owners")
-        li.px-9.pt-5.pb-5.w-1x2.lg_w-1x4.flex.flex-col
-          .flex.pb-4(:class="{'opacity-30': !owner}")
+        li.px-5.pt-3.pb-4.w-1x2.lg_w-1x4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1': addrIsOwner(owner)}")
+          .flex.pb-4(:class="{'opacity-30': !owner, '-mb-1': addrIsOwner(owner)}")
             | turmite_{{ ['W', 'N', 'S', 'E'][i] }}
             .flex.items-center.opacity-30.ml-4(v-if="owner") \#{{tokenIds[i]}} 
             //- #[span.ml-2(style="font-size:0.66em") ↗]
@@ -38,6 +39,9 @@ article.board
             .h-18.flex.items-start
               router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
 
+          //- owner actions
+          template(v-if="addrIsOwner(owner)")
+            turmite-move-form.mt-2(:tokenId="tokenIds[i]", @moved="getBoardImage")
       
   //- (related assets)
   footer
@@ -89,9 +93,10 @@ article.board
 
 <script>
 import Addr from '@/components/Addr.vue'
+import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
 export default {
   name: 'NFT',
-  components: { Addr },
+  components: { Addr, TurmiteMoveForm },
   created () {
     this.getOwner()
     this.getMint()
@@ -156,6 +161,9 @@ export default {
     getBoardImage () {
       this.$store.dispatch('getBoardImage', { id: this.boardId.toString() })
         .then(imgSrc => this.boardImage = imgSrc)
+    },
+    addrIsOwner (owner) {
+      return this.$store.state.address && owner?.toLowerCase() === this.$store.state.address?.toLowerCase()
     }
   },
   metaInfo () {
@@ -186,6 +194,6 @@ export default {
 
 <style lang="postcss">
 article.board .addr--is-you{
-  @apply bg-accent2 text-accent1 rounded-lg px-2 py-1 leading-none uppercase font-bold;
+  @apply bg-accent1 text-accent2 rounded-lg px-2 py-1 leading-none uppercase font-bold;
 }
 </style>
