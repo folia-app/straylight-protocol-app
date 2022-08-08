@@ -3,6 +3,7 @@ import App from './App.vue'
 import './style/index.css'
 import router from './router'
 import store from './store'
+import vClickOutside from "click-outside-vue3"
 
 const app = createApp(App)
 
@@ -18,4 +19,8 @@ app.directive('autofocus', {
 })
 
 // mount
-app.use(store).use(router).mount('#app')
+app
+  .use(store)
+  .use(router)
+  .use(vClickOutside)
+  .mount('#app')

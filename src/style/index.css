@@ -15,9 +15,10 @@ html{
   font-size:var(--rem);
 }
 
-a, button{
+*{
   &:focus{
     outline:none;
+    @apply ring ring-accent3;
   }
 }
 

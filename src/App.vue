@@ -1,27 +1,3 @@
-<!-- <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
-<template lang="pug">
-h1 hello
-</template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style> -->
-
 <template lang="pug">
 #app.text-base.font-sans.leading-snug
 
@@ -46,21 +22,37 @@ h1 hello
               svg-logo.h-10
 
         //- laptop right
-        nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12
-          //- border cell
-          .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.leading-none.overflow-hidden.bg-accent1.text-center
-            //- (info btn)
-            button.w-1x6.lg_w-auto.lg_px-12.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(@click="openInfoOverlay")
-              | info
+        nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12.leading-none.text-md
+          .flex.flex-1.lg_flex-none
+            //- border cell
+            .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.overflow-hiddenff.bg-accent1.text-center
+              //- (info btn)
+              button.h-8.flex.items-center.justify-center.flex-1.lg_w-auto.lg_px-12.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1.rounded-full(@click="openInfoOverlay")
+                | info
 
-            //- mint link
-            router-link.w-1x6.lg_w-auto.lg_px-12.lg_-mx-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(to="/mint")
-              div mint
+              //- mint link
+              router-link.h-8.flex.items-center.justify-center.flex-1.lg_w-auto.lg_px-12.lg_-ml-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1.rounded-full(to="/mint")
+                div mint
 
-            div.w-1x6.lg_w-auto.lg_px-10.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full
-              div connect
-              //- connect/disconnect btn
-              //- connect-disconnect-btn.h-20.shadow-md.relative.z-10(connectLbl="connect", iconWidth="w-20")
+              //- (connect btn)
+              template(v-if="!$store.state.address")
+                button.h-8.flex.items-center.justify-center.flex-1.block.lg_-ml-4.lg_w-auto.lg_px-10.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1.rounded-full(@click="connectWallet") connect
+
+            //- (connected dropdown)
+            template(v-if="$store.state.address")
+              div.ml-1.text-accent1
+                .border.border-accent2.rounded-full.bg-accent2
+                  button.h-8.flex.items-center.border.border-accent2.block.pl-8.rounded-full.flex.items-center.pb-1(@click="userMenuVisible = true")
+                    addr(:address="$store.state.address")
+                    svg-chevron-down.w-6.h-6.mx-3.mt-1(strokeWidth="1")
+
+                .relative(v-if="userMenuVisible", v-click-outside="() => { userMenuVisible = false }")
+                  .absolute.top-0.right-0.pt-2
+                    ul.bg-accent2.bg-accent2.rounded-lg.pt-1.pb-2
+                      li
+                        router-link.block.px-4.py-1.rounded-full(:to="`/account/${$store.state.address}`") my profile
+                      li
+                        button.block.px-4.py-1.rounded-full(@click="disconnectWallet") sign-out
 
             
 
@@ -138,9 +130,11 @@ import SvgLogo from '@/components/SvgLogo.vue'
 import SvgFleuron from '@/components/SVG-Fleuron.vue'
 import SvgX from '@/components/SVG-X.vue'
 import Observer from '@/components/Observer.vue'
+import Addr from '@/components/Addr.vue'
+import SvgChevronDown from '@/components/SvgChevronDown.vue'
 export default {
   name: 'App',
-  components: { ConnectDisconnectBtn, SvgLogo, SvgFleuron, SvgX, Observer },
+  components: { ConnectDisconnectBtn, SvgLogo, SvgFleuron, SvgX, Observer, Addr, SvgChevronDown },
   metaInfo: {
     titleTemplate: (ttl) => {
       return ttl ? `${ttl} :: s̷̰̃t̴̫̊r̶͔̽ả̷̜y̴̼͂l̸̙͛į̸͆g̴̘̎h̷̜̀ṭ̸͂ ̸̰̊p̵̞̅ȑ̴̙ơ̸͍t̶̗̑o̶͂͜ć̵͍ȏ̸͕l̷̗͗` : 's̷̰̃t̴̫̊r̶͔̽ả̷̜y̴̼͂l̸̙͛į̸͆g̴̘̎h̷̜̀ṭ̸͂ ̸̰̊p̵̞̅ȑ̴̙ơ̸͍t̶̗̑o̶͂͜ć̵͍ȏ̸͕l̷̗͗ by Paul Seidler'
@@ -148,7 +142,8 @@ export default {
   },
   data () {
     return {
-      infoVisible: false
+      infoVisible: false,
+      userMenuVisible: false
     }
   },
   computed: {
@@ -184,6 +179,26 @@ export default {
       this.infoVisible = false
     },
     // end info overlay
+
+    async connectWallet () {
+      try {
+        await this.$store.dispatch('connect')
+      } catch (e) {
+        console.error(e)
+        if (e !== 'Modal closed by user') {
+          alert('Error connecting wallet!')
+        }
+      }
+    },
+
+    async disconnectWallet () {
+      try {
+        await this.$store.dispatch('disconnect')
+        this.userMenuVisible = false
+      } catch (e) {
+        alert("error disconnecting wallet")
+      }
+    }
   },
   created () {
     this.$store.dispatch('init')

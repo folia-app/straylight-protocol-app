@@ -9,13 +9,13 @@ article.board
 
     .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-8.lg_py-24
       //- board image
-      img.border.border-gray-700(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage}")
+      img.border.border-gray-700(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
 
     //- turmite list
-    ul.flex.flex-wrap.items-start.sticky.bottom-0.left-0.w-full.bg-black.pb-1(style="mix-blend-mode:difference; ")
+    ul.sticky.bottom-0.left-0.w-full.bg-black.pb-1.grid.grid-cols-2.lg_grid-cols-4.gap-px.bg-accent1()
       //- turmites...
       template(v-for="(owner, i) in owners")
-        li.px-5.pt-3.pb-4.w-1x2.lg_w-1x4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1': addrIsOwner(owner)}")
+        li.px-5.pt-3.pb-4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1 border-none': addrIsOwner(owner)}")
           .flex.pb-4(:class="{'opacity-30': !owner, '-mb-1': addrIsOwner(owner)}")
             | turmite_{{ ['W', 'N', 'S', 'E'][i] }}
             .flex.items-center.opacity-30.ml-4(v-if="owner") \#{{tokenIds[i]}} 
@@ -34,7 +34,7 @@ article.board
                       span.ml-2.opacity-30(style="font-size:0.9em") ↗
               .h-9.flex.items-center
                 .inline-block.opacity-30(style="min-width:3.5em") moves
-                .inline-block 8
+                .inline-block XX
           template(v-else)
             .h-18.flex.items-start
               router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
@@ -108,6 +108,7 @@ export default {
       owners: [undefined, undefined, undefined, undefined],
       mintedBy: undefined,
       sourceAsset: undefined,
+      imgIsLoading: false,
       imgLoaded: undefined,
       boardImage: undefined
     }
@@ -159,8 +160,16 @@ export default {
       }
     },
     getBoardImage () {
+      this.imgIsLoading = true
       this.$store.dispatch('getBoardImage', { id: this.boardId.toString() })
-        .then(imgSrc => this.boardImage = imgSrc)
+        .then(imgSrc => {
+          this.imgIsLoading = false
+          this.boardImage = imgSrc
+        })
+        .catch(e => {
+          console.error(e)
+          this.imgIsLoading = false
+        })
     },
     addrIsOwner (owner) {
       return this.$store.state.address && owner?.toLowerCase() === this.$store.state.address?.toLowerCase()

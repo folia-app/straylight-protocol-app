@@ -3,18 +3,18 @@
 .connect-disconnect.flex
   //- (connect btn)
   template(v-if="!$store.state.address")
-    button.relative.w-full.mouse_hover_bg-yellow-600(@click="connectWallet")
+    button.relative(@click="connectWallet")
       | {{ connectLbl }}
-      .absolute.top-0.right-0.h-full.flex.items-center.justify-center.pt-2(:class="[iconWidth]") ꩜
+      //- .absolute.top-0.right-0.h-full.flex.items-center.justify-center.pt-2(:class="[iconWidth]") ꩜
 
   //- (connected)
   template(v-else)
     .relative.w-full.flex.items-center
-      .w-full.text-center.pt-1
+      .w-full.text-center
         addr(:address="$store.state.address")
       //- (disconnect btn)
       button.absolute.top-0.right-0.h-full.flex.items-center.justify-center.mouse_hover_bg-yellow-600(@click="disconnectWallet", title="Disconnect", :class="[iconWidth]")
-        svg-x.h-4.w-4(strokeWidth="1.1")
+        svg-x.h-2.w-2(strokeWidth="1.1")
 </template>
 
 <script>
