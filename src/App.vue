@@ -81,8 +81,8 @@
               p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 
             footer.w-full.grid.grid-cols-2.gap-1.px-3.pb-3
-              template(v-if="$store.state.nftContract")
-                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.network.explorer.domain}/address/${$store.state.nftContract.address}`", target="_blank", rel="noopener noreferrer")
+              template(v-if="$store.state.contractAddr")
+                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.network.explorer.domain}/address/${$store.state.contractAddr}`", target="_blank", rel="noopener noreferrer")
                   | contract &nbsp;↗
 
               a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.openSeaLink({})}/collection/decomposer${ $store.state.networkId === 4 ? '-v2': '' }`", target="_blank", rel="noopener noreferrer")

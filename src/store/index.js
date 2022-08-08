@@ -48,6 +48,8 @@ export default createStore({
       networkId: null, // wallet network
       appNetworkId,
 
+      contractAddr: null,
+
       mintPrice: undefined,
       collectionsList: undefined,
 
@@ -76,13 +78,12 @@ export default createStore({
     },
     addrShort: () => (addr) => addr ? addr.slice(0, 6) + '...' + addr.slice(-4) : '...',
     userBalance: (state) => (addr) => provider?.getBalance(addr || state.address) || '0', // wei
-    contractAddr: (state) => nftContract?.address,
     isSoldOut: () => (work) => {
       return work && Number(work.editions) && Number(work.printed) >= Number(work.editions)
     },
     openSeaLink: (state, getters) => ({ token, account }) => {
       const isTestnet = [4].includes(state.networkId)
-      const path = token ? `/assets/${getters.contractAddr}/${token}`
+      const path = token ? `/assets/${state.contractAddr}/${token}`
         : account ? `/accounts/${account}`
           : ''
       return `https://${isTestnet ? 'testnets.' : ''}opensea.io` + path
@@ -139,13 +140,14 @@ export default createStore({
       state.metadatas.push(metadata)
     },
 
-    SET_CONTRACTS_ETHERS (state, { chainId, provider }) {
+    SET_CONTRACTS (state, { chainId, provider }) {
       if (!networks[chainId]) {
         console.warn(`Unsupported network: (id: ${chainId}). Default will be used for contracts (id: ${appNetworkId})`)
         chainId = appNetworkId
       }
       // nft
       nftContract = new ethers.Contract(NFTContract.networks[chainId].address, NFTContract.abi, provider)
+      state.contractAddr = NFTContract.networks[chainId].address.toLowerCase()
       console.log('token:', NFTContract.networks[chainId].address)
 
       // controller
@@ -240,7 +242,7 @@ export default createStore({
         // set network
         commit('SET_NETWORK_ID', chainId)
         // set contracts
-        commit('SET_CONTRACTS_ETHERS', { chainId, provider })
+        commit('SET_CONTRACTS', { chainId, provider })
 
         return chainId
       } catch (e) {
