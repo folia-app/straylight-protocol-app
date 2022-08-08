@@ -9,7 +9,7 @@ article
     //- main / left col
     
     .relative
-      header.h-20.z-20.relative.sticky.top-0.left-0.w-full.flex.w-full.items-center.justify-center
+      header.h-20.relative.sticky.top-0.left-0.w-full.flex.w-full.items-center.justify-center
         router-link.w-20.absolute.top-0.left-0.h-full.flex.items-center.justify-center.mouse_hover_bg-black-a08(to="/") &larr;
         h2.font-bold.tracking-wide MINT TURMITE
 

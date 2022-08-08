@@ -18,7 +18,7 @@
 
           .h-20.flex-1.flex.items-center.pb-1b
             //- div <b>Straylight Protocol</b>
-            router-link(to="/")
+            router-link.rounded-lg(to="/")
               svg-logo.h-10
 
         //- laptop right
@@ -52,7 +52,7 @@
                       li
                         router-link.block.px-4.py-1.rounded-full(:to="`/account/${$store.state.address}`") my profile
                       li
-                        button.block.px-4.py-1.rounded-full(@click="disconnectWallet") sign-out
+                        button.block.px-4.py-1.rounded-full(@click.stop="disconnectWallet") sign-out
 
             
 

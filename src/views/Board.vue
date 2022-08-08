@@ -4,15 +4,15 @@ article.board
   .min-h-screen.flex.flex-col
 
     //- title row
-    header.mt-48.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
+    header.mt-40.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
       h1 world_{{ boardId }}
 
-    .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-8.lg_py-24
+    .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-12.lg_py-24
       //- board image
       img.border.border-gray-700(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
 
     //- turmite list
-    ul.sticky.bottom-0.left-0.w-full.bg-black.pb-1.grid.grid-cols-2.lg_grid-cols-4.gap-px.bg-accent1()
+    ul.lg_sticky.bottom-0.left-0.w-full.bg-black.pb-1.grid.grid-cols-2.lg_grid-cols-4.gap-px.bg-accent1()
       //- turmites...
       template(v-for="(owner, i) in owners")
         li.px-5.pt-3.pb-4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1 border-none': addrIsOwner(owner)}")

@@ -1,6 +1,6 @@
 <template lang="pug">
 form.turmite-move-form(@submit.prevent="move")
-  input.w-full.mb-1.border.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.text-center(v-model="moveQty", type="number", min="1", step="1")
+  input.w-full.mb-2px.border.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.text-center(v-model="moveQty", type="number", min="1", step="1")
   
   .grid.grid-cols-1.gap-1
     //- button.block.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1 PREVIEW
