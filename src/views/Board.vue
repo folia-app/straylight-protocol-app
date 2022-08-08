@@ -1,5 +1,5 @@
 <template lang="pug">
-article.work
+article.board
 
   .min-h-screen.flex.flex-col
 
@@ -29,7 +29,7 @@ article.work
                     span.animate-pulse ...
                   template(v-else)
                     .flex.items-center
-                      addr(:address="owner")
+                      addr(:address="owner", :youOn="true")
                       span.ml-2.opacity-30(style="font-size:0.9em") ↗
               .h-9.flex.items-center
                 .inline-block.opacity-30(style="min-width:3.5em") moves
@@ -130,7 +130,10 @@ export default {
       for (var i = 0; i < this.tokenIds.length; i++) {
         const index = i
         this.$store.dispatch('getNFTOwnerByTokenId', this.tokenIds[i])
-          .then(owner => this.$set(this.owners, index, owner))
+          .then(owner => {
+            // this.$set(this.owners, index, owner)
+            this.owners[index] = owner
+          })
       }
     },
     async getMint () {
@@ -181,5 +184,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang="postcss">
+article.board .addr--is-you{
+  @apply bg-accent2 text-accent1 rounded-lg px-2 py-1 leading-none uppercase font-bold;
+}
 </style>
