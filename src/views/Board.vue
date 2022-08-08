@@ -15,24 +15,24 @@ article.work
     ul.flex.flex-wrap.items-end.sticky.bottom-0.left-0.w-full.bg-black(style="mix-blend-mode:difference; ")
       template(v-for="(owner, i) in owners")
         li.px-9.pt-5.pb-5.w-1x2.lg_w-1x4.flex.flex-col
-          .flex.pb-4(:class="{'opacity-33': !owner}")
+          .flex.pb-4(:class="{'opacity-30': !owner}")
             | turmite_{{ ['W', 'N', 'S', 'E'][i] }}
-            .flex.items-center.opacity-33.ml-4(v-if="owner") \#{{tokenIds[i]}} 
+            .flex.items-center.opacity-30.ml-4(v-if="owner") \#{{tokenIds[i]}} 
             //- #[span.ml-2(style="font-size:0.66em") ↗]
           template(v-if="owner")
             .text-smm
               //- owner
               .h-9.flex.items-center
-                .inline-block.opacity-33(style="min-width:3.5em") owner
+                .inline-block.opacity-30(style="min-width:3.5em") owner
                 .inline-block
                   template(v-if="owner === undefined")
                     span.animate-pulse ...
                   template(v-else)
                     .flex.items-center
                       addr(:address="owner")
-                      span.ml-2.opacity-33(style="font-size:0.9em") ↗
+                      span.ml-2.opacity-30(style="font-size:0.9em") ↗
               .h-9.flex.items-center
-                .inline-block.opacity-33(style="min-width:3.5em") moves
+                .inline-block.opacity-30(style="min-width:3.5em") moves
                 .inline-block 8
           template(v-else)
             .h-18.flex.items-start

@@ -36,7 +36,7 @@ h1 hello
         //- laptop left
         .flex
           //- folia logo link
-          a.block.borderff.opacity-33.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
+          a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
             .w-20.h-20.flex.items-center.justify-center.mouse_hover_text-black.pb-2.pr-2
               svg-fleuron(style="height:1.35em")
 
