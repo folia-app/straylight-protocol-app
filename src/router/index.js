@@ -1,42 +1,29 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Index from '@/views/Index'
-// import Work from '@/views/Work'
-// const WorkTokens = () => import(/* webpackChunkName: "work-tokens" */ '../views/work/WorkTokens.vue')
-// const WorkInfo = () => import(/* webpackChunkName: "work" */ '../views/work/WorkInfo.vue')
+import { createRouter, createWebHistory } from 'vue-router'
+import Index from '@/views/Index.vue'
 
-// import Home from '@/views/Home'
-// import Admin from '@/views/Admin'
-Vue.use(Router)
+const routes = [
+  {
+    path: '/',
+    name: 'index',
+    component: Index
+  },
 
-/*
-index (patches, users)
-user/wallet: name?, addr, patches, patchesCount?
-patch: artist, title, EditionId, printNum, currentPrice, currentUserThisPatch [tokenIds], transactionList (tokenId, addr/owner (isCurrent?), price, date)
-(search?)
-*/
+  {
+    path: '/boards/:board',
+    name: 'board',
+    component: () => import(/* webpackChunkName: 'board' */ '../views/Board.vue')
+  },
 
-export default new Router({
-  mode: 'history',
-  routes: [
-    {
-      path: '/',
-      name: 'index',
-      component: Index
-    },
+  {
+    path: '/mint',
+    name: 'mint',
+    component: () => import(/* webpackChunkName: 'board' */ '../views/Mint.vue')
+  },
+]
 
-    {
-      path: '/boards/:board',
-      name: 'board',
-      component: () => import(/* webpackChunkName: 'board' */ '../views/Board.vue')
-    },
-
-    // {
-    //   path: '/mint',
-    //   name: 'mint',
-    //   component: () => import(/* webpackChunkName: 'board' */ '../views/Mint.vue')
-    // },
-  ],
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
   scrollBehavior (to, from, savedPosition) {
     if (to.hash) {
       return {
@@ -47,7 +34,9 @@ export default new Router({
       return savedPosition
     } else {
       // scroll to top
-      return { y: 0 }
+      return { top: 0 }
     }
   }
 })
+
+export default router

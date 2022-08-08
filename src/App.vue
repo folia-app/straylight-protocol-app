@@ -1,118 +1,143 @@
+<!-- <script setup>
+// This starter template is using Vue 3 <script setup> SFCs
+// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+import HelloWorld from './components/HelloWorld.vue'
+</script>
+
 <template lang="pug">
-  #app.text-base.font-sans.leading-snug
+h1 hello
+</template>
 
-    .min-h-screen.flex.flex-col
+<style scoped>
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.vue:hover {
+  filter: drop-shadow(0 0 2em #42b883aa);
+}
+</style> -->
 
-      //- HEADER AS INTRO
-      header.fixed.top-0.left-0.w-full.z-20
-        //- top bar
-        .flex.flex-wrap.w-full.items-start
-          //- h1.sr-only Straylight Protocol
-          
-          //- laptop left
-          .flex
-            //- folia logo link
-            a.block.borderff.opacity-33.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
-              .w-20.h-20.flex.items-center.justify-center.mouse_hover_text-black.pb-2.pr-2
-                svg-fleuron(style="height:1.35em")
+<template lang="pug">
+#app.text-base.font-sans.leading-snug
 
-            .h-20.flex-1.flex.items-center.pb-1b
-              //- div <b>Straylight Protocol</b>
-              router-link(to="/")
-                svg-logo.h-10
+  .min-h-screen.flex.flex-col
 
-          //- laptop right
-          nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12
-            //- border cell
-            .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.leading-none.overflow-hidden.bg-accent1.text-center
-              //- (info btn)
-              button.w-1x6.lg_w-auto.lg_px-12.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(@click="openInfoOverlay")
-                | info
+    //- HEADER AS INTRO
+    header.fixed.top-0.left-0.w-full.z-20
+      //- top bar
+      .flex.flex-wrap.w-full.items-start
+        //- h1.sr-only Straylight Protocol
+        
+        //- laptop left
+        .flex
+          //- folia logo link
+          a.block.borderff.opacity-33.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
+            .w-20.h-20.flex.items-center.justify-center.mouse_hover_text-black.pb-2.pr-2
+              svg-fleuron(style="height:1.35em")
 
-              //- mint link
-              router-link.w-1x6.lg_w-auto.lg_px-12.lg_-mx-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(to="/mint")
-                div mint
+          .h-20.flex-1.flex.items-center.pb-1b
+            //- div <b>Straylight Protocol</b>
+            router-link(to="/")
+              svg-logo.h-10
 
-              div.w-1x6.lg_w-auto.lg_px-10.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full
-                div connect
-                //- connect/disconnect btn
-                //- connect-disconnect-btn.h-20.shadow-md.relative.z-10(connectLbl="connect", iconWidth="w-20")
+        //- laptop right
+        nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12
+          //- border cell
+          .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.leading-none.overflow-hidden.bg-accent1.text-center
+            //- (info btn)
+            button.w-1x6.lg_w-auto.lg_px-12.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(@click="openInfoOverlay")
+              | info
 
+            //- mint link
+            router-link.w-1x6.lg_w-auto.lg_px-12.lg_-mx-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full(to="/mint")
+              div mint
+
+            div.w-1x6.lg_w-auto.lg_px-10.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1b.rounded-full
+              div connect
+              //- connect/disconnect btn
+              //- connect-disconnect-btn.h-20.shadow-md.relative.z-10(connectLbl="connect", iconWidth="w-20")
+
+            
+
+    //- (info overlay)
+    .fixed.pt-36.md_pt-20.z-40.overlay.overflow-y-scroll.scrollbars-hidden(ref="infoEl", :class="{'pointer-events-none': !infoVisible}")
+      //- (reveals as background fades in)
+      .relative.px-6
+        .flex.justify-end.items-start
+          //- info card
+          .relative.z-10.bg-accent2.text-black.rounded-xl.border-accent2.overflow-hidden(@click.stop, v-show="infoVisible", style="box-shadowff: #f72d8e 0 4px 98px; box-shadow: black 0 4px 98px")
+            .px-9.py-9.leading-snug.text-2xl.tracking-wide.w-full(style="max-width:42em")
+              p.text-md.mb-em.pb-1
+                | #[a.font-bold(href="https://folia.app", target="_blank", rel="noopener noreferrer") #[svg-fleuron.inline-block(style="height:1em;margin-bottom:0.25em;margin-right:0.18em")] #[span.border-b.border-current.border-dashed.hover_border-solid folia]] presents&hellip;<br>
+              p
+                | #[span.inline-block.border.border-dashed.rounded-xl.px-1 straylight protocol] &mdash; a #[span.info-tag multi-player], #[span.info-tag NFT-based game] by #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid(href="https://twitter.com/brachlandberlin", target="_blank", rel="noopener noreferrer") paul seidler] of #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid(href="https://twitter.com/_terra0", target="_blank", rel="noopener noreferrer") terra0]
               
+              p.mt-em the game runs #[span.info-tag entirely on-chain] on the #[span.info-tag optimism] ethereum network
 
-      //- (info overlay)
-      .fixed.pt-36.md_pt-20.z-40.overlay.overflow-y-scroll.scrollbars-hidden(ref="infoEl", :class="{'pointer-events-none': !infoVisible}")
-        //- (reveals as background fades in)
-        .relative.px-6
-          .flex.justify-end.items-start
-            //- info card
-            .relative.z-10.bg-accent2.text-black.rounded-xl.border-accent2.overflow-hidden(@click.stop, v-show="infoVisible", style="box-shadowff: #f72d8e 0 4px 98px; box-shadow: black 0 4px 98px")
-              .px-9.py-9.leading-snug.text-2xl.tracking-wide.w-full(style="max-width:42em")
-                p.text-md.mb-em.pb-1
-                  | #[a.font-bold(href="https://folia.app", target="_blank", rel="noopener noreferrer") #[svg-fleuron.inline-block(style="height:1em;margin-bottom:0.25em;margin-right:0.18em")] #[span.border-b.border-current.border-dashed.hover_border-solid folia]] presents&hellip;<br>
-                p
-                  | #[span.inline-block.border.border-dashed.rounded-xl.px-1 straylight protocol] &mdash; a #[span.info-tag multi-player], #[span.info-tag NFT-based game] by #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid(href="https://twitter.com/brachlandberlin", target="_blank", rel="noopener noreferrer") paul seidler] of #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid(href="https://twitter.com/_terra0", target="_blank", rel="noopener noreferrer") terra0]
-                
-                p.mt-em the game runs #[span.info-tag entirely on-chain] on the #[span.info-tag optimism] ethereum network
+              ul.mt-em
+                li players mint up to #[span.info-tag 1024] NFT-"turmites"
+                li turmites dig in one of #[span.info-tag ~800] patterns
+                li each #[span.info-tag world] has #[span.info-tag 4 turmites]
+                li players #[span.info-tag move()] their turmites with just gas
+                li the contract renders a #[span.info-tag new world]
 
-                ul.mt-em
-                  li players mint up to #[span.info-tag 1024] NFT-"turmites"
-                  li turmites dig in one of #[span.info-tag ~800] patterns
-                  li each #[span.info-tag world] has #[span.info-tag 4 turmites]
-                  li players #[span.info-tag move()] their turmites with just gas
-                  li the contract renders a #[span.info-tag new world]
+              p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 
-                p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
+            footer.w-full.grid.grid-cols-2.gap-1.px-3.pb-3
+              template(v-if="$store.state.nftContract")
+                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.network.explorer.domain}/address/${$store.state.nftContract.address}`", target="_blank", rel="noopener noreferrer")
+                  | contract &nbsp;↗
 
-              footer.w-full.grid.grid-cols-2.gap-1.px-3.pb-3
-                template(v-if="$store.state.nftContract")
-                  a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.network.explorer.domain}/address/${$store.state.nftContract.address}`", target="_blank", rel="noopener noreferrer")
-                    | contract &nbsp;↗
+              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.openSeaLink({})}/collection/decomposer${ $store.state.networkId === 4 ? '-v2': '' }`", target="_blank", rel="noopener noreferrer")
+                | quixotic &nbsp;↗
 
-                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.openSeaLink({})}/collection/decomposer${ $store.state.networkId === 4 ? '-v2': '' }`", target="_blank", rel="noopener noreferrer")
-                  | quixotic &nbsp;↗
+              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
+                | discord &nbsp;↗
 
-                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
-                  | discord &nbsp;↗
+              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://snapshot.org/#/decomposer.eth", target="_blank", rel="noopener noreferrer")
+                | wiki &nbsp;↗
 
-                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://snapshot.org/#/decomposer.eth", target="_blank", rel="noopener noreferrer")
-                  | wiki &nbsp;↗
+            //- close btn
+            button.absolute.top-0.right-0.w-16.h-16.m-4.border.border-gray-700.rounded-xl.flex.items-center.justify-center.bg-black-a08ff(@click.stop="closeInfoOverlay")
+              svg-x.w-5.h-5(strokeWidth="1.15")
 
-              //- close btn
-              button.absolute.top-0.right-0.w-16.h-16.m-4.border.border-gray-700.rounded-xl.flex.items-center.justify-center.bg-black-a08ff(@click.stop="closeInfoOverlay")
-                svg-x.w-5.h-5(strokeWidth="1.15")
+        //- scroll off area
+        observer#info-scroll-end.pointer-events-none(style="height:133vh", :threshold="0.75", @visible="closeInfoOverlay")
 
-          //- scroll off area
-          observer#info-scroll-end.pointer-events-none(style="height:133vh", :threshold="0.75", @visible="closeInfoOverlay")
+        //- background
+        button.block.absolute.overlay.bg-black-a60ff.transition.duration-1000(:class="{'opacity-0 pointer-events-none': !infoVisible}", @click.stop="infoVisible = false", aria-label="Close Info")
 
-          //- background
-          button.block.absolute.overlay.bg-black-a60ff.transition.duration-1000(:class="{'opacity-0 pointer-events-none': !infoVisible}", @click.stop="infoVisible = false", aria-label="Close Info")
-
-      //- main
-      main.app_main.flex-1
+    //- main
+    main.app_main.flex-1
+      router-view(v-slot="{ Component }")
         keep-alive(include="Index")
-          router-view(:key="$route.path")
+          component(:is="Component")
 
-      //- footer?
-    
-    template(v-if="isWrongNetwork")
-      //- .p-8 Oops
-      .sticky.z-50.bottom-0.left-0.w-full.p-6.md_p-8.bg-yellow-500.text-black.text-center.-shadow-md.font-sans.text-sm.md_text-base.lg_text-lg
-        //- (v-html="'Wrong&nbsp;Network&nbsp;🤖 Please&nbsp;switch&nbsp;to&nbsp;Mainnet'")
-        | 🤖 Wrong Network!
-        //- .absolute.top-0.right-0.h-full.flex.items-center.px-6.md_p-8
-        button.absolute.top-0.right-0.h-full.bg-black-a15.px-8.md_px-12.mouse_hover_bg-black-a30(@click="switchToAppNetwork", style="font-size:0.875em") Switch
+    //- footer?
+  
+  template(v-if="isWrongNetwork")
+    //- .p-8 Oops
+    .sticky.z-50.bottom-0.left-0.w-full.p-6.md_p-8.bg-yellow-500.text-black.text-center.-shadow-md.font-sans.text-sm.md_text-base.lg_text-lg
+      //- (v-html="'Wrong&nbsp;Network&nbsp;🤖 Please&nbsp;switch&nbsp;to&nbsp;Mainnet'")
+      | 🤖 Wrong Network!
+      //- .absolute.top-0.right-0.h-full.flex.items-center.px-6.md_p-8
+      button.absolute.top-0.right-0.h-full.bg-black-a15.px-8.md_px-12.mouse_hover_bg-black-a30(@click="switchToAppNetwork", style="font-size:0.875em") Switch
 </template>
 
 <script>
 // import Notifications from './components/Notifications.vue'
 // import Status from './components/Status.vue'
-import '@/style/_main.css'
-import ConnectDisconnectBtn from '@/components/ConnectDisconnectBtn'
-import SvgLogo from '@/components/SvgLogo'
-import SvgFleuron from '@/components/SVG-Fleuron'
-import SvgX from '@/components/SVG-X'
-import Observer from '@/components/Observer'
+// import '@/style/_main.css'
+import ConnectDisconnectBtn from '@/components/ConnectDisconnectBtn.vue'
+import SvgLogo from '@/components/SvgLogo.vue'
+import SvgFleuron from '@/components/SVG-Fleuron.vue'
+import SvgX from '@/components/SVG-X.vue'
+import Observer from '@/components/Observer.vue'
 export default {
   name: 'App',
   components: { ConnectDisconnectBtn, SvgLogo, SvgFleuron, SvgX, Observer },
@@ -175,7 +200,7 @@ export default {
 /*@import './style/global';*/
 /*@import './style/imports';*/
 /*@import './style/variables';*/
-@import './style/transitions';
+/* @import './style/transitions'; */
 
 #app {
   /*font-family: var(--serif);*/
@@ -183,6 +208,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /*font-size:var(--basefont);*/
 }
+
+/* #app nav .router-link-active{
+  @apply bg-accent2 text-accent1
+} */
 
 .app__main{
   transition:transform 500ms;

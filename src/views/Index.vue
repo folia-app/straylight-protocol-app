@@ -1,13 +1,13 @@
 <template lang="pug">
-  article.index
-    h1.sr-only Worlds
-    div(style="height:25vh")
-    minted-results
+article.index
+  h1.sr-only Worlds
+  div(style="height:25vh")
+  minted-results
 
 </template>
 
 <script>
-import MintedResults from '@/components/MintedResults'
+import MintedResults from '@/components/MintedResults.vue'
 
 export default {
   name: 'Index',

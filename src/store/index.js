@@ -1,68 +1,70 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 // contracts
-import NFTContract from '../../contracts/Straylight'
-import Controller from '../../contracts/Minting'
-// ethers
+import NFTContract from '../../contracts/Straylight.js'
+import Controller from '../../contracts/Minting.js'
+// web3
 import { ethers } from 'ethers'
-// import Web3 from 'web3'
 import Web3Modal from 'web3modal'
-import WalletConnectProvider from '@walletconnect/web3-provider'
-// import { exception } from 'vue-gtag'
-// modules
-import assets from './assets' // connected wallet assets
+// Wallet Connect - directly import .js file since import breaks `vite build`
+// see: https://github.com/vitejs/vite/issues/7257
+import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
 
 let provider, signer, walletProvider, initializing, web3
 
-const infuraProjectID = process.env.VUE_APP_INFURA_PROJECT_ID
+const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
 const networks = {
   1: { name: 'mainnet', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
   // 4: { name: 'rinkeby', layer: 'ethereum', infura: `https://rinkeby.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://rinkeby.etherscan.io' } }
   69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } },
-  420: { name: 'goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli/' } },
+  420: { name: 'goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' } },
 }
-const appNetworkId = process.env.VUE_APP_FALLBACK_NETWORK_ID || 1
+const appNetworkId = import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1
 
 // setup web3 modal
+// let web3Modal = {}
 const web3Modal = new Web3Modal({
-  // network: 'mainnet', // optional
+  // network: deployNetwork.name, // optional - NOTE, doesn't seem to work with "polygon" as name...
   cacheProvider: false, // optional
   providerOptions: { // required
     walletconnect: {
       package: WalletConnectProvider, // required
       options: {
-        infuraId: infuraProjectID // required
-      }
+        infuraProjectID, // required
+        // rpc: {
+        //   137: networks[137].infura,
+        // }
+      },
     }
-  }
+  },
+  theme: 'dark'
 })
 
-Vue.use(Vuex)
+export default createStore({
+  // modules: { profiles },
+  state () {
+    return {
+      address: null,
+      networkId: null, // wallet network
+      appNetworkId,
 
-export default new Vuex.Store({
-  modules: { assets },
-  state: {
-    address: null,
-    networkId: null, // wallet network
-    appNetworkId,
+      nftContract: null,
+      controllerContract: null,
 
-    nftContract: null,
-    controllerContract: null,
+      mintPrice: undefined,
+      collectionsList: undefined,
 
-    mintPrice: undefined,
-    collectionsList: undefined,
+      mints: null,
+      mintCount: undefined,
+      tokens: [],
 
-    mints: null,
-    mintCount: undefined,
-    tokens: [],
+      // old
+      reserveAuctionContract: null,
 
-    // old
-    reserveAuctionContract: null,
-
-    works: [],
-    metadatas: [],
-    addresses: {}
+      works: [],
+      metadatas: [],
+      addresses: {}
+    }
   },
   getters: {
     network: (state) => networks[state.networkId],
@@ -442,7 +444,7 @@ export default new Vuex.Store({
         //
         if (!state.controllerContract) await dispatch('init')
         // fetch...
-        const price = await state.controllerContract.price()
+        const price = await state.controllerContract.mintPrice()
         // save
         commit('SET_MINT_PRICE', price)
         return price
@@ -490,7 +492,7 @@ export default new Vuex.Store({
       }
     },
 
-    async mint ({ state, dispatch }, { contract, tokenId }) {
+    async mint ({ state, dispatch }, { rule }) {
       try {
         // wait for init?
         if (!state.controllerContract) await dispatch('init')
@@ -499,9 +501,12 @@ export default new Vuex.Store({
 
         // setup
         const contractSigner = state.controllerContract.connect(signer)
+        console.log({rule})
+        rule = ethers.utils.hexZeroPad(ethers.utils.hexlify(Number(rule)), 12)
+        console.log({rule})
         const price = await dispatch('getMintPrice')
         // confirm...
-        const tx = await contractSigner.buy(state.address, contract, tokenId, { value: price.toString() })
+        const tx = await contractSigner.publicMint(rule.toString(), { value: price.toString() })
         console.log('my new mint tx:', tx)
         return tx
       } catch (e) {
@@ -510,15 +515,15 @@ export default new Vuex.Store({
       }
     },
 
-    async getPaused ({ state, dispatch }) {
-      try {
-        if (!state.controllerContract) await dispatch('init')
-        return state.controllerContract.paused()
-      } catch (e) {
-        console.error(e)
-        throw e
-      }
-    },
+    // async getPaused ({ state, dispatch }) {
+    //   try {
+    //     if (!state.controllerContract) await dispatch('init')
+    //     return state.controllerContract.paused()
+    //   } catch (e) {
+    //     console.error(e)
+    //     throw e
+    //   }
+    // },
 
     /* buy artwork */
     // async buy ({ state, dispatch, rootGetters }, workId) {

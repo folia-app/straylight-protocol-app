@@ -1,19 +1,19 @@
 <template lang="pug">
-  observer.board-image.relative.group(:threshold="0.01", @visible="onVisible", @hidden="visible = false")
+observer.board-image.relative.group(:threshold="0.01", @visible="onVisible", @hidden="visible = false")
 
-    //- (placeholder)
-    template(v-if="!imgSrc")
-      .w-full.pb-full
-        .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-accent3.text-smm
-          .py-1.pl-3.pr-2 loading...
+  //- (placeholder)
+  template(v-if="!imgSrc")
+    .w-full.pb-full
+      .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-accent3.text-smm
+        .py-1.pl-3.pr-2 loading...
 
-    template(v-else)
-      img.block.w-full(:src="imgSrc")
+  template(v-else)
+    img.block.w-full(:src="imgSrc")
 
 </template>
 
 <script>
-import Observer from '@/components/Observer'
+import Observer from '@/components/Observer.vue'
 export default {
   name: 'BoardImage',
   props: ['boardId'],

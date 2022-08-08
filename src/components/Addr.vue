@@ -1,5 +1,5 @@
 <template lang="pug">
-  span.addr {{ name || '...' }}
+span.addr {{ name || '...' }}
 </template>
 
 <script>
