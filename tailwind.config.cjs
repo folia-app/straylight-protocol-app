@@ -53,6 +53,8 @@ module.exports = {
       52: '13rem',
       56: '14rem',
       64: '16rem',
+      72: '18rem',
+      80: '20rem',
       'lh-snug': '1.375em'
     },
     fontSize: {
@@ -699,13 +701,14 @@ module.exports = {
       max: 'max-content',
       fit: 'fit-content',
     },
-    minWidth: {
+    minWidth: ({ theme }) => ({
+      ...theme('spacing'),
       0: '0px',
       full: '100%',
       min: 'min-content',
       max: 'max-content',
       fit: 'fit-content',
-    },
+    }),
     objectPosition: {
       bottom: 'bottom',
       center: 'center',

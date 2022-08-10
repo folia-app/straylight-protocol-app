@@ -17,7 +17,7 @@ article.board
       template(v-for="(owner, i) in owners")
         li.px-5.pt-3.pb-4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1 border-none': addrIsOwner(owner)}")
           .flex.pb-4(:class="{'opacity-30': !owner, '-mb-1': addrIsOwner(owner)}")
-            | turmite_{{ ['W', 'N', 'S', 'E'][i] }}
+            | turmite_{{ ['W', 'S', 'N', 'E'][i] }}
             .flex.items-center.opacity-30.ml-4(v-if="owner") \#{{tokenIds[i]}} 
             //- #[span.ml-2(style="font-size:0.66em") ↗]
           template(v-if="owner")

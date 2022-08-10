@@ -18,6 +18,8 @@ html{
 *{
   &:focus{
     outline:none;
+  }
+  &:focus-visible{
     @apply ring ring-accent3;
   }
 }

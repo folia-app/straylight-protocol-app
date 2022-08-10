@@ -471,7 +471,7 @@ export default createStore({
       }
     },
 
-    async mint ({ state, dispatch }, { rule }) {
+    async mint ({ state, dispatch }, { rule, moves = 0 }) {
       try {
         // wait for init?
         if (!controllerContract) await dispatch('init')
@@ -485,7 +485,7 @@ export default createStore({
         console.log({rule})
         const price = await dispatch('getMintPrice')
         // confirm...
-        const tx = await contractSigner.publicMint(rule, { value: price.toString() })
+        const tx = await contractSigner.publicMint(rule, moves.toString(), { value: price.toString() })
         console.log('my new mint tx:', tx)
         return tx
       } catch (e) {

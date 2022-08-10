@@ -3,18 +3,18 @@
 .connect-disconnect.flex
   //- (connect btn)
   template(v-if="!$store.state.address")
-    button.relative(@click="connectWallet")
-      | {{ connectLbl }}
-      //- .absolute.top-0.right-0.h-full.flex.items-center.justify-center.pt-2(:class="[iconWidth]") ꩜
+    button.flex.pl-6.pr-2.items-center.rounded-full.mouse_hover_bg-accent2.mouse_hover_text-accent1.rounded-full.border(@click="connectWallet")
+      .pb-1 {{ connectLbl }}
+      div(style="font-size:0.75em;padding:0 0.5em 0.28em;") ꩜
 
   //- (connected)
   template(v-else)
-    .relative.w-full.flex.items-center
-      .w-full.text-center
+    .flex.pl-6
+      .flex.items-center
         addr(:address="$store.state.address")
       //- (disconnect btn)
-      button.absolute.top-0.right-0.h-full.flex.items-center.justify-center.mouse_hover_bg-yellow-600(@click="disconnectWallet", title="Disconnect", :class="[iconWidth]")
-        svg-x.h-2.w-2(strokeWidth="1.1")
+      button.flex.w-8.ml-4.justify-center.items-center.ml-1.mouse_hover_bg-accent2.mouse_hover_text-accent1.rounded-full.border(@click="disconnectWallet", title="Disconnect")
+        svg-x.h-3.w-3(strokeWidth="1.1")
 </template>
 
 <script>
@@ -24,7 +24,6 @@ export default {
   name: 'ConnectDisconnectBtn',
   props: {
     connectLbl: { type: String, default: 'Connect' },
-    iconWidth: { type: String, default: 'w-24' }
   },
   components: { Addr, SvgX },
   methods: {

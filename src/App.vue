@@ -40,7 +40,7 @@
 
             //- (connected dropdown)
             template(v-if="$store.state.address")
-              div.ml-1.text-accent1
+              div.ml-1.text-accent1.text-smm
                 .border.border-accent2.rounded-full.bg-accent2
                   button.h-8.flex.items-center.border.border-accent2.block.pl-8.rounded-full.flex.items-center.pb-1(@click="userMenuVisible = true")
                     addr(:address="$store.state.address")
