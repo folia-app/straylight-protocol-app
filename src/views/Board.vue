@@ -7,15 +7,16 @@ article.board
     header.mt-40.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
       h1 world_{{ boardId }}
 
-    .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-12.lg_py-24
+    .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-12.lg_pb-24
       //- board image
       img.border.border-gray-700(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
 
     //- turmite list
-    ul.lg_sticky.bottom-0.left-0.w-full.bg-black.pb-1.grid.grid-cols-2.lg_grid-cols-4.gap-px.bg-accent1()
+    ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
-      template(v-for="(owner, i) in owners")
-        li.px-5.pt-3.pb-4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1 border-none': addrIsOwner(owner)}")
+      template(v-for="(tokenId, i) in tokenIds")
+        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="getBoardImage")
+        //- li.px-5.pt-3.pb-4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1 border-none': addrIsOwner(owner)}")
           .flex.pb-4(:class="{'opacity-30': !owner, '-mb-1': addrIsOwner(owner)}")
             | turmite_{{ ['W', 'S', 'N', 'E'][i] }}
             .flex.items-center.opacity-30.ml-4(v-if="owner") \#{{tokenIds[i]}} 
@@ -93,10 +94,10 @@ article.board
 
 <script>
 import Addr from '@/components/Addr.vue'
-import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
+import TurmiteDetails from '@/components/TurmiteDetails.vue'
 export default {
   name: 'NFT',
-  components: { Addr, TurmiteMoveForm },
+  components: { Addr, TurmiteDetails },
   created () {
     this.getOwner()
     this.getMint()
@@ -129,9 +130,7 @@ export default {
     }
   },
   methods: {
-    async getOwner () {
-      this.owner = await this.$store.dispatch('getNFTOwnerByTokenId', this.$route.params.token)
-    },
+    
     async getOwners () {
       for (var i = 0; i < this.tokenIds.length; i++) {
         const index = i
@@ -200,9 +199,3 @@ export default {
   }
 }
 </script>
-
-<style lang="postcss">
-article.board .addr--is-you{
-  @apply bg-accent1 text-accent2 rounded-lg px-2 py-1 leading-none uppercase font-bold;
-}
-</style>

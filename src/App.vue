@@ -13,8 +13,8 @@
         .flex
           //- folia logo link
           a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
-            .w-20.h-20.flex.items-center.justify-center.mouse_hover_text-black.pb-2.pr-2
-              svg-fleuron(style="height:1.35em")
+            .w-20.h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
+              svg-fleuron(style="height:1.3em")
 
           .h-20.flex-1.flex.items-center.pb-1b
             //- div <b>Straylight Protocol</b>

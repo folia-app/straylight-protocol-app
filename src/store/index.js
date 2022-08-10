@@ -81,6 +81,7 @@ export default createStore({
     isSoldOut: () => (work) => {
       return work && Number(work.editions) && Number(work.printed) >= Number(work.editions)
     },
+    isConnectedAddr: (state) => (addr) => addr && addr.toLowerCase() === state.address,
     openSeaLink: (state, getters) => ({ token, account }) => {
       const isTestnet = [4].includes(state.networkId)
       const path = token ? `/assets/${state.contractAddr}/${token}`
@@ -114,7 +115,7 @@ export default createStore({
   },
   mutations: {
     SIGN_IN (state, address) {
-      state.address = address
+      state.address = address.toLowerCase()
     },
     SIGN_OUT (state) {
       state.address = null
@@ -322,6 +323,16 @@ export default createStore({
       })
     },
 
+    async getNFTContract ({ dispatch }) {
+      try {
+        if (!nftContract) await dispatch('init')
+        return nftContract
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
     async getControllerDeployBlock ({ state, dispatch }) {
       let block = networks[state.networkId].controllerDeployBlock
       if (!block) {
@@ -367,8 +378,7 @@ export default createStore({
 
         // get events...
         // console.time('getEvents')
-        const mintEvents = await controllerContract.queryFilter('mint', fromBlock)
-        // console.log({ mintEvents })
+        const mintEvents = await nftContract.queryFilter('turmiteMint', fromBlock)
         // console.timeEnd('getEvents')
 
         return mintEvents
@@ -386,14 +396,15 @@ export default createStore({
         // get all mint events...
         const events = await dispatch('getMintedEvents')
         console.log({ events })
+        
         // format
         const mints = events.reverse().map(event => ({
-          getTx: event.getTransaction,
-          contractAddress: event.args[0].toLowerCase(),
-          tokenId: event.args[1].toString().toLowerCase(),
-          newTokenId: event.args[2].toString().toLowerCase()
+          // getTx: event.getTransaction,
+          tokenId: event.args[0].toString().toLowerCase(),
+          rule: event.args[1].toString().toLowerCase()
         }))
         console.log({ mints })
+        
         commit('SAVE_MINTS', mints)
         return mints
       } catch (e) {
@@ -738,7 +749,7 @@ export default createStore({
         // commit('SAVE_TOKEN', [tokenId, owner])
         return owner
       } catch (e) {
-        console.error(e)
+        // console.error(e)
         // seems to error if token doesn't exist...
         console.warn(`get owner error / token doesn't exist? (${tokenId})`)
         return null

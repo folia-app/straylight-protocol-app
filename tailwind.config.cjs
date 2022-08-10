@@ -111,6 +111,8 @@ module.exports = {
       accent1: 'var(--color-bg)',
       accent2: 'var(--color-text)',
       accent3: 'var(--color-accent)',
+      accent4: 'var(--color-accent2)',
+      accent5: 'var(--color-accent3)',
 
       gray: {
         50: '#fafafa',
