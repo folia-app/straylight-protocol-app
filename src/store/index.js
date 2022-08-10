@@ -57,12 +57,14 @@ export default createStore({
       mintCount: undefined,
       tokens: [],
 
+      moves: undefined,
+
       // old
       reserveAuctionContract: null,
 
       works: [],
       metadatas: [],
-      addresses: {}
+      addresses: {},
     }
   },
   getters: {
@@ -176,6 +178,10 @@ export default createStore({
 
     SET_MINT_COUNT (state, count) {
       state.mintCount = count
+    },
+
+    SAVE_MOVES (state, moves) {
+      state.moves = moves
     }
   },
   actions: {
@@ -374,6 +380,7 @@ export default createStore({
       try {
         if (!controllerContract) await dispatch('init')
 
+        // TODO fix from block
         const fromBlock = await dispatch('getControllerDeployBlock')
 
         // get events...
@@ -399,7 +406,7 @@ export default createStore({
         
         // format
         const mints = events.reverse().map(event => ({
-          // getTx: event.getTransaction,
+          blockNumber: event.blockNumber,
           tokenId: event.args[0].toString().toLowerCase(),
           rule: event.args[1].toString().toLowerCase()
         }))
@@ -444,13 +451,45 @@ export default createStore({
       }
     },
 
-    async getEditionsLeft ({ state, dispatch }, contract) {
+    async getMoves ({ state, commit, dispatch }, { cached = false, filter }) {
       try {
-        if (!controllerContract) await dispatch('init')
-        const resp = await controllerContract.aC(contract)
-        return resp?.editionsLeft?.toString() ?? -1
+        let moves = cached && state.moves ? state.moves : null
+        
+        if (!moves) {
+          if (!nftContract) await dispatch('init')
+
+          // TODO fix from block
+          const fromBlock = 0 // await dispatch('getControllerDeployBlock')
+          
+          // get events...
+          const events = await nftContract.queryFilter('turmiteMove', fromBlock)
+          console.log({ moveEvents: events })
+
+          // format
+          moves = events.reverse().map(event => ({
+            type: 'move',
+            blockNumber: event.blockNumber,
+            boardId: event.args[1].toString(),
+            tokenId: event.args[0].toString().toLowerCase(),
+            getReceipt: event.getTransactionReceipt,
+            getBlock: event.getBlock,
+          }))
+          console.log({ moves })
+          
+          commit('SAVE_MOVES', moves)
+        }
+
+        // filter?
+        if (filter) {
+          console.log(filter, { moves })
+          moves = moves.filter(event => event[filter[0]] === filter[1])
+          console.log('fitlered', { moves })
+        }
+
+        return moves
       } catch (e) {
         console.error(e)
+        throw e
       }
     },
 

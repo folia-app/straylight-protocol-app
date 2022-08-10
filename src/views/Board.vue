@@ -44,8 +44,9 @@ article.board
           template(v-if="addrIsOwner(owner)")
             turmite-move-form.mt-2(:tokenId="tokenIds[i]", @moved="getBoardImage")
       
+  activity-list(:activity="activity")
   //- (related assets)
-  footer
+  //- footer
     //- header
     h6.block.w-full.px-6.pt-48.pb-4.text-smm.border-tff
       span.text-gray-400 Activity
@@ -95,9 +96,10 @@ article.board
 <script>
 import Addr from '@/components/Addr.vue'
 import TurmiteDetails from '@/components/TurmiteDetails.vue'
+import ActivityList from '@/components/ActivityList.vue'
 export default {
   name: 'NFT',
-  components: { Addr, TurmiteDetails },
+  components: { Addr, TurmiteDetails, ActivityList },
   created () {
     this.getOwner()
     this.getMint()
@@ -111,7 +113,8 @@ export default {
       sourceAsset: undefined,
       imgIsLoading: false,
       imgLoaded: undefined,
-      boardImage: undefined
+      boardImage: undefined,
+      moves: [],
     }
   },
   computed: {
@@ -127,6 +130,9 @@ export default {
     },
     relatedAssets () {
       return this.contractMints?.filter(mint => mint.newTokenId !== this.mint?.newTokenId) || []
+    },
+    activity () {
+      return [...this.moves]
     }
   },
   methods: {
@@ -172,6 +178,9 @@ export default {
     },
     addrIsOwner (owner) {
       return this.$store.state.address && owner?.toLowerCase() === this.$store.state.address?.toLowerCase()
+    },
+    async getMoves () {
+      this.moves = await this.$store.dispatch('getMoves', { cached: false, filter: ['boardId', this.boardId] })
     }
   },
   metaInfo () {
@@ -196,6 +205,7 @@ export default {
   created () {
     this.getOwners()
     this.getBoardImage()
+    this.getMoves()
   }
 }
 </script>
