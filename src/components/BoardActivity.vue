@@ -1,5 +1,5 @@
 <template lang="pug">
-.board-activity.relative
+.board-activity.relative.mt-px
   observer(v-if="loaded < 2", @visible="onVisible")
   //- (loading)
   template(v-if="loaded < 1")

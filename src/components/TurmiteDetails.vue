@@ -45,9 +45,11 @@ li.turmite-detail.flex.flex-col
           router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
 
   //- (move form)
-  template(v-if="moveFormVisible")
-    .p-4.pb-5.rounded-lg.my-px.bg-accent3.text-accent1.lg_order-first
-      turmite-move-form(:tokenId="props.tokenId", @moved="emit('moved')")
+  .lg_my-px.lg_order-first
+    template(v-if="moveFormVisible")
+      .mt-px.lg_my-0.relative
+        .lg_absolute.bottom-0.left-0.w-full.p-4.pb-5.rounded-lg.bg-accent3.text-accent1
+          turmite-move-form(:tokenId="props.tokenId", @moved="emit('moved')")
 </template>
 
 <script setup>
@@ -95,6 +97,6 @@ getOwner()
 
 <style lang="postcss">
 .turmite-detail .addr--is-you{
-  @apply bg-accent1 text-accent2 font-bold;
+  @apply bg-accent1 text-accent2 font-bold px-3px rounded-lg leading-tight;
 }
 </style>

@@ -7,9 +7,29 @@ article.board
     header.mt-40.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
       h1 world_{{ boardId }}
 
-    .flex-1.relative.flex.items-start.sm_items-center.justify-center.pb-12.lg_pb-24
-      //- board image
-      img.border.border-gray-700(:src="boardImage", @load="imgLoaded = true", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
+    .flex-1.relative.flex.items-center.justify-center.pb-12.lg_pb-24.px-12.md_px-0
+      .flex.w-full
+        //- (prev board link)
+        .hidden.md_flex.w-20.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.relative.group
+          template(v-if="boardImage && boardId - 1 >= 0")
+            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
+              .sr-only prev world
+              //- label
+              .absolute.top-0.h-full.right-0.transform.translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
+                | world_{{ boardId - 1 }}
+        
+        .flex-1.flex.justify-center.items-center
+          //- board image
+          img.border.border-gray-700.transition.duration-500(:src="boardImage", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
+
+        //- (next board link)
+        .hidden.md_flex.w-20.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
+          template(v-if="boardImage && boardId + 1 < boardCount")
+            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
+              .sr-only next world
+              //- label
+              .absolute.top-0.h-full.left-0.transform.-translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
+                | world_{{ boardId + 1 }}
 
     //- turmite list
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
@@ -55,9 +75,8 @@ export default {
       mintedBy: undefined,
       sourceAsset: undefined,
       imgIsLoading: false,
-      imgLoaded: undefined,
       boardImage: undefined,
-      boardCount: 999,
+      boardCount: 0,
     }
   },
   computed: {
