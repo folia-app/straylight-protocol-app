@@ -1,7 +1,9 @@
 <template lang="pug">
 section.minted-results.flex.flex-col.w-full
   template(v-if="boardCount === undefined")
-    .fixed.z-50.bottom-0.left-0.animate-pulse.text-black.px-6.py-4.text-md Loading...
+    .fixed.z-50.overlay.flex.items-center.justify-center.text-md.text-accent3.text-center
+      div(v-if="status", v-html="status")
+      .animate-pulse(v-else) loading...
 
   template(v-else)
     .flex-1.w-full.grid.grid-cols-2.sm_grid-cols-3.lg_grid-cols-4.xl_grid-cols-5.items-end.bg-black
@@ -69,28 +71,30 @@ export default {
   components: { SvgX, BoardThumb, Observer },
   data () {
     return {
+      status: null,
       boardCount: undefined
     }
   },
   computed: {
-    ...mapState(['mints']),
-
     filters () {
       return this.$route.query.collections?.split(',') || []
     },
+  },
+  methods: {
+    getBoardCount () {
+      this.status = null
 
-    mintsFiltered () {
-      let mints = this.mints
-      const filterBy = this.filters.map(addr => addr.toLowerCase())
-      if (filterBy.length) {
-        mints = mints.filter(mint => filterBy.includes(mint.contractAddress.toLowerCase()))
-      }
-      return mints
+      this.$store.dispatch('getBoardCount')
+        .then(val => {
+          this.boardCount = val
+        })
+        .catch(e => {
+          this.status = "error<br>couldn't fetch worlds<br>☹️"
+        })
     }
   },
   created () {
-    // this.$store.dispatch('getMints', { cached: false })
-    this.$store.dispatch('getBoardCount').then(val => { this.boardCount = val })
+    this.getBoardCount()
   }
 }
 </script>

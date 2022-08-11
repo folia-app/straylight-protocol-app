@@ -31,9 +31,9 @@ const web3Modal = new Web3Modal({
       package: WalletConnectProvider, // required
       options: {
         infuraProjectID, // required
-        // rpc: {
-        //   137: networks[137].infura,
-        // }
+        rpc: {
+          420: networks[420].infura,
+        }
       },
     }
   },
@@ -363,6 +363,7 @@ export default createStore({
         return count.add(1).toNumber()
       } catch (e) {
         console.error(e)
+        throw e
       }
     },
     
