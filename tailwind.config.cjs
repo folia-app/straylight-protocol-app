@@ -94,7 +94,7 @@ module.exports = {
       // '9xl': ['8rem', { lineHeight: '1' }],
     },
     colors: {
-      transparent: 'transparent',
+      transparent: 'rgba(0,0,0,0)',
       current: 'currentColor',
 
       white: 'white',
@@ -677,6 +677,7 @@ module.exports = {
     maxWidth: ({ theme, breakpoints }) => ({
       none: 'none',
       0: '0rem',
+      '1x3': 'calc(100%/3)',
       xs: '20rem',
       sm: '24rem',
       md: '28rem',

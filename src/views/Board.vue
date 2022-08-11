@@ -16,94 +16,37 @@ article.board
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
         turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="getBoardImage")
-        //- li.px-5.pt-3.pb-4.flex.flex-col.rounded-lg(:class="{'bg-accent2 text-accent1 border-none': addrIsOwner(owner)}")
-          .flex.pb-4(:class="{'opacity-30': !owner, '-mb-1': addrIsOwner(owner)}")
-            | turmite_{{ ['W', 'S', 'N', 'E'][i] }}
-            .flex.items-center.opacity-30.ml-4(v-if="owner") \#{{tokenIds[i]}} 
-            //- #[span.ml-2(style="font-size:0.66em") ↗]
-          template(v-if="owner")
-            .text-smm
-              //- owner
-              .h-9.flex.items-center
-                .inline-block.opacity-30(style="min-width:3.5em") owner
-                .inline-block
-                  template(v-if="owner === undefined")
-                    span.animate-pulse ...
-                  template(v-else)
-                    .flex.items-center
-                      addr(:address="owner", :youOn="true")
-                      span.ml-2.opacity-30(style="font-size:0.9em") ↗
-              .h-9.flex.items-center
-                .inline-block.opacity-30(style="min-width:3.5em") moves
-                .inline-block XX
-          template(v-else)
-            .h-18.flex.items-start
-              router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
-
-          //- owner actions
-          template(v-if="addrIsOwner(owner)")
-            turmite-move-form.mt-2(:tokenId="tokenIds[i]", @moved="getBoardImage")
       
-  activity-list(:activity="activity")
-  //- (related assets)
-  //- footer
-    //- header
-    h6.block.w-full.px-6.pt-48.pb-4.text-smm.border-tff
-      span.text-gray-400 Activity
+  board-activity(:boardId="boardId.toString()")
 
-      div(style="min-height:50vh")
-      //- template(v-if="sourceAsset") {{ sourceAsset.collectionName }}
-      //- template(v-else)
-        addr(:address="mint && mint.contractAddress")
+  footer
+    nav.grid.grid-cols-3.gap-1.text-md.h-48.items-center
+      .flex.justify-center
+        template(v-if="boardId - 1 >= 0")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-12.pr-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
+            | world_{{ boardId - 1 }}
+            .absolute.top-0.left-2.h-full.flex.items-center &larr;
 
-    //- .grid.grid-cols-4.items-end(v-if="relatedAssets.length > 0")
-      //- mints...
-      template(v-for="mint in relatedAssets")
-        board-thumb.mt-16.text-xxs(:mint="mint")
-        //- router-link.relative.group.block.mt-16(:to="'/tokens/' + mint.newTokenId")
-          mint-image(:mint="mint")
+      .flex.justify-center
+        router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
+          | all worlds
 
-          img.w-full(:src="`/api/${$store.state.networkId}/get/${mint.contractAddress}/${mint.tokenId}`")
-          //- original
-          .absolute.overlay.z-10.transitionff.duration-1000ff.opacity-0.group-hover_opacity-100.bg-gray-100
-            img.absolute.overlay.group-hover_animate-pulse2ff(:src="`/api/${$store.state.networkId}/get/original/${mint.contractAddress}/${mint.tokenId}`")
-
-      //- template(v-for="n in 'ABCDEFGHIJKLMNOPQR'.split('')")
-        router-link.relative.group.block.transition.duration-1000(:to="'/works/' + n")
-
-          img.w-full(:src="`/demo/${n}2.png`")
-
-          //- original
-          .absolute.overlay.z-10.transition.duration-1000.opacity-0.group-hover_opacity-100
-            img.absolute.overlay.group-hover_animate-pulse2(:src="`/demo/${n}1.png`")
-
-    //- h6.p-8 More from "Collection"
-    //- section.grid.grid-cols-4
-      template(v-for="n in 88")
-        router-link.block.relative.border-b.border-gray-100.hover_bg-gray-300.transition.duration-1000(:to="'/works/' + n", :class="{'bg-gray-50': !(n % 2), 'bg-gray-100': n % 2}")
-          .pb-full
-            .absolute.overlay.flex.items-center.justify-center.text-sm.opacity-10 {{ n }}
-
-    //- .sticky.z-10.bottom-0.left-0.w-full.h-28.flex.text-smm.uppercase.tracking-wide
-      router-link.w-1x2.flex.items-center.justify-center.bg-gray-200.relative.mouse_hover_bg-yellow-600(to="/")
-        .w-28.h-full.flex.items-center.justify-center.absolute.top-0.left-0.pt-2 &larr;
-        div View All
-      router-link.w-1x2.flex.items-center.justify-center.bg-gray-300.relative.mouse_hover_bg-yellow-600(to="/mint")
-        div Mint New
-        .w-28.h-full.flex.items-center.justify-center.absolute.top-0.right-0 ꩜
+      .flex.justify-center
+        template(v-if="boardId + 1 < boardCount")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-7.pr-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
+            | world_{{ boardId + 1 }}
+            .absolute.top-0.right-2.h-full.flex.items-center &rarr;
+          
+      
 </template>
 
 <script>
 import Addr from '@/components/Addr.vue'
 import TurmiteDetails from '@/components/TurmiteDetails.vue'
-import ActivityList from '@/components/ActivityList.vue'
+import BoardActivity from '@/components/BoardActivity.vue'
 export default {
   name: 'NFT',
-  components: { Addr, TurmiteDetails, ActivityList },
-  created () {
-    this.getOwner()
-    this.getMint()
-  },
+  components: { Addr, TurmiteDetails, BoardActivity },
   data () {
     return {
       mint: undefined,
@@ -114,56 +57,19 @@ export default {
       imgIsLoading: false,
       imgLoaded: undefined,
       boardImage: undefined,
-      moves: [],
+      boardCount: 999,
     }
   },
   computed: {
     boardId () {
-      return this.$route.params.board
+      return Number(this.$route.params.board)
     },
     tokenIds () {
       const boardId = Number(this.boardId) * 4
       return [boardId, boardId + 1, boardId + 2, boardId + 3]
     },
-    contractMints () {
-      return this.$store.state.mints?.filter(mint => mint.contractAddress === this.mint?.contractAddress)
-    },
-    relatedAssets () {
-      return this.contractMints?.filter(mint => mint.newTokenId !== this.mint?.newTokenId) || []
-    },
-    activity () {
-      return [...this.moves]
-    }
   },
   methods: {
-    
-    async getOwners () {
-      for (var i = 0; i < this.tokenIds.length; i++) {
-        const index = i
-        this.$store.dispatch('getNFTOwnerByTokenId', this.tokenIds[i])
-          .then(owner => {
-            // this.$set(this.owners, index, owner)
-            this.owners[index] = owner
-          })
-      }
-    },
-    async getMint () {
-      try {
-        // const cached = this.$route.params.new ? false : true
-        // fetch...
-        await this.$store.dispatch('getMints', { cached: false })
-        this.mint = this.$store.state.mints.find(mint => mint.newTokenId === this.$route.params.token)
-
-        if (this.mint) {
-          // set minted by
-          this.mintedBy = (await this.mint.getTx()).from
-          // get source asset
-          this.sourceAsset = await this.$store.dispatch('assets/getSourceAsset', this.mint)
-        }
-      } catch (e) {
-        console.error(e)
-      }
-    },
     getBoardImage () {
       this.imgIsLoading = true
       this.$store.dispatch('getBoardImage', { id: this.boardId.toString() })
@@ -176,12 +82,6 @@ export default {
           this.imgIsLoading = false
         })
     },
-    addrIsOwner (owner) {
-      return this.$store.state.address && owner?.toLowerCase() === this.$store.state.address?.toLowerCase()
-    },
-    async getMoves () {
-      this.moves = await this.$store.dispatch('getMoves', { cached: false, filter: ['boardId', this.boardId] })
-    }
   },
   metaInfo () {
     const title = `world_` + this.boardId
@@ -203,9 +103,8 @@ export default {
     }
   },
   created () {
-    this.getOwners()
     this.getBoardImage()
-    this.getMoves()
+    this.$store.dispatch('getBoardCount').then(count => { this.boardCount = count })
   }
 }
 </script>

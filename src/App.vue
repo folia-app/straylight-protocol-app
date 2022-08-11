@@ -6,20 +6,20 @@
     //- HEADER AS INTRO
     header.fixed.top-0.left-0.w-full.z-20
       //- top bar
-      .flex.flex-wrap.w-full.items-start
+      .flex.flex-wrap.w-full.items-start.relative.z-10
         //- h1.sr-only Straylight Protocol
         
         //- laptop left
         .flex
           //- folia logo link
           a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
-            .w-20.h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
+            .w-22.h-22.sm_w-20.sm_h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
               svg-fleuron(style="height:1.3em")
 
-          .h-20.flex-1.flex.items-center.pb-1b
+          .h-22.sm_h-20.flex-1.flex.items-center.pb-1b
             //- div <b>Straylight Protocol</b>
             router-link.rounded-lg(to="/")
-              svg-logo.h-10
+              svg-logo.h-12.sm_h-10
 
         //- laptop right
         nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12.leading-none.text-md
@@ -50,10 +50,12 @@
                   .absolute.top-0.right-0.pt-2
                     ul.bg-accent2.bg-accent2.rounded-lg.pt-1.pb-2
                       li
-                        router-link.block.px-4.py-1.rounded-full(:to="`/account/${$store.state.address}`") my profile
+                        router-link.block.px-4.py-1.rounded-full(:to="`/${$store.state.address}`") my profile
                       li
                         button.block.px-4.py-1.rounded-full(@click.stop="disconnectWallet") sign-out
 
+      //- bg gradient
+      .sm_hidden.absolute.overlay.bg-gradient-to-b.from-accent1.to-transparent.pointer-events-none(style="height:200%")
             
 
     //- (info overlay)

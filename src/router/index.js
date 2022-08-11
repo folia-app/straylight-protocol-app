@@ -19,6 +19,11 @@ const routes = [
     name: 'mint',
     component: () => import(/* webpackChunkName: 'board' */ '../views/Mint.vue')
   },
+
+  {
+    path: '/:address',
+    name: 'profile'
+  }
 ]
 
 const router = createRouter({

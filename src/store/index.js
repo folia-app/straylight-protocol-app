@@ -384,9 +384,7 @@ export default createStore({
         const fromBlock = await dispatch('getControllerDeployBlock')
 
         // get events...
-        // console.time('getEvents')
         const mintEvents = await nftContract.queryFilter('turmiteMint', fromBlock)
-        // console.timeEnd('getEvents')
 
         return mintEvents
       } catch (e) {
@@ -395,24 +393,34 @@ export default createStore({
       }
     },
 
-    async getMints ({ state, commit, dispatch }, { cached = false }) {
+    async getMints ({ state, commit, dispatch }, { cached = false, filter }) {
       try {
-        if (cached && state.mints) {
-          return state.mints
+        let mints = cached && state.mints
+
+        if (!mints) {
+          // get all mint events...
+          const events = await dispatch('getMintedEvents')
+          
+          // format
+          mints = events.reverse().map(event => ({
+            type: 'mint',
+            blockNumber: event.blockNumber,
+            boardId: event.args[2].toString(),
+            tokenId: event.args[0].toString(),
+            rule: event.args[1].toString().toLowerCase(),
+            getBlock: event.getBlock,
+            getReceipt: event.getTransactionReceipt,
+          }))
+          // console.log({ mints })
+          
+          commit('SAVE_MINTS', mints)
         }
-        // get all mint events...
-        const events = await dispatch('getMintedEvents')
-        console.log({ events })
-        
-        // format
-        const mints = events.reverse().map(event => ({
-          blockNumber: event.blockNumber,
-          tokenId: event.args[0].toString().toLowerCase(),
-          rule: event.args[1].toString().toLowerCase()
-        }))
-        console.log({ mints })
-        
-        commit('SAVE_MINTS', mints)
+
+        // filter?
+        if (filter) {
+          mints = mints.filter(event => event[filter[0]] === filter[1])
+        }
+
         return mints
       } catch (e) {
         console.error(e)
@@ -481,9 +489,7 @@ export default createStore({
 
         // filter?
         if (filter) {
-          console.log(filter, { moves })
           moves = moves.filter(event => event[filter[0]] === filter[1])
-          console.log('fitlered', { moves })
         }
 
         return moves

@@ -1,43 +1,47 @@
 <template lang="pug">
 li.turmite-detail.flex.flex-col
 
-  .px-5.pt-4.pb-4.flex.flex-col.rounded-lg.bg-accent1(:class="{'bg-accent2 text-accent1 border-none': isOwner}")
-    //- title
-    .flex.justify-between.items-end.leading-none.pb-5
-      .flex(:class="{'opacity-30': !owner, '-mb-1': isOwner}")
-        | turmite_{{ props.label }}
-      .flex.items-center.opacity-30.ml-4.text-smm(v-if="owner")
-        | \#{{ props.tokenId }} 
-        span.ml-2(style="font-size:0.75em") ↗
+  .rounded-lg.relative(:class="{'bg-accent2 text-accent1 border-none': isOwner}")
+    //- (background)
+    .absolute.overlay.bg-accent1.opacity-90.rounded-lg(v-if="!isOwner")
     
-    //- (owner, moves)
-    template(v-if="owner")
-      .flex.flex-wrap.items-end
-        .flex-1.text-smm
-          //- owner
-          .h-8.flex.items-center
-            .inline-block.opacity-30(style="min-width:3.5em") owner
-            .inline-block
-              template(v-if="owner === undefined")
-                span.animate-pulse ...
-              template(v-else)
-                .flex.items-center
-                  addr(:address="owner", :youOn="true")
-                  span.ml-2.opacity-20(style="font-size:0.75em") ↗
-          .h-8.flex.items-center
-            .inline-block.opacity-30(style="min-width:3.5em") pattern
-            .inline-block.lowercase 
-              | {{ ruleNickname || '...' }}
-              span.ml-2.opacity-20(style="font-size:0.75em") ↗
+    .relative.z-10.px-5.pt-4.pb-4.flex.flex-col
+      //- title
+      .flex.justify-start.items-end.leading-none.pb-5(:class="{'-mb-1': isOwner}")
+        .flex(:class="{'opacity-30': !owner}")
+          | turmite_{{ props.label }}
+        .flex.items-center.opacity-20.ml-4.text-smmff(v-if="owner")
+          | \#{{ props.tokenId }} 
+          span.ml-2(style="font-size:0.75em") ↗
+      
+      //- (owner, moves)
+      template(v-if="owner")
+        .flex.flex-wrap.items-end
+          .flex-1.text-smm
+            //- owner
+            .h-8.flex.items-center
+              .inline-block.opacity-30(style="min-width:3.5em") owner
+              .inline-block
+                template(v-if="owner === undefined")
+                  span.animate-pulse ...
+                template(v-else)
+                  .flex.items-center
+                    addr(:address="owner", :youOn="true")
+                    span.ml-2.opacity-20(style="font-size:0.75em") ↗
+            .h-8.flex.items-center
+              .inline-block.opacity-30(style="min-width:3.5em") pattern
+              .inline-block.lowercase 
+                | {{ ruleNickname || '...' }}
+                span.ml-2.opacity-20(style="font-size:0.75em") ↗
 
-        //- (owner actions)
-        template(v-if="isOwner")
-          button.h-8.rounded-full.px-6.text-sm.borderff.flex.items-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
-    
-    //- ("join/mint")
-    template(v-else)
-      .h-18.flex.items-start
-        router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
+          //- (owner actions)
+          template(v-if="isOwner")
+            button.h-8.rounded-full.px-6.text-sm.borderff.flex.items-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
+      
+      //- ("join/mint")
+      template(v-else)
+        .h-18.flex.items-start
+          router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
 
   //- (move form)
   template(v-if="moveFormVisible")

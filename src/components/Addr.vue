@@ -18,7 +18,7 @@ export default {
     name () {
       const profile = this.$store.state.addresses[this.address?.toLowerCase()] || {}
 
-      return this.youOn && this.isYou ? 'you'
+      return this.youOn && this.isYou ? 'YOU'
         : profile.ens ? profile.ens
           : profile.openSea && this.openSeaEnabled ? profile.openSea
             : this.short ? this.$store.getters.addrShort(this.address)
