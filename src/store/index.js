@@ -16,7 +16,7 @@ const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 const networks = {
   1: { name: 'mainnet', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
   // 4: { name: 'rinkeby', layer: 'ethereum', infura: `https://rinkeby.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://rinkeby.etherscan.io' } }
-  69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } },
+  // 69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } },
   420: { name: 'goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' } },
 }
 const appNetworkId = import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1
@@ -912,7 +912,30 @@ export default createStore({
         //   })
         // }
 
-        return { ens }
+        return { address, ens, openSea }
+      } catch (e) {
+        console.error(e)
+        return null
+      }
+    },
+
+    async resolveENS ({ state, commit, dispatch }, ens) {
+      try {
+        // saved ?
+        // let address = Object.keys(state.addresses).find(key => ens && state.addresses[key].ens === ens)
+        // if (address) return address
+        
+        // resolve...
+        const provider = new ethers.getDefaultProvider(networks[1].infura)
+        
+        address = await provider.resolveName(ens)
+        
+        // if (address) {
+        //   // save if resolved...
+        //   commit('SAVE_ADDRESS', { address, ens })
+        // }
+
+        return address
       } catch (e) {
         console.error(e)
         return null

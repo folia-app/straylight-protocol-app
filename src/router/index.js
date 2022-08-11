@@ -11,18 +11,19 @@ const routes = [
   {
     path: '/boards/:board',
     name: 'board',
-    component: () => import(/* webpackChunkName: 'board' */ '../views/Board.vue')
+    component: () => import('../views/Board.vue')
   },
 
   {
     path: '/mint',
     name: 'mint',
-    component: () => import(/* webpackChunkName: 'board' */ '../views/Mint.vue')
+    component: () => import('../views/Mint.vue')
   },
 
   {
     path: '/:address',
-    name: 'profile'
+    name: 'profile',
+    component: () => import('../views/Profile.vue')
   }
 ]
 

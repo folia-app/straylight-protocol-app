@@ -1,9 +1,10 @@
 <template lang="pug">
 section.minted-results.flex.flex-col.w-full
   template(v-if="boardCount === undefined")
-    .fixed.z-50.overlay.flex.items-center.justify-center.text-md.text-accent3.text-center
-      div(v-if="status", v-html="status")
-      .animate-pulse(v-else) loading...
+    .fixed.z-50.overlay.flex.items-center.justify-center.text-md.text-accent3.text-center.pointer-events-none
+      .pointer-events-auto
+        div(v-if="status", v-html="status")
+        .animate-pulse(v-else) loading...
 
   template(v-else)
     .flex-1.w-full.grid.grid-cols-2.sm_grid-cols-3.lg_grid-cols-4.xl_grid-cols-5.items-end.bg-black
@@ -99,5 +100,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang="postcss">
+.boards-grid{
+  /* @apply grid grid-cols-2 sm_grid-cols-3 lg_grid-cols-4 xl_grid-cols-5; */
+}
 </style>
