@@ -19,9 +19,9 @@ article.board
       
   board-activity(:boardId="boardId.toString()")
 
-  footer
-    nav.grid.grid-cols-3.gap-1.text-md.h-48.items-center
-      .flex.justify-center
+  footer.pt-24.pb-64.lg_pb-36
+    nav.flex.text-md.items-center
+      .flex-1.flex.justify-center.lg_-mr-28
         template(v-if="boardId - 1 >= 0")
           router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-12.pr-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
             | world_{{ boardId - 1 }}
@@ -31,7 +31,7 @@ article.board
         router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
           | all worlds
 
-      .flex.justify-center
+      .flex-1.flex.justify-center.lg_-ml-28
         template(v-if="boardId + 1 < boardCount")
           router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-7.pr-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
             | world_{{ boardId + 1 }}

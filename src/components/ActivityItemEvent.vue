@@ -1,15 +1,19 @@
 <template lang="pug">
+//- TODO color based on address / account >:)
 observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide.mb-1(@visible="getInfo", :class="{'text-accent3': props.event.type === 'move', 'text-accent2': props.event.type === 'mint'}")
   //- time
-  .w-1x4.lg_w-1x4.text-left.text-xs.flex.pr-2(style="min-width:11em")
-    .pl-3.pr-2
+  .w-1x4.lg_w-1x4.text-left.text-xs.flex.pr-3.lg_pr-0(style="min-width:11em")
+    .lg_w-3.border-b.opacity-30.mb-1.mr-2
+    .pl-3.pr-2.lg_pl-0
       template(v-if="localTime") {{ localTime }}
       span.animate-pulse(v-else) block {{ props.event.blockNumber }}
   
     .flex-1.border-b.opacity-30.mb-1
   
+  .lg_w-2.border-b.opacity-30.mb-1.mr-3
   //- log
   .pr-2
+    
     //- (move)
     template(v-if="props.event.type === 'move'")
       | #[router-link.border.rounded-lg.px-3px.text-smm.mr-1.font-bold.tracking-wider.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }}

@@ -8,7 +8,7 @@
 
   //- (activity)
   template(v-else)
-    activity-list.my-6(:activity="activity")
+    activity-list.mt-8.mb-6(:activity="activity")
 </template>
 
 <script setup>

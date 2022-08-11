@@ -10,33 +10,34 @@ li.turmite-detail.flex.flex-col
       .flex.justify-start.items-end.leading-none.pb-5(:class="{'-mb-1': isOwner}")
         .flex(:class="{'opacity-30': !owner}")
           | turmite_{{ props.label }}
-        .flex.items-center.opacity-20.ml-4.text-smmff(v-if="owner")
+        .flex.items-end.opacity-20.ml-4.text-smmff(v-if="owner")
           | \#{{ props.tokenId }} 
-          span.ml-2(style="font-size:0.75em") ↗
+          span.ml-1(style="font-size:0.6em") ↗
       
       //- (owner, moves)
       template(v-if="owner")
         .flex.flex-wrap.items-end
           .flex-1.text-smm
             //- owner
-            .h-8.flex.items-center
+            .h-9.flex.items-center
               .inline-block.opacity-30(style="min-width:3.5em") owner
               .inline-block
                 template(v-if="owner === undefined")
                   span.animate-pulse ...
                 template(v-else)
-                  .flex.items-center
+                  router-link.flex.items-center(:to="{name: 'profile', params: { address: owner }}")
                     addr(:address="owner", :youOn="true")
-                    span.ml-2.opacity-20(style="font-size:0.75em") ↗
-            .h-8.flex.items-center
+                    span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
+            //- pattern
+            .h-9.flex.items-center
               .inline-block.opacity-30(style="min-width:3.5em") pattern
               .inline-block.lowercase 
                 | {{ ruleNickname || '...' }}
-                span.ml-2.opacity-20(style="font-size:0.75em") ↗
+                span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
 
           //- (owner actions)
           template(v-if="isOwner")
-            button.h-8.rounded-full.px-6.text-sm.borderff.flex.items-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
+            button.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
       
       //- ("join/mint")
       template(v-else)
@@ -94,6 +95,6 @@ getOwner()
 
 <style lang="postcss">
 .turmite-detail .addr--is-you{
-  @apply bg-accent1 text-accent2 rounded-lg px-2 py-1 leading-none uppercase font-bold;
+  @apply bg-accent1 text-accent2 font-bold;
 }
 </style>
