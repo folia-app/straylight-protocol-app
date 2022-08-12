@@ -7,7 +7,7 @@ section.minted-results.flex.flex-col.w-full
         .animate-pulse(v-else) loading...
 
   template(v-else)
-    .flex-1.w-full.grid.grid-cols-2.sm_grid-cols-3.lg_grid-cols-4.xl_grid-cols-5.items-end.bg-black
+    .flex-1.w-full.boards-grid
       template(v-for="n in 128")
 
         //- mints...
@@ -15,7 +15,7 @@ section.minted-results.flex.flex-col.w-full
         template(v-for="n in boardCount")
           //- board index starts at 1 lol
           //- reverse
-          board-thumb(:boardId="boardCount - (n - 1)")
+          board-thumb(:boardId="boardCount - n")
             //- mint-thumb.mt-32.text-xs.md_text-md(:mint="mint", :key="mint.newTokenId")
 
       //- DEMO ITEMS
@@ -102,6 +102,6 @@ export default {
 
 <style lang="postcss">
 .boards-grid{
-  /* @apply grid grid-cols-2 sm_grid-cols-3 lg_grid-cols-4 xl_grid-cols-5; */
+  @apply grid grid-cols-2 sm_grid-cols-3 lg_grid-cols-4 xl_grid-cols-5;
 }
 </style>

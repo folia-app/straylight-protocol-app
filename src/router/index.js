@@ -22,8 +22,19 @@ const routes = [
 
   {
     path: '/:address',
-    name: 'profile',
-    component: () => import('../views/Profile.vue')
+    component: () => import('../views/Profile.vue'),
+    children: [
+      {
+        path: '',
+        name: 'profile', // worlds,
+        component: () => import('../views/ProfileBoards.vue'),
+      },
+      {
+        path: 'activity',
+        name: 'profile__activity', // worlds,
+        component: () => import('../views/ProfileActivity.vue'),
+      }
+    ]
   }
 ]
 
@@ -39,6 +50,10 @@ const router = createRouter({
     } else if (savedPosition) {
       return savedPosition
     } else {
+      // don't scroll to top on user tab changes...
+      if (to.params.address && to.params.address === from.params.address) {
+        return
+      }
       // scroll to top
       return { top: 0 }
     }

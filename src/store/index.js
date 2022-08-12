@@ -78,7 +78,7 @@ export default createStore({
       return prefix ? ('00' + id).slice(-3) // 001
         : id // 1 - for contract communication
     },
-    addrShort: () => (addr) => addr ? addr.slice(0, 6) + '...' + addr.slice(-4) : '...',
+    addrShort: () => (addr) => addr ? '0x' + addr.slice(2, 6).toUpperCase() + '...' + addr.slice(-4).toUpperCase() : '...',
     userBalance: (state) => (addr) => provider?.getBalance(addr || state.address) || '0', // wei
     isSoldOut: () => (work) => {
       return work && Number(work.editions) && Number(work.printed) >= Number(work.editions)
@@ -90,6 +90,13 @@ export default createStore({
         : account ? `/accounts/${account}`
           : ''
       return `https://${isTestnet ? 'testnets.' : ''}opensea.io` + path
+    },
+    quixoticLink: (state, getters) => ({ token, account }) => {
+      const isGoerli = [420].includes(state.networkId)
+      const path = token ? `/asset/${state.contractAddr}/${token}`
+        : account ? `/${account}`
+          : ''
+      return `https://${isGoerli ? 'goerli.' : ''}quixotic.io` + path
     },
     meta: state => ({ title, descrip, img }) => {
       const meta = []
@@ -922,18 +929,17 @@ export default createStore({
     async resolveENS ({ state, commit, dispatch }, ens) {
       try {
         // saved ?
-        // let address = Object.keys(state.addresses).find(key => ens && state.addresses[key].ens === ens)
-        // if (address) return address
+        let address = Object.keys(state.addresses).find(key => ens && state.addresses[key].ens === ens)
+        if (address) return address
         
-        // resolve...
+        // resolve ENS on mainnet...
         const provider = new ethers.getDefaultProvider(networks[1].infura)
-        
         address = await provider.resolveName(ens)
         
-        // if (address) {
-        //   // save if resolved...
-        //   commit('SAVE_ADDRESS', { address, ens })
-        // }
+        if (address) {
+          // save if resolved...
+          commit('SAVE_ADDRESS', { address, ens })
+        }
 
         return address
       } catch (e) {

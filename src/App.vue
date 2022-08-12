@@ -87,11 +87,11 @@
                 a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.network.explorer.domain}/address/${$store.state.contractAddr}`", target="_blank", rel="noopener noreferrer")
                   | contract &nbsp;↗
 
-              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.openSeaLink({})}/collection/decomposer${ $store.state.networkId === 4 ? '-v2': '' }`", target="_blank", rel="noopener noreferrer")
-                | quixotic &nbsp;↗
-
               a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
                 | discord &nbsp;↗
+
+              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="$store.getters.quixoticLink({}) + '/collection/' + $store.state.contractAddr", target="_blank", rel="noopener noreferrer")
+                | quixotic &nbsp;↗
 
               a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://snapshot.org/#/decomposer.eth", target="_blank", rel="noopener noreferrer")
                 | wiki &nbsp;↗
