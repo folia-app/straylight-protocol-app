@@ -22,7 +22,7 @@
               svg-logo.h-12.sm_h-10
 
         //- laptop right
-        nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-8.md_px-12.leading-none.text-md
+        nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-6.md_px-12.leading-none.text-md
           .flex.flex-1.lg_flex-none
             //- border cell
             .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.overflow-hiddenff.bg-accent1.text-center
@@ -65,7 +65,7 @@
         .flex.justify-end.items-start
           //- info card
           .relative.z-10.bg-accent2.text-black.rounded-xl.border-accent2.overflow-hidden(@click.stop, v-show="infoVisible", style="box-shadowff: #f72d8e 0 4px 98px; box-shadow: black 0 4px 98px")
-            .px-9.py-9.leading-snug.text-2xl.tracking-wide.w-full(style="max-width:42em")
+            .px-6.md_px-9.py-9.leading-snug.text-2xl.tracking-wide.w-full(style="max-width:42em")
               p.text-md.mb-em.pb-1
                 | #[a.font-bold(href="https://folia.app", target="_blank", rel="noopener noreferrer") #[svg-fleuron.inline-block(style="height:1em;margin-bottom:0.25em;margin-right:0.18em")] #[span.border-b.border-current.border-dashed.hover_border-solid folia]] presents&hellip;<br>
               p
@@ -101,7 +101,7 @@
               svg-x.w-5.h-5(strokeWidth="1.15")
 
         //- scroll off area
-        observer#info-scroll-end.pointer-events-none(style="height:133vh", :threshold="0.75", @visible="closeInfoOverlay")
+        observer#info-scroll-end.pointer-events-none(style="height:133vh", :threshold="0.66", @visible="closeInfoOverlay")
 
         //- background
         button.block.absolute.overlay.bg-black-a60ff.transition.duration-1000(:class="{'opacity-0 pointer-events-none': !infoVisible}", @click.stop="infoVisible = false", aria-label="Close Info")

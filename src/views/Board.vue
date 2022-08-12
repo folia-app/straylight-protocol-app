@@ -35,9 +35,9 @@ article.board
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="getBoardImage")
+        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved")
       
-  board-activity(:boardId="boardId.toString()")
+  board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :key="activityFetch")
 
   footer.pt-24.pb-64.lg_pb-36
     nav.flex.text-md.items-center
@@ -61,6 +61,7 @@ article.board
 </template>
 
 <script>
+import { ref } from 'vue'
 import Addr from '@/components/Addr.vue'
 import TurmiteDetails from '@/components/TurmiteDetails.vue'
 import BoardActivity from '@/components/BoardActivity.vue'
@@ -77,6 +78,7 @@ export default {
       imgIsLoading: false,
       boardImage: undefined,
       boardCount: 0,
+      activityFetch: 0,
     }
   },
   computed: {
@@ -101,6 +103,11 @@ export default {
           this.imgIsLoading = false
         })
     },
+    onTurmiteMoved () {
+      this.getBoardImage()
+      // update activity list
+      this.activityFetch++
+    }
   },
   metaInfo () {
     const title = `world_` + this.boardId
@@ -124,6 +131,6 @@ export default {
   created () {
     this.getBoardImage()
     this.$store.dispatch('getBoardCount').then(count => { this.boardCount = count })
-  }
+  },
 }
 </script>

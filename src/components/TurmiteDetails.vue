@@ -7,12 +7,13 @@ li.turmite-detail.flex.flex-col
     
     .relative.z-10.px-5.pt-4.pb-4.flex.flex-col
       //- title
-      .flex.justify-start.items-end.leading-none.pb-5(:class="{'-mb-1': isOwner}")
-        .flex(:class="{'opacity-30': !owner}")
-          | turmite_{{ props.label }}
-        .flex.items-end.opacity-20.ml-4.text-smmff(v-if="owner")
-          | \#{{ props.tokenId }} 
-          span.ml-1(style="font-size:0.6em") ↗
+      .flex
+        a.flex.justify-start.items-end.leading-none.pb-5.group(:class="{'-mb-1': isOwner}", :href="$store.getters.quixoticLink({ token: tokenId })", target="_blank", rel="noopener noreferrer")
+          .flex(:class="{'opacity-30': !owner}")
+            | turmite_{{ props.label }}
+          .flex.items-end.opacity-20.ml-4.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
+            | \#{{ props.tokenId }} 
+            span.ml-1(style="font-size:0.6em") ↗
       
       //- (owner, moves)
       template(v-if="owner")
@@ -33,11 +34,11 @@ li.turmite-detail.flex.flex-col
               .inline-block.opacity-30(style="min-width:3.5em") pattern
               .inline-block.lowercase 
                 | {{ ruleNickname || '...' }}
-                span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
+                //- span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
 
           //- (owner actions)
           template(v-if="isOwner")
-            button.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
+            button.w-full.md_w-auto.mt-2.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
       
       //- ("join/mint")
       template(v-else)

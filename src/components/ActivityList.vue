@@ -2,7 +2,7 @@
 .activity
   //- header.px-5
     .text-5xl activity
-  ul.whitespace-nowrap.overflow-x-scroll
+  ul.whitespace-nowrap.overflow-x-scroll.scrollbars-hidden
     li.flex(v-for="item in activity")
       activity-item-event(:event="item", :includeWorld="props.includeWorld")
 </template>

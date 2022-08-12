@@ -2,7 +2,7 @@
 //- TODO color based on address / account >:)
 observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide.mb-1(@visible="getInfo", :class="{'text-accent3': props.event.type === 'move', 'text-accent2': props.event.type === 'mint'}")
   //- time
-  .w-1x4.lg_w-1x4.text-left.text-xs.flex.pr-3.lg_pr-0(style="min-width:11em")
+  .w-1x4.lg_w-1x4.text-left.text-xs.flex.pr-2.lg_pr-0(style="min-width:10em")
     .w-3.border-b.opacity-30.mb-1.mr-2
     .pr-2
       template(v-if="localTime") {{ localTime }}

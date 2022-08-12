@@ -1,16 +1,20 @@
 <template lang="pug">
 article.profile
   .min-h-screen.flex.flex-col
-    header.mt-56.pl-20.pr-12
+    
+    header.mt-64.lg_mt-56.px-6.lg_pl-20
       //- ("YOU")
       .relative(v-if="$store.getters.isConnectedAddr(address)")
         .absolute.top-0.left-0.transform.-translate-y-full.pb-2
           .px-1.text-sm.leading-tight.rounded-lg.bg-accent2.text-accent1.font-bold YOU
       
-      .flex.items-end
-        h1.text-6xl.leading-none
+      .flex.flex-wrap.items-end
+        h1.text-6xl.leading-none.lg_order-1
           addr(:address="address")
-        nav.text-xs.ml-8.pb-px.-mb-2
+        
+        .w-full.mt-2.opacity-40.text-xs.lg_order-2 {{ address }}
+
+        nav.text-xs.-ml-3.lg_ml-8.pb-px.-mb-2.lg_order-1
           //- quixotic link
           a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.quixoticLink({ account: address })", target="_blank", rel="noopener noreferrer")
             | Quixotic
@@ -20,14 +24,13 @@ article.profile
           template(v-if="ens")
             a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="`https://app.ens.domains/name/${ens}`", target="_blank", rel="noopener noreferrer")
               | ENS
-      .mt-2.opacity-40.text-xs {{ address }}
     
     section.flex-1
       template(v-if="!address")
         .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 resolving...
       
       template(v-else)
-        nav.mt-22.flex.pl-20
+        nav.mt-22.flex.px-6.lg_pl-20
           .flex
             router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address }}") turmites
 

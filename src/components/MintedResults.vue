@@ -102,6 +102,6 @@ export default {
 
 <style lang="postcss">
 .boards-grid{
-  @apply grid grid-cols-2 sm_grid-cols-3 lg_grid-cols-4 xl_grid-cols-5;
+  @apply w-full overflow-hidden grid grid-cols-2 sm_grid-cols-3 lg_grid-cols-4 xl_grid-cols-5;
 }
 </style>
