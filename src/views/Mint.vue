@@ -73,7 +73,7 @@ article.pb-64
 
           //- (status)
           template(v-if="status")
-            .sticky.bottom-1.left-0.mt-3px.min-h-32.flex.items-center.justify-center.relative.text-smm.font-bold.px-6.py-4.rounded-lg(:class="{'bg-green-400 text-black': status.type === 'success', 'bg-red text-black': status.type === 'error', 'bg-accent3 text-accent1': !status.type, 'animate-pulse': status.msg.includes('...') }")
+            .sticky.bottom-1.left-0.mt-3px.min-h-16.flex.items-center.justify-center.relative.text-smm.font-bold.px-6.py-4.rounded-lg(:class="{'bg-green-400 text-black': status.type === 'success', 'bg-red text-black': status.type === 'error', 'bg-accent3 text-accent1': !status.type, 'animate-pulse': status.msg.includes('...') }")
               //- msg
               span.break-all {{ status.msg }}
               //- (tx link)

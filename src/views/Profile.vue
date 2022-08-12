@@ -1,40 +1,61 @@
 <template lang="pug">
 article.profile
-  header.mt-56.pl-20.pr-12
-    //- ("YOU")
-    .relative(v-if="$store.getters.isConnectedAddr(address)")
-      .absolute.top-0.left-0.transform.-translate-y-full.pb-2
-        .px-1.text-sm.leading-tight.rounded-lg.bg-accent2.text-accent1.font-bold YOU
+  .min-h-screen.flex.flex-col
+    header.mt-56.pl-20.pr-12
+      //- ("YOU")
+      .relative(v-if="$store.getters.isConnectedAddr(address)")
+        .absolute.top-0.left-0.transform.-translate-y-full.pb-2
+          .px-1.text-sm.leading-tight.rounded-lg.bg-accent2.text-accent1.font-bold YOU
+      
+      .flex.items-end
+        h1.text-6xl.leading-none
+          addr(:address="address")
+        nav.text-xs.ml-8.pb-px.-mb-2
+          //- quixotic link
+          a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.quixoticLink({ account: address })", target="_blank", rel="noopener noreferrer")
+            | Quixotic
+          //- OS link
+          a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.openSeaLink({ account: address })", target="_blank", rel="noopener noreferrer") OpenSea
+          //- ENS link
+          template(v-if="ens")
+            a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="`https://app.ens.domains/name/${ens}`", target="_blank", rel="noopener noreferrer")
+              | ENS
+      .mt-2.opacity-40.text-xs {{ address }}
     
-    .flex.items-end
-      h1.text-6xl.leading-none
-        addr(:address="address")
-      nav.text-xs.ml-8.pb-px.-mb-2
-        //- quixotic link
-        a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.quixoticLink({ account: address })", target="_blank", rel="noopener noreferrer")
-          | Quixotic
-        //- OS link
-        a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.openSeaLink({ account: address })", target="_blank", rel="noopener noreferrer") OpenSea
-        //- ENS link
-        template(v-if="ens")
-          a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="`https://app.ens.domains/name/${ens}`", target="_blank", rel="noopener noreferrer")
-            | ENS
-    .mt-2.opacity-40.text-xs {{ address }}
-  
-  section
-    template(v-if="!address")
-      .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 resolving...
-    
-    template(v-else)
-      nav.mt-22.flex.pl-20
-        .flex
-          router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address }}") turmites
+    section.flex-1
+      template(v-if="!address")
+        .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 resolving...
+      
+      template(v-else)
+        nav.mt-22.flex.pl-20
+          .flex
+            router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address }}") turmites
 
-        router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address }}") acitivty
+          router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address }}") acitivty
 
-      router-view.mt-26(v-if="address", :address="address", v-slot="{ Component }")
-        keep-alive(include="ProfileBoards")
-          component(:is="Component")
+        //- view
+        //- * wait for 'boards' so activity doesn't fetch until tokenIds is set
+        router-view.mt-26(v-if="boards", v-slot="{ Component }", :boards="boards", :tokenIds="tokenIds")
+          keep-alive
+            component(:is="Component")
+
+  footer.pb-64.lg_pb-36
+    nav.flex.text-md.items-center
+      .flex-1.flex.justify-center.lg_-mr-28
+        //- template(v-if="boardId - 1 >= 0")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-12.pr-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
+            | world_{{ boardId - 1 }}
+            .absolute.top-0.left-2.h-full.flex.items-center &larr;
+
+      .flex.justify-center
+        router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
+          | all worlds
+
+      .flex-1.flex.justify-center.lg_-ml-28
+        //- template(v-if="boardId + 1 < boardCount")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-7.pr-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
+            | world_{{ boardId + 1 }}
+            .absolute.top-0.right-2.h-full.flex.items-center &rarr;
 </template>
 
 <script setup>
@@ -50,6 +71,22 @@ const address = ref()
 
 // Addr.vue will lookup ens
 const ens = computed(() => store.state.addresses[address.value?.toLowerCase()]?.ens)
+
+const tokenIds = ref()
+
+const boards = computed(() => {
+  let boards
+  if (tokenIds.value) {
+    boards = tokenIds.value.map(id => Math.floor(id / 4))
+    boards = [...new Set(boards)]
+    boards.sort().reverse()
+    boards = boards.map(board => ({
+      id: board,
+      tokens: tokenIds.value.filter(id => Math.floor(id / 4) === board)
+    }))
+  }
+  return boards
+})
 
 const resolveAddress = async () => {
   try {
@@ -72,7 +109,30 @@ const resolveAddress = async () => {
   }
 }
 
-resolveAddress()
+const getAddressTokens = async () => {
+  try {    
+    await resolveAddress()
+
+    const contract = await store.dispatch('getNFTContract')
+
+    // get balance
+    const balance = (await contract.balanceOf(address.value)).toString()
+    const ids = []
+
+    if (balance > 0) {
+      for (var i = 0; i < balance; i++) {
+        const tokenId = await contract.tokenOfOwnerByIndex(address.value, i)
+        ids.push(tokenId.toString())
+      }
+    }
+
+    tokenIds.value = ids
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+getAddressTokens()
 </script>
 
 <style lang="postcss">

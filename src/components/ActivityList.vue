@@ -4,7 +4,7 @@
     .text-5xl activity
   ul.whitespace-nowrap.overflow-x-scroll
     li.flex(v-for="item in activity")
-      activity-item-event(:event="item")
+      activity-item-event(:event="item", :includeWorld="props.includeWorld")
 </template>
 
 <script setup>
@@ -12,7 +12,8 @@ import { computed } from 'vue'
 import ActivityItemEvent from '@/components/ActivityItemEvent.vue'
 
 const props = defineProps({
-  activity: { type: Array, default: () => ([]) }
+  activity: { type: Array, default: () => ([]) },
+  includeWorld: { type: Boolean, default: false } 
 })
 
 const activitySorted = computed(() => props.activity.sort((a,b) => a.blockNumber - b.blockNumber))

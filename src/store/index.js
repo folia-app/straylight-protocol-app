@@ -426,7 +426,11 @@ export default createStore({
 
         // filter?
         if (filter) {
-          mints = mints.filter(event => event[filter[0]] === filter[1])
+          if (typeof filter[1] === 'object') {
+            mints = mints.filter(event => filter[1].includes(event[filter[0]]))
+          } else {
+            mints = mints.filter(event => event[filter[0]] === filter[1])  
+          }
         }
 
         return mints
@@ -497,7 +501,11 @@ export default createStore({
 
         // filter?
         if (filter) {
-          moves = moves.filter(event => event[filter[0]] === filter[1])
+          if (typeof filter[1] === 'object') {
+            moves = moves.filter(event => filter[1].includes(event[filter[0]]))
+          } else {
+            moves = moves.filter(event => event[filter[0]] === filter[1])  
+          }
         }
 
         return moves

@@ -22,9 +22,13 @@ const props = defineProps(['boardId'])
 const loaded = ref(0)
 
 const moves = ref([])
-const boardMints = ref([])
+const mints = ref([])
 
-const activity = computed(() => [...moves.value, ...boardMints.value])
+const activity = computed(() => {
+  let activity = [...moves.value, ...mints.value]
+  activity.sort((a, b) => b.blockNumber - a.blockNumber)
+  return activity
+})
 
 const getMoves = async ({ cached = false }) => {
   try {
@@ -35,9 +39,9 @@ const getMoves = async ({ cached = false }) => {
   }
 }
 
-const getBoardMints = async ({ cached = false }) => {
+const getMints = async ({ cached = false }) => {
   try {
-    boardMints.value = await store.dispatch('getMints', { cached, filter: ['boardId', props.boardId] })  
+    mints.value = await store.dispatch('getMints', { cached, filter: ['boardId', props.boardId] })  
     loaded.value++
   } catch (e) {
     console.error(e)
@@ -45,7 +49,7 @@ const getBoardMints = async ({ cached = false }) => {
 }
 
 const onVisible = () => {
-  getBoardMints({ cached: false })
-  getMoves({ cached: false })
+  getMints({ cached: true })
+  getMoves({ cached: true })
 }
 </script>

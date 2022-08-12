@@ -20,6 +20,9 @@ observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide
     //- (mint)
     template(v-else-if="props.event.type === 'mint'")
       | #[router-link.border.rounded-lg.px-3px.text-smm.mr-1.font-bold.tracking-wider.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }}
+
+    span.ml-2(v-if="props.includeWorld && props.event.boardId")
+      | in #[router-link.ml-1.border.rounded-lg.px-3px.text-smm.mr-1.font-bold.tracking-wider.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") world_{{ event.boardId }}]
   
   .flex-1.border-b.opacity-30.mb-1
 </template>
@@ -30,7 +33,7 @@ import Observer from '@/components/Observer.vue'
 import Addr from '@/components/Addr.vue'
 import { turmiteName } from '@/utils'
 
-const props = defineProps(['event'])
+const props = defineProps(['event', 'includeWorld'])
 
 const from = ref()
 
