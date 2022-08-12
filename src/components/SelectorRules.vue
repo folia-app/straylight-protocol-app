@@ -1,5 +1,5 @@
 <template>
-  <div class="selector-rules lowercase text-smm">
+  <div class="selector-rules lowercase text-smm relative flex">
     <Combobox v-model="selected">
       <div class="relative mt-1">
         <!-- input -->
@@ -68,6 +68,11 @@
         </TransitionRoot>
       </div>
     </Combobox>
+
+    <!-- refresh button -->
+    <button class="absolute top-0 right-0 h-full px-4 rounded-full flex items-center transform translate-x-full" @click="randomRule">
+      <refresh-icon class="h-6 w-6 transform scale-110 origin-center"></refresh-icon>
+    </button>
   </div>
 </template>
 
@@ -82,6 +87,7 @@ import {
   TransitionRoot,
 } from '@headlessui/vue'
 import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
+import { RefreshIcon } from '@heroicons/vue/outline'
 import rules from '../../contracts/rulesSelected.js'
 
 const props = defineProps(['modelValue'])
@@ -111,6 +117,10 @@ const fileteredRules = computed(() =>
           .includes(query.value.toLowerCase().replace(/\s+/g, ''))
       )
 )
+
+const randomRule = () => {
+  selected.value = rules[randInt(0, rules.length - 1)]
+}
 
 // emit init value
 emit('update:modelValue', selected.value)
