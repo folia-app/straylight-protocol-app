@@ -93,15 +93,6 @@ import rules from '../../contracts/rulesSelected.js'
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 
-// const people = [
-//   { id: 1, name: 'Wade Cooper' },
-//   { id: 2, name: 'Arlene Mccoy' },
-//   { id: 3, name: 'Devon Webb' },
-//   { id: 4, name: 'Tom Cook' },
-//   { id: 5, name: 'Tanya Fox' },
-//   { id: 6, name: 'Hellen Schmidt' },
-// ]
-
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
 const selected = ref(rules[randInt(0, rules.length - 1)])

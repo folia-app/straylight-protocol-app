@@ -75,7 +75,7 @@ article.pb-64
           template(v-if="status")
             .sticky.bottom-1.left-0.mt-3px.min-h-16.flex.items-center.justify-center.relative.text-smm.font-bold.px-6.py-4.rounded-lg(:class="{'bg-green-400 text-black': status.type === 'success', 'bg-red text-black': status.type === 'error', 'bg-accent3 text-accent1': !status.type, 'animate-pulse': status.msg.includes('...') }")
               //- msg
-              span.break-all {{ status.msg }}
+              span.break-all.text-center(v-html="status.msg")
               //- (tx link)
               template(v-if="status.tx")
                a.absolute.top-0.right-0.h-full.px-10.flex.items-center.w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
@@ -125,7 +125,7 @@ export default {
   computed: {
     ...mapState(['mintCount']),
     isConnected () {
-      return this.$store.state.address
+      return this.$store.state.address !== undefined
     }
   },
 
@@ -150,16 +150,19 @@ export default {
 
         // wait for confirmation...
         this.status = { msg: 'Waiting for confirmation...', tx }
-        await tx.wait()
+        const receipt = await tx.wait()
+
+        console.log({ receipt })
 
         // success
         this.status = { type: 'success', msg: 'Minted! ~ View Turmite →' }
         // find my mint
-        // this.myMint = await this.$store.dispatch('findMint', { contract, tokenId })
+        this.myMint = await this.$store.dispatch('findMint', { blockNumber: receipt.blockNumber })
       } catch (e) {
         console.error(e)
         //
-        const msg = 'Error - ' + (e.reason || e.message || e)
+        let msg = 'Error: ' + (e.reason || e.message || e)
+        msg += e.data?.message ? '<br>' + e.data.message : ''
         // show error to user
         this.status = { type: 'error', msg }
       }

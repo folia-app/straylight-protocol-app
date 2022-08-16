@@ -550,18 +550,26 @@ export default createStore({
         // connect wallet?
         if (!state.address || !signer) await dispatch('connect')
 
+        // check balance
+        const price = await dispatch('getMintPrice')
+        const balance = await provider.getBalance(state.address)
+
+        if (balance.lt(price)) {
+          throw new Error(`Insufficient funds in your wallet`)
+        }
+
         // setup
         const contractSigner = controllerContract.connect(signer)
-        console.log({rule})
-        // rule = ethers.utils.hexZeroPad(ethers.utils.hexlify(Number(rule)), 12)
-        console.log({rule})
-        const price = await dispatch('getMintPrice')
+
         // confirm...
         const tx = await contractSigner.publicMint(rule, moves.toString(), { value: price.toString() })
         console.log('my new mint tx:', tx)
         return tx
       } catch (e) {
-        console.error(e)
+        console.log(e.code)
+        if (e?.code === 4001) {
+          throw new Error('You rejected to the transaction.')
+        }
         throw e
       }
     },
