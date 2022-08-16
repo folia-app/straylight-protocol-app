@@ -6,7 +6,8 @@ export default {
     // }
     // goerli
     420: {
-      "address": "0x7afAbfd898f1D9a575fA179301011773cD5A68D0"
+      "address": "0x7afAbfd898f1D9a575fA179301011773cD5A68D0",
+      "blockNumber": 303635
     }
   },
   "abi": [

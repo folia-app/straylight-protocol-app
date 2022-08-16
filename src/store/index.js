@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 // contracts
-import NFTContract from '../../contracts/Straylight.js'
-import Controller from '../../contracts/Minting.js'
+import NFTContractDeploy from '../../contracts/Straylight.js'
+import ControllerDeploy from '../../contracts/Minting.js'
 // web3
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
@@ -156,13 +156,13 @@ export default createStore({
         chainId = appNetworkId
       }
       // nft
-      nftContract = new ethers.Contract(NFTContract.networks[chainId].address, NFTContract.abi, provider)
-      state.contractAddr = NFTContract.networks[chainId].address.toLowerCase()
-      console.log('token:', NFTContract.networks[chainId].address)
+      nftContract = new ethers.Contract(NFTContractDeploy.networks[chainId].address, NFTContractDeploy.abi, provider)
+      state.contractAddr = NFTContractDeploy.networks[chainId].address.toLowerCase()
+      console.log('token:', NFTContractDeploy.networks[chainId].address)
 
       // controller
-      controllerContract = new ethers.Contract(Controller.networks[chainId].address, Controller.abi, provider)
-      console.log('controller:', Controller.networks[chainId].address)
+      controllerContract = new ethers.Contract(ControllerDeploy.networks[chainId].address, ControllerDeploy.abi, provider)
+      console.log('controller:', ControllerDeploy.networks[chainId].address)
     },
 
     SAVE_ADDRESS (state, { address, ens, openSea }) {
@@ -346,21 +346,15 @@ export default createStore({
       }
     },
 
-    async getControllerDeployBlock ({ state, dispatch }) {
-      let block = networks[state.networkId].controllerDeployBlock
-      if (!block) {
-        try {
-          if (!provider) await dispatch('init')
-          // get block from deploy tx
-          block = (await provider.getTransaction(Controller.networks[state.networkId].transactionHash)).blockNumber
-          // save to networks object
-          networks[state.networkId].controllerDeployBlock = block
-        } catch (e) {
-          console.error("Couldn't get deploy block: " + e)
-          block = null
-        }
+    async getDeployBlock ({ state, dispatch }) {
+      let deployBlock = 0
+      try {
+        if (!state.networkId) await dispatch('init')
+        deployBlock = NFTContractDeploy.networks[state.networkId].blockNumber
+      } catch (e) {
+        console.error(e)
       }
-      return block
+      return deployBlock
     },
 
     async getBoardCount ({ state, dispatch }) {
@@ -388,8 +382,7 @@ export default createStore({
       try {
         if (!controllerContract) await dispatch('init')
 
-        // TODO fix from block
-        const fromBlock = await dispatch('getControllerDeployBlock')
+        const fromBlock = await dispatch('getDeployBlock')
 
         // get events...
         const mintEvents = await nftContract.queryFilter('turmiteMint', fromBlock)
@@ -478,8 +471,7 @@ export default createStore({
         if (!moves) {
           if (!nftContract) await dispatch('init')
 
-          // TODO fix from block
-          const fromBlock = 0 // await dispatch('getControllerDeployBlock')
+          const fromBlock = await dispatch('getDeployBlock')
           
           // get events...
           const events = await nftContract.queryFilter('turmiteMove', fromBlock)
