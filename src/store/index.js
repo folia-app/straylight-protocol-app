@@ -51,13 +51,13 @@ export default createStore({
       contractAddr: null,
 
       mintPrice: undefined,
-      collectionsList: undefined,
 
       mints: null,
       mintCount: undefined,
       tokens: [],
 
       moves: undefined,
+      movesMax: 4000, // above seems to throw rpc error?
 
       // old
       reserveAuctionContract: null,
@@ -173,10 +173,6 @@ export default createStore({
 
     SET_MINT_PRICE (state, bigNumber) {
       state.mintPrice = bigNumber
-    },
-
-    SAVE_COLLECTIONS_LIST (state, contracts) {
-      state.collectionsList = contracts
     },
 
     SAVE_MINTS (state, mints) {

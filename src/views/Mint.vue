@@ -6,7 +6,7 @@ article.pb-64
     h1.font-bold MINT TURMITE
         
   //- body
-  div
+  form(@submit.prevent="mint", validate)
 
     //- preview
     figure.mt-8.mb-12.px-4.flex.justify-center.w-full
@@ -53,7 +53,7 @@ article.pb-64
 
               .pr-20
                 .w-64.flex.items-center
-                  input.flex-1.text-right.border-b.min-w-0.focus_ring-0.focus_bg-accent2.focus_text-accent1.px-1.focus_rounded-lg(type="number", v-model="premove", min="0", step="1", placeholder="0")
+                  input.flex-1.text-right.border-b.min-w-0.focus_ring-0.focus_bg-accent2.focus_text-accent1.px-1.focus_rounded-lg(type="number", v-model="premove", min="0", step="1", :max="$store.state.movesMax", placeholder="0", required)
                   div.ml-3.text-sm steps
         //- (selection overlay)
         //- button.absolute.overlay.bg-black-a60(v-if="selection", @click="clearSelection")
@@ -61,7 +61,7 @@ article.pb-64
         //- (mint step)
         li(:class="{'opacity-30': !isConnected || selection === undefined}")
           //- mint-btn
-          button.block.w-full.bg-accent1(@click="mint", :disabled="!isConnected")
+          button.block.w-full.bg-accent1(type="submit", :disabled="!isConnected")
             .border.rounded-lg.relative(:class="{'mt-3px bg-accent2 text-accent1 border-none': isConnected, '-mt-px': !isConnected}")
               //-
               .flex.h-40.w-full.items-center.justify-center.uppercase.tracking-wide.relative
@@ -86,7 +86,7 @@ article.pb-64
                 | Tx#[span(style="font-size:0.85em") ↗]
               
               //- (clear btn)
-              button.w-14.flex.items-center.justify-center.absolute.top-0.left-0.h-full(v-if="status.type === 'error'", @click="status = null")
+              button.w-14.flex.items-center.justify-center.absolute.top-0.left-0.h-full(v-if="status.type === 'error'", @click.prevent="status = null")
                 svg-x.w-3.h-3
 
               //- icon
@@ -114,6 +114,7 @@ import { mapState } from 'vuex'
 import ConnectDisconnectBtn from '@/components/ConnectDisconnectBtn.vue'
 import SvgX from '@/components/SVG-X.vue'
 import SelectorRules from '@/components/SelectorRules.vue'
+import store from '@/store'
 export default {
   name: 'MintView',
   components: { ConnectDisconnectBtn, SvgX, SelectorRules },
