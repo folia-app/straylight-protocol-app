@@ -3,6 +3,9 @@ section.profile-worlds
   template(v-if="!props.boards")
     .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 loading...
   
+  template(v-else-if="!props.boards.length")
+    p.px-6.text-smm no turmites found
+  
   template(v-else)
     ul.boards-grid
       template(v-for="n in 1")

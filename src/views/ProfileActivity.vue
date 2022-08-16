@@ -4,6 +4,9 @@
   template(v-if="!loaded")
     .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 loading...
 
+  template(v-else-if="activity && !activity.length")
+    p.px-6.text-smm no activity found
+
   //- (activity)
   template(v-else)
     activity-list.mt-8.mb-6.pb-24(:activity="activity", :includeWorld="true")

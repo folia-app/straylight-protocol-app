@@ -32,9 +32,9 @@ article.profile
       template(v-else)
         nav.mt-22.flex.px-6.lg_pl-20.text-md
           .flex
-            router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address }}") turmites
+            router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address: route.params.address }}") turmites
 
-          router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address }}") activity
+          router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address: route.params.address }}") activity
 
         //- view
         //- * wait for 'boards' so activity doesn't fetch until tokenIds is set
@@ -65,10 +65,11 @@ article.profile
 import { ref, computed } from 'vue'
 import store from '@/store'
 import { utils } from 'ethers'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Addr from '@/components/Addr.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const address = ref()
 
@@ -94,6 +95,11 @@ const boards = computed(() => {
 const resolveAddress = async () => {
   try {
     let input = route.params.address.toLowerCase()
+
+    // enforce lowercase
+    if (input !== route.params.address) {
+      router.replace({ params: { address: input }})  
+    }
     
     if (utils.isAddress(input)) {
       address.value = input
