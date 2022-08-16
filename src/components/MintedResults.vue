@@ -16,7 +16,8 @@ section.minted-results.flex.flex-col.w-full
           //- board index starts at 1 lol
           //- reverse
           board-thumb(:boardId="boardCount - n")
-            //- mint-thumb.mt-32.text-xs.md_text-md(:mint="mint", :key="mint.newTokenId")
+            .hidden.mouse_group-hover_block.absolute.overlay.px-2.pt-1.text-xs.leading-tight(style="mix-blend-mode:difference")
+              h6 world_{{boardCount - n}}
 
       //- DEMO ITEMS
 

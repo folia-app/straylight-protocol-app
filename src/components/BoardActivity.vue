@@ -49,7 +49,7 @@ const getMints = async ({ cached = false }) => {
 }
 
 const onVisible = () => {
-  getMints({ cached: true })
-  getMoves({ cached: true })
+  getMints({ cached: false })
+  getMoves({ cached: false })
 }
 </script>

@@ -76,10 +76,15 @@ article.pb-64
             .sticky.bottom-1.left-0.mt-3px.min-h-16.flex.items-center.justify-center.relative.text-smm.font-bold.px-6.py-4.rounded-lg(:class="{'bg-green-400 text-black': status.type === 'success', 'bg-red text-black': status.type === 'error', 'bg-accent3 text-accent1': !status.type, 'animate-pulse': status.msg.includes('...') }")
               //- msg
               span.break-all.text-center(v-html="status.msg")
+              //- (success profile link)
+              router-link.absolute.overlay(:to="{name: 'profile', params: { address: $store.state.address }}")
+                .sr-only Go to your Profile
+              
               //- (tx link)
               template(v-if="status.tx")
                a.absolute.top-0.right-0.h-full.px-10.flex.items-center.w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
                 | Tx#[span(style="font-size:0.85em") ↗]
+              
               //- (clear btn)
               button.w-14.flex.items-center.justify-center.absolute.top-0.left-0.h-full(v-if="status.type === 'error'", @click="status = null")
                 svg-x.w-3.h-3
@@ -155,9 +160,7 @@ export default {
         console.log({ receipt })
 
         // success
-        this.status = { type: 'success', msg: 'Minted! ~ View Turmite →' }
-        // find my mint
-        this.myMint = await this.$store.dispatch('findMint', { blockNumber: receipt.blockNumber })
+        this.status = { type: 'success', msg: 'Minted! ~ View on your Profile →' }
       } catch (e) {
         console.error(e)
         //

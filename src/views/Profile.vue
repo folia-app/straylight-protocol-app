@@ -6,7 +6,7 @@ article.profile
       //- ("YOU")
       .relative(v-if="$store.getters.isConnectedAddr(address)")
         .absolute.top-0.left-0.transform.-translate-y-full.pb-2
-          .px-1.text-sm.leading-tight.rounded-lg.bg-accent2.text-accent1.font-bold YOU
+          .px-1.text-sm.leading-tight.rounded-lg.bg-accent3.text-accent1.font-bold YOU
       
       .flex.flex-wrap.items-end
         h1.text-6xl.leading-none.lg_order-1

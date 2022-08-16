@@ -401,6 +401,7 @@ export default createStore({
         if (!mints) {
           // get all mint events...
           const events = await dispatch('getMintedEvents')
+          console.log({ mintEvents: events })
           
           // format
           mints = events.reverse().map(event => ({
@@ -433,19 +434,19 @@ export default createStore({
       }
     },
 
-    async findMint ({ dispatch }, { contract, tokenId }) {
-      try {
-        const events = await dispatch('getMintedEvents')
-        // find mint event by matching contract and token id
-        return events.find(event => {
-          return event.args.contractAddress.toString().toLowerCase() === contract.toLowerCase() &&
-            event.args.tokenId.toString().toLowerCase() === tokenId.toLowerCase()
-        })
-      } catch (e) {
-        console.error(e)
-        throw e
-      }
-    },
+    // async findMint ({ dispatch }, { contract, tokenId }) {
+    //   try {
+    //     const events = await dispatch('getMintedEvents')
+    //     // find mint event by matching contract and token id
+    //     return events.find(event => {
+    //       return event.args.contractAddress.toString().toLowerCase() === contract.toLowerCase() &&
+    //         event.args.tokenId.toString().toLowerCase() === tokenId.toLowerCase()
+    //     })
+    //   } catch (e) {
+    //     console.error(e)
+    //     throw e
+    //   }
+    // },
 
     async getMintPrice ({ state, commit, dispatch }) {
       try {
