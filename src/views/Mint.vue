@@ -23,10 +23,10 @@ article.pb-64
         li.relative.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex: !isConnected ? 4 : 1}")
           .flex.items-center.justify-between
             header.relative.flex.items-center.h-40
-              .h-40.w-40.flex.items-center.justify-center.rounded-lg.text-smm 1
-              h2.leading-none.pb-2px connect wallet #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+              .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 1
+              h2.leading-none.pb-2px.text-md.sm_text-base connect wallet #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
               //- <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            .pr-20
+            .pr-2.sm_pr-20
               .min-w-64.flex.justify-center
                 connect-disconnect-btn.text-md.h-8(connectLbl="connect")
 
@@ -35,10 +35,10 @@ article.pb-64
           .border.rounded-lg(:class="{'opacity-50': !isConnected}")
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
-                .h-40.w-40.flex.items-center.justify-center.rounded-lg.text-smm 2
-                h2.leading-none.pb-2px select turmite pattern #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+                .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 2
+                h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite pattern #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
 
-              .pr-20
+              .pr-14.sm_pr-20
                 selector-rules.w-64(v-model="selection")
 
             //- div.text-center.lowercase(v-if="selection") {{ selection.nickname || selection.name }}
@@ -48,10 +48,10 @@ article.pb-64
           .border.rounded-lg(:class="{'opacity-40': !isConnected}")
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
-                .h-40.w-40.flex.items-center.justify-center.rounded-lg.text-smm 3
-                h2.leading-none.pb-2px move turmite #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+                .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 3
+                h2.leading-none.pb-2px.text-md.sm_text-base move turmite #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
 
-              .pr-20
+              .pr-4.sm_pr-20
                 .w-64.flex.items-center
                   input.flex-1.text-right.border-b.min-w-0.focus_ring-0.focus_bg-accent2.focus_text-accent1.px-1.focus_rounded-lg(type="number", v-model="premove", min="0", step="1", :max="$store.state.movesMax", placeholder="0", required)
                   div.ml-3.text-sm steps
@@ -67,9 +67,9 @@ article.pb-64
               .flex.h-40.w-full.items-center.justify-center.uppercase.tracking-wide.relative
                 | Mint
               //- (icon)
-              .absolute.w-40.h-full.top-0.left-0.flex.items-center.justify-center(v-if="selection") ꩜
+              .absolute.w-18.md_w-40.flex-shrink-0.h-full.top-0.left-0.flex.items-center.justify-center(v-if="selection") ꩜
               //- price
-              .absolute.h-full.pr-20.top-0.right-0.flex.items-center.justify-center.text-xs(v-if="selection") 0.08 ETH
+              .absolute.h-full.pr-4.sm_pr-20.top-0.right-0.flex.items-center.justify-center.text-xs(v-if="selection") 0.08 ETH
 
           //- (status)
           template(v-if="status")
@@ -82,7 +82,7 @@ article.pb-64
               
               //- (tx link)
               template(v-if="status.tx")
-               a.absolute.top-0.right-0.h-full.px-10.flex.items-center.w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
+               a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
                 | Tx#[span(style="font-size:0.85em") ↗]
               
               //- (clear btn)
