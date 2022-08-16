@@ -209,6 +209,11 @@ export default {
     // this.$store.dispatch('listenForMints')
     // hide loading overlay
     return document.getElementById('loading')?.remove()
+  },
+  watch: {
+    '$route' () {
+      this.userMenuVisible = false
+    }
   }
 }
 </script>

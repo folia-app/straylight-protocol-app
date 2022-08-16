@@ -1,11 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Index from '@/views/Index.vue'
+import IndexWorlds from '@/views/IndexWorlds.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'index',
-    component: Index
+    component: Index,
+    children: [
+      {
+        path: '',
+        name: 'index',
+        component: IndexWorlds,
+      },
+      {
+        path: 'activity',
+        name: 'index__activity',
+        component: () => import('../views/IndexActivity.vue')
+      }
+    ]
   },
 
   {

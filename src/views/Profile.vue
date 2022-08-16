@@ -30,15 +30,15 @@ article.profile
         .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 resolving...
       
       template(v-else)
-        nav.mt-22.flex.px-6.lg_pl-20
+        nav.mt-22.flex.px-6.lg_pl-20.text-md
           .flex
             router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address }}") turmites
 
-          router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address }}") acitivty
+          router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address }}") activity
 
         //- view
         //- * wait for 'boards' so activity doesn't fetch until tokenIds is set
-        router-view.mt-26(v-if="boards", v-slot="{ Component }", :boards="boards", :tokenIds="tokenIds")
+        router-view.mt-14(v-if="boards", v-slot="{ Component }", :boards="boards", :tokenIds="tokenIds")
           keep-alive
             component(:is="Component")
 

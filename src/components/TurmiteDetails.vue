@@ -27,7 +27,7 @@ li.turmite-detail.flex.flex-col
                   span.animate-pulse ...
                 template(v-else)
                   router-link.flex.items-center(:to="{name: 'profile', params: { address: owner }}")
-                    addr(:address="owner", :youOn="true")
+                    addr.font-bold.px-3px.rounded-lg.leading-tight(:address="owner", :youOn="true")
                     span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
             //- pattern
             .h-9.flex.items-center
@@ -97,7 +97,10 @@ getOwner()
 </script>
 
 <style lang="postcss">
-.turmite-detail .addr--is-you{
-  @apply bg-accent1 text-accent2 font-bold px-3px rounded-lg leading-tight;
+.turmite-detail .addr{
+  @apply bg-accent2 text-accent1;
+  &.addr--is-you{
+    @apply bg-accent1 text-accent2;
+  }
 }
 </style>
