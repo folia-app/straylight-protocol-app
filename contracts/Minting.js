@@ -5,8 +5,12 @@ export default {
     //   "address": "0x3cF2D51787Ca95E4b6917B3EDDDBd9f72A3D75Ca"
     // }
     // goerli
+    5: {
+      "address": "0x6D1bE825C08Df630CbEB6D3b47864a0a485671A3",
+    },
+    // optimism goerli
     420: {
-      "address": "0xb81a153a006F6e3709DBB0bDFa04cAcf6D805C48"
+      "address": "0xb81a153a006F6e3709DBB0bDFa04cAcf6D805C48",
     }
   },
   "abi": [

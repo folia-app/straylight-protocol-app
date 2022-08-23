@@ -114,7 +114,7 @@
 
     //- footer?
   
-  template(v-if="isWrongNetwork")
+  //- template(v-if="isWrongNetwork")
     //- .p-8 Oops
     .sticky.z-50.bottom-0.left-0.w-full.p-6.md_p-8.bg-yellow-500.text-black.text-center.-shadow-md.font-sans.text-sm.md_text-base.lg_text-lg
       //- (v-html="'Wrong&nbsp;Network&nbsp;🤖 Please&nbsp;switch&nbsp;to&nbsp;Mainnet'")
@@ -151,7 +151,7 @@ export default {
   computed: {
     isWrongNetwork () {
       const id = this.$store.state.networkId
-      return id && (id !== Number(this.$store.state.appNetworkId))
+      return id && (id !== Number(this.$store.state.appDefaultNetworkId))
     }
   },
   methods: {
@@ -161,7 +161,7 @@ export default {
 
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x' + this.$store.state.appNetworkId }]
+          params: [{ chainId: '0x' + this.$store.state.appDefaultNetworkId }]
         })
 
         // reload app
@@ -203,7 +203,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('init')
+    // this.$store.dispatch('init') // , { networkName: this.$route.params.networkName })
   },
   mounted () {
     // this.$store.dispatch('listenForMints')

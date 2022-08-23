@@ -9,17 +9,16 @@ import Web3Modal from 'web3modal'
 // see: https://github.com/vitejs/vite/issues/7257
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
 
-let provider, signer, walletProvider, initializing, nftContract, controllerContract
+let provider, signer, initializing, nftContract, controllerContract
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
 const networks = {
-  1: { name: 'mainnet', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
-  // 4: { name: 'rinkeby', layer: 'ethereum', infura: `https://rinkeby.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://rinkeby.etherscan.io' } }
-  // 69: { name: 'kovan', layer: 'optimism', infura: null, explorer: { name: 'Etherscan', domain: 'https://kovan-optimistic.etherscan.io/' } },
-  420: { name: 'goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' } },
+  1: { name: 'ethereum', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
+  5: { name: 'goerli', layer: 'ethereum', infura: `https://goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://goerli.etherscan.io' } },
+  420: { name: 'optimism-goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' } },
 }
-const appNetworkId = import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1
+const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1)
 
 // setup web3 modal
 // let web3Modal = {}
@@ -45,8 +44,10 @@ export default createStore({
   state () {
     return {
       address: null,
-      networkId: null, // wallet network
-      appNetworkId,
+      givenNetworkId: null,
+
+      appNetworkId: null,
+      appDefaultNetworkId,
 
       contractAddr: null,
 
@@ -123,18 +124,17 @@ export default createStore({
     },
   },
   mutations: {
-    SIGN_IN (state, address) {
+    SIGN_IN (state, { address }) {
       state.address = address.toLowerCase()
+      console.log('signed in', address)
     },
     SIGN_OUT (state) {
       state.address = null
+      console.log('wallet disconnected')
     },
-    SET_NETWORK (state, id) {
+    SET_GIVEN_NETWORK_ID (state, id) {
       state.networkId = id
-    },
-    SET_NETWORK_ID (state, id) {
-      state.networkId = id
-      console.log('network:', id)
+      console.log('given network:', id)
     },
     SAVE_WORK (state, work) {
       const i = state.works.findIndex(svd => svd.id === work.id)
@@ -151,18 +151,18 @@ export default createStore({
     },
 
     SET_CONTRACTS (state, { chainId, provider }) {
-      if (!networks[chainId]) {
-        console.warn(`Unsupported network: (id: ${chainId}). Default will be used for contracts (id: ${appNetworkId})`)
-        chainId = appNetworkId
-      }
+      // set network id
+      state.appNetworkId = chainId
+      console.log('app network:', chainId)
+      
       // nft
       nftContract = new ethers.Contract(NFTContractDeploy.networks[chainId].address, NFTContractDeploy.abi, provider)
       state.contractAddr = NFTContractDeploy.networks[chainId].address.toLowerCase()
-      console.log('token:', NFTContractDeploy.networks[chainId].address)
+      console.log('token contract:', NFTContractDeploy.networks[chainId].address)
 
       // controller
       controllerContract = new ethers.Contract(ControllerDeploy.networks[chainId].address, ControllerDeploy.abi, provider)
-      console.log('controller:', ControllerDeploy.networks[chainId].address)
+      console.log('controller contract:', ControllerDeploy.networks[chainId].address)
     },
 
     SAVE_ADDRESS (state, { address, ens, openSea }) {
@@ -202,10 +202,17 @@ export default createStore({
             await dispatch('connect')
           }
 
+          // await dispatch('setProvider', networkName)
+
+
+
           // fallback provider
           if (!provider) {
             await dispatch('setupFallbackProvider')
           }
+
+          await dispatch('setupContracts')
+
 
           initializing = false
         } catch (e) {
@@ -221,6 +228,83 @@ export default createStore({
       return initializing
     },
 
+    async getProvider ({ commit }, { network }) {
+      let provider
+      let targetChainId = network?.id
+        || Object.keys(networks).find(key => networks[key]['name'] === network?.name)
+        || appDefaultNetworkId
+
+      // try browser/wallet provider first
+      if (window.ethereum) {
+        provider = new ethers.providers.Web3Provider(window.ethereum)
+
+        // check on supported network
+        try {
+          const { chainId } = await provider.getNetwork()
+
+          commit('SET_GIVEN_NETWORK_ID', chainId)
+
+          // unsupported network
+          if (chainId !== Number(targetChainId)) {
+            provider = undefined
+          }
+        } catch (e) {
+          console.error('error getting given provider network', e)
+        }
+      }
+
+      // fallback to infura
+      if (!provider) {
+        provider = new ethers.getDefaultProvider(networks[targetChainId].infura)
+      }
+
+      return { provider, chainId: targetChainId }
+    },
+
+    async getNFTContract ({ dispatch }, { network }) {
+      const { provider, chainId } = await dispatch('getProvider', { network })
+      const contract = new ethers.Contract(NFTContractDeploy.networks[chainId].address, NFTContractDeploy.abi, provider)
+      return contract
+    },
+
+    // async setProvider ({ dispatch }, desiredNetworkName) {
+    //   let givenChainId
+
+    //   // find desired network
+
+    //   const desiredNetwork = Object.values(networks).find(net => net.name === desiredNetworkName)
+
+    //   // look for browser provider if not set
+    //   if (!provider && window.ethereum) {
+    //     // metamask/browser
+    //     provider = new ethers.providers.Web3Provider(window.ethereum)
+    //   }
+
+    //   // get chainId of this provider
+    //   try {
+    //     const { chainId } = await provider.getNetwork()
+    //     givenChainId = chainId
+    //   } catch (e) {
+    //     console.error('error getting given provider chain id', e)
+    //   }
+
+    //   // store even if not provided
+    //   commit('SET_GIVEN_NETWORK_ID', givenChainId)
+
+    //   // check if supported network
+    //   if (!provider || !Object.keys(networks).includes(givenChainId)) {
+    //     console.warn(`Provider/Wallet network not supported (${givenChainId}). Loading from infura default network: ${appDefaultNetworkId}...`)
+        
+    //     chainId = appDefaultNetworkId
+    //     provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
+    //   } else {
+    //     // given provider is supported :)
+    //     chainId = givenChainId
+    //   }
+
+    //   }
+    // },
+
     async setupFallbackProvider ({ dispatch }) {
       try {
         if (window.ethereum) {
@@ -228,11 +312,11 @@ export default createStore({
           provider = new ethers.providers.Web3Provider(window.ethereum)
         } else {
           // infura fallback
-          console.log(appNetworkId)
-          provider = new ethers.getDefaultProvider(networks[appNetworkId].infura)
+          console.log(appDefaultNetworkId)
+          provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
         }
 
-        await dispatch('getNetwork', provider)
+        await dispatch('setupContracts', { provider })
 
         return true
       } catch (e) {
@@ -246,46 +330,81 @@ export default createStore({
     //     .catch(console.error)
     // },
 
-    async getNetwork ({ commit }, provider) {
-      try {
-        const { chainId } = await provider.getNetwork()
-        // set network
-        commit('SET_NETWORK_ID', chainId)
-        // set contracts
-        commit('SET_CONTRACTS', { chainId, provider })
+    // async getNetwork ({ commit }, provider) {
+    //   try {
+    //     const { chainId } = await provider.getNetwork()
+    //     // set network
+    //     commit('SET_NETWORK_ID', chainId)
+    //     // set contracts
+    //     commit('SET_CONTRACTS', { chainId, provider })
 
-        return chainId
-      } catch (e) {
-        console.error(e)
-        throw e
-      }
-    },
+    //     return chainId
+    //   } catch (e) {
+    //     console.error(e)
+    //     throw e
+    //   }
+    // },
 
     /* connect wallet */
     async connect ({ state, commit, dispatch }) {
       try {
         // connect and update provider, signer
-        walletProvider = await web3Modal.connect()
+        const walletProvider = await web3Modal.connect()
         provider = new ethers.providers.Web3Provider(walletProvider)
         signer = provider.getSigner()
 
         // set user address
         const address = await signer.getAddress()
-        commit('SIGN_IN', address)
+        commit('SIGN_IN', { address })
 
-        // set network id
-        await dispatch('getNetwork', provider)
+        // set given network id
+        const { chainId } = await provider.getNetwork()
+        commit('SET_GIVEN_NETWORK_ID', chainId)
 
-        // commit('SET_CONTRACTS', provider)
-
-        dispatch('listenToWalletProvider')
-        return
+        dispatch('listenToWalletProvider', walletProvider)
+        
+        return { address }
       } catch (e) {
         // clear wallet in case
         dispatch('disconnect')
         // throw error so stops any flows (closes modal too)
         throw e
       }
+    },
+
+    async setupContracts ({ commit }) {
+      let chainId, givenChainId
+
+      if (!provider && window.ethereum) {
+        // metamask/browser
+        provider = new ethers.providers.Web3Provider(window.ethereum)
+      }
+
+      try {
+        const { chainId } = await provider.getNetwork()
+        givenChainId = chainId
+      } catch (e) {
+        console.error('error getting given provider chain id', e)
+      }
+
+      // store even if not provided
+      commit('SET_GIVEN_NETWORK_ID', givenChainId)
+
+      // check if supported network
+      if (!provider || !Object.keys(networks).includes(givenChainId)) {
+        console.warn(`Provider/Wallet network not supported (${givenChainId}). Loading from infura default network: ${appDefaultNetworkId}...`)
+        
+        chainId = appDefaultNetworkId
+        provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
+      } else {
+        // given provider is supported :)
+        chainId = givenChainId
+      }
+
+      // set contracts
+      commit('SET_CONTRACTS', { chainId, provider })      
+
+      return true
     },
 
     /* disconnect wallet */
@@ -301,12 +420,14 @@ export default createStore({
       // }
 
       commit('SIGN_OUT')
-      dispatch('setupFallbackProvider')
       signer = null
+      provider = null
+      // reset provider
+      dispatch('setupContracts')
     },
 
     /* wallet events */
-    listenToWalletProvider ({ commit, dispatch }) {
+    listenToWalletProvider ({ commit, dispatch }, walletProvider) {
       if (!walletProvider?.on) return
 
       // account changed (or disconnected)
@@ -332,30 +453,28 @@ export default createStore({
       })
     },
 
-    async getNFTContract ({ dispatch }) {
-      try {
-        if (!nftContract) await dispatch('init')
-        return nftContract
-      } catch (e) {
-        console.error(e)
-        throw e
-      }
-    },
+    // async getNFTContract ({ dispatch }) {
+    //   try {
+    //     if (!nftContract) await dispatch('init')
+    //     return nftContract
+    //   } catch (e) {
+    //     console.error(e)
+    //     throw e
+    //   }
+    // },
 
-    async getDeployBlock ({ state, dispatch }) {
+    async getDeployBlock ({ state, dispatch }, { network }) {
       let deployBlock = 0
-      try {
-        if (!state.networkId) await dispatch('init')
-        deployBlock = NFTContractDeploy.networks[state.networkId].blockNumber
-      } catch (e) {
-        console.error(e)
+      if (network) {
+        const chainId = network.id || Object.keys(networks).find(key => networks[key]["name"] === network.name)
+        deployBlock = NFTContractDeploy.networks[chainId].blockNumber  
       }
       return deployBlock
     },
 
-    async getBoardCount ({ state, dispatch }) {
+    async getBoardCount ({ state, dispatch }, { network }) {
       try {
-        if (!nftContract) await dispatch('init')
+        const nftContract = await dispatch('getNFTContract', { network })
         const count = await nftContract.boardcounter() // starts at 0
         return count.add(1).toNumber()
       } catch (e) {
@@ -364,9 +483,9 @@ export default createStore({
       }
     },
     
-    async getBoardImage ({ state, dispatch }, { id }) {
+    async getBoardImage ({ state, dispatch }, { id, network }) {
       try {
-        if (!nftContract) await dispatch('init')
+        const nftContract = await dispatch('getNFTContract', { network })
         return nftContract.renderBoard(id)
       } catch (e) {
         console.error(e)
@@ -374,11 +493,11 @@ export default createStore({
       }
     },
 
-    async getMintedEvents ({ state, dispatch }) {
+    async getMintedEvents ({ state, dispatch }, { network }) {
       try {
-        if (!controllerContract) await dispatch('init')
+        const fromBlock = await dispatch('getDeployBlock', { network })
 
-        const fromBlock = await dispatch('getDeployBlock')
+        const nftContract = await dispatch('getNFTContract', { network })
 
         // get events...
         const mintEvents = await nftContract.queryFilter('turmiteMint', fromBlock)
@@ -390,13 +509,13 @@ export default createStore({
       }
     },
 
-    async getMints ({ state, commit, dispatch }, { cached = false, filter }) {
+    async getMints ({ state, commit, dispatch }, { cached = false, filter, network }) {
       try {
         let mints = cached && state.mints
 
         if (!mints) {
           // get all mint events...
-          const events = await dispatch('getMintedEvents')
+          const events = await dispatch('getMintedEvents', { network })
           console.log({ mintEvents: events })
           
           // format
@@ -461,14 +580,14 @@ export default createStore({
       }
     },
 
-    async getMoves ({ state, commit, dispatch }, { cached = false, filter }) {
+    async getMoves ({ state, commit, dispatch }, { cached = false, filter, network }) {
       try {
-        let moves = cached && state.moves ? state.moves : null
+        let moves // = cached && state.moves ? state.moves : null
         
         if (!moves) {
-          if (!nftContract) await dispatch('init')
 
-          const fromBlock = await dispatch('getDeployBlock')
+          const fromBlock = await dispatch('getDeployBlock', { network })
+          const nftContract = await dispatch('getNFTContract', { network })
           
           // get events...
           const events = await nftContract.queryFilter('turmiteMove', fromBlock)
@@ -483,9 +602,9 @@ export default createStore({
             getReceipt: event.getTransactionReceipt,
             getBlock: event.getBlock,
           }))
-          console.log({ moves })
+          // console.log({ moves })
           
-          commit('SAVE_MOVES', moves)
+          // commit('SAVE_MOVES', moves)
         }
 
         // filter?
@@ -794,14 +913,14 @@ export default createStore({
     // },
 
     /* read owner by token id from chain */
-    async getNFTOwnerByTokenId ({ state, commit, dispatch }, tokenId) {
+    async getNFTOwnerByTokenId ({ state, commit, dispatch }, { tokenId, network }) {
       try {
         // saved?
         // const token = state.tokens.find(token => token[0] === tokenId) || []
         // let owner = token && token[1]
         // if (owner) return owner
         // fetch...
-        if (!nftContract) await dispatch('init')
+        const nftContract = await dispatch('getNFTContract', { network })
         let owner = await nftContract.ownerOf(tokenId)
         // save
         // commit('SAVE_TOKEN', [tokenId, owner])

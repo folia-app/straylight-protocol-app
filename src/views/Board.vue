@@ -35,9 +35,9 @@ article.board
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved")
+        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName")
       
-  board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :key="activityFetch")
+  board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch")
 
   footer.pt-24.pb-64.lg_pb-36
     nav.flex.text-md.items-center
@@ -48,7 +48,7 @@ article.board
             .absolute.top-0.left-2.h-full.flex.items-center &larr;
 
       .flex.justify-center
-        router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
+        router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{ name: 'network-index', params: { networkName: $route.params.networkName }}")
           | all worlds
 
       .flex-1.flex.justify-center.lg_-ml-28
@@ -91,17 +91,33 @@ export default {
     },
   },
   methods: {
-    getBoardImage () {
+    async getBoardImage () {
       this.imgIsLoading = true
-      this.$store.dispatch('getBoardImage', { id: this.boardId.toString() })
-        .then(imgSrc => {
-          this.imgIsLoading = false
-          this.boardImage = imgSrc
+      try {
+        // fetch based on network param
+        const imgSrc = await this.$store.dispatch('getBoardImage', {
+          id: this.boardId.toString(),
+          network: { name: this.$route.params.networkName }
         })
-        .catch(e => {
-          console.error(e)
-          this.imgIsLoading = false
-        })
+
+        this.imgIsLoading = false
+        this.boardImage = imgSrc
+      } catch (e) {
+        console.error(e)
+        this.imgIsLoading = false
+      }
+      // this.$store.dispatch('getBoardImage', {
+      //   id: this.boardId.toString(),
+      //   network: { name: this.$route.params.networkName }}
+      //   )
+      //   .then(imgSrc => {
+      //     this.imgIsLoading = false
+      //     this.boardImage = imgSrc
+      //   })
+      //   .catch(e => {
+      //     console.error(e)
+      //     this.imgIsLoading = false
+      //   })
     },
     onTurmiteMoved () {
       this.getBoardImage()
@@ -130,7 +146,8 @@ export default {
   },
   created () {
     this.getBoardImage()
-    this.$store.dispatch('getBoardCount').then(count => { this.boardCount = count })
+    this.$store.dispatch('getBoardCount', { network: { name: this.$route.params.networkName }})
+      .then(count => { this.boardCount = count })
   },
 }
 </script>

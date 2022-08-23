@@ -17,7 +17,7 @@ observer.board-image.relative.group(:threshold="0.01", @visible="onVisible", @hi
 import Observer from '@/components/Observer.vue'
 export default {
   name: 'BoardImage',
-  props: ['boardId'],
+  props: ['boardId', 'network'],
   components: { Observer },
   data () {
     return {
@@ -34,7 +34,8 @@ export default {
       this.visible = true
     },
     loadImage () {
-      this.$store.dispatch('getBoardImage', { id: this.boardId.toString() })
+      const network = this.network
+      this.$store.dispatch('getBoardImage', { id: this.boardId.toString(), network })
         .then(imgSrc => this.imgSrc = imgSrc)
     }
   }

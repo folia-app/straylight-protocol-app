@@ -60,7 +60,7 @@ import Addr from '@/components/Addr.vue'
 import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
 import rules from '../../contracts/rulesSelected.js'
 
-const props = defineProps(['tokenId', 'label'])
+const props = defineProps(['tokenId', 'label', 'networkName'])
 const emit = defineEmits(['moved'])
 
 const owner = ref()
@@ -70,7 +70,7 @@ const moveFormVisible = ref(false)
 
 const getOwner = async () => {
   try {
-    owner.value = await store.dispatch('getNFTOwnerByTokenId', props.tokenId)  
+    owner.value = await store.dispatch('getNFTOwnerByTokenId', { tokenId: props.tokenId, network: { name: props.networkName }})  
     if (owner.value) getAttr()
   } catch (e) {
     console.error(e)
@@ -83,7 +83,7 @@ const ruleNickname = computed(() => attributes.value && (rules.find(row => row.r
 
 const getAttr = async () => {
   try {
-    const contract = await store.dispatch('getNFTContract')
+    const contract = await store.dispatch('getNFTContract', { network: { name: props.networkName }})
     const data = await contract.tokenURI(props.tokenId)
     // convert from base64
     const json = JSON.parse(atob(data.split(',')[1]))

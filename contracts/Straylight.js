@@ -4,7 +4,11 @@ export default {
     // 69: {
     //   "address": "0x820226867468D5825f9D38e3Dd969A6a38e673E7"
     // }
-    // goerli
+    5: {
+      "address": "0x68b350db08f01207164e292216d5a2624e1347f4",
+      "blockNumber": 7426623
+    },
+    // optimism goerli
     420: {
       "address": "0x7afAbfd898f1D9a575fA179301011773cD5A68D0",
       "blockNumber": 303635

@@ -11,8 +11,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import store from '@/store'
 import ActivityList from '@/components/ActivityList.vue'
+
+const route = useRoute()
 
 const loaded = ref(0)
 
@@ -28,7 +31,7 @@ const activity = computed(() => {
 
 const getMoves = async ({ cached = false }) => {
   try {
-    moves.value = await store.dispatch('getMoves', { cached })
+    moves.value = await store.dispatch('getMoves', { cached, network: { name: route.params.networkName }})
     loaded.value++
   } catch (e) {
     console.error(e)
@@ -37,7 +40,7 @@ const getMoves = async ({ cached = false }) => {
 
 const getMints = async ({ cached = false }) => {
   try {
-    mints.value = await store.dispatch('getMints', { cached })  
+    mints.value = await store.dispatch('getMints', { cached, network: { name: route.params.networkName }})  
     loaded.value++
   } catch (e) {
     console.error(e)

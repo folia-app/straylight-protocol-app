@@ -17,7 +17,7 @@ import store from '@/store'
 import ActivityList from '@/components/ActivityList.vue'
 import Observer from '@/components/Observer.vue'
 
-const props = defineProps(['boardId'])
+const props = defineProps(['boardId', 'networkName'])
 
 const loaded = ref(0)
 
@@ -32,7 +32,7 @@ const activity = computed(() => {
 
 const getMoves = async ({ cached = false }) => {
   try {
-    moves.value = await store.dispatch('getMoves', { cached, filter: ['boardId', props.boardId] })
+    moves.value = await store.dispatch('getMoves', { cached, filter: ['boardId', props.boardId], network: { name: props.networkName }})
     loaded.value++
   } catch (e) {
     console.error(e)
@@ -41,7 +41,7 @@ const getMoves = async ({ cached = false }) => {
 
 const getMints = async ({ cached = false }) => {
   try {
-    mints.value = await store.dispatch('getMints', { cached, filter: ['boardId', props.boardId] })  
+    mints.value = await store.dispatch('getMints', { cached, filter: ['boardId', props.boardId], network: { name: props.networkName }})  
     loaded.value++
   } catch (e) {
     console.error(e)

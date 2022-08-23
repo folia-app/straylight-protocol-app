@@ -15,7 +15,7 @@ section.minted-results.flex.flex-col.w-full
         template(v-for="n in boardCount")
           //- board index starts at 1 lol
           //- reverse
-          board-thumb(:boardId="boardCount - n")
+          board-thumb(:boardId="boardCount - n", :network="{ name: $route.params.networkName }")
             .hidden.mouse_group-hover_block.absolute.overlay.px-2.pt-1.text-xs.leading-tight(style="mix-blend-mode:difference")
               h6 world_{{boardCount - n}}
 
@@ -86,7 +86,7 @@ export default {
     getBoardCount () {
       this.status = null
 
-      this.$store.dispatch('getBoardCount')
+      this.$store.dispatch('getBoardCount', { network: { name: this.$route.params.networkName }})
         .then(val => {
           this.boardCount = val
         })

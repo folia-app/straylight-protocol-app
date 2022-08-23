@@ -1,35 +1,48 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '@/views/Home.vue'
 import Index from '@/views/Index.vue'
 import IndexWorlds from '@/views/IndexWorlds.vue'
 
 const routes = [
   {
     path: '/',
-    component: Index,
-    children: [
-      {
-        path: '',
-        name: 'index',
-        component: IndexWorlds,
-      },
-      {
-        path: 'activity',
-        name: 'index__activity',
-        component: () => import('../views/IndexActivity.vue')
-      }
-    ]
-  },
-
-  {
-    path: '/boards/:board',
-    name: 'board',
-    component: () => import('../views/Board.vue')
+    name: 'home',
+    component: Home,
   },
 
   {
     path: '/mint',
     name: 'mint',
     component: () => import('../views/Mint.vue')
+  },
+
+  {
+    path: '/networks/:networkName',
+    children: [
+      // network index
+      {
+        path: '',
+        component: Index,
+        children: [
+          {
+            path: 'worlds',
+            name: 'network-index',
+            component: IndexWorlds,
+          },
+          {
+            path: 'activity',
+            name: 'network-index__activity',
+            component: () => import('../views/IndexActivity.vue')
+          }
+        ]
+      },
+
+      {
+        path: 'worlds/:board',
+        name: 'board',
+        component: () => import('../views/Board.vue')
+      },
+    ]
   },
 
   {
