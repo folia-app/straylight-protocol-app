@@ -2,8 +2,15 @@
 article.pb-64
 
   //- title row
-  header.mt-40.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
-    h1.font-bold MINT TURMITE
+  header.mt-40.md_mt-24.lg_mt-0
+    .h-20.flex.w-full.items-center.justify-center
+      h1.font-bold MINT TURMITE
+
+    //- nav.flex.justify-center
+      template(v-if="networkName")
+        network-switcher(:initNetworkName="networkName")
+      template(v-else)
+        .h-8.flex.items-center.border.border-accent2.block.pl-6.pr-2.rounded-full.flex.items-center.pb-1.animate-pulse loading...
         
   //- body
   form(@submit.prevent="mint", validate)
@@ -14,28 +21,64 @@ article.pb-64
         .aspect-square.border.border-gray-700
 
     section.w-full.lg_w-1x2.mx-auto
-      //- mint count
-      .text-right.text-sm.animate-pulse.pb-px.pr-2 {{ mintCount !== undefined ? mintCount : '...' }}/1024 minted
       
       //- steps
       ol.px-px
         //- step: connect
-        li.relative.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex: !isConnected ? 4 : 1}")
+        li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex: !isConnected ? 4 : 1}")
           .flex.items-center.justify-between
             header.relative.flex.items-center.h-40
               .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 1
+              h2.leading-none.pb-2px.text-md.sm_text-base select network #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+              //- <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            .pr-2.sm_pr-20
+              .min-w-64.flex.justify-center
+                template(v-if="networkName")
+                  network-switcher(:initNetworkName="networkName", @change="val => { networkName = val }")
+                template(v-else)
+                  .h-8.flex.items-center.border.border-accent2.block.pl-6.pr-2.rounded-full.flex.items-center.pb-1.animate-pulse loading...
+
+          //- mint count
+          .absolute.bottom-0.right-0.text-xs.pb-px.pr-2(:class="{'animate-pulse': !networkMintCount }")
+            | {{ networkMintCount !== undefined ? networkMintCount : '...' }}/1024 minted
+        
+        //- step: connect
+        li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndexff: !isConnected ? 4 : 1}", :class="{'mb-5': isWrongNetwork || switchError }")
+          .flex.items-center.justify-between
+            header.relative.flex.items-center.h-40
+              .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 2
               h2.leading-none.pb-2px.text-md.sm_text-base connect wallet #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
               //- <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             .pr-2.sm_pr-20
               .min-w-64.flex.justify-center
                 connect-disconnect-btn.text-md.h-8(connectLbl="connect")
 
-        //- step: select turmie
+          //- !! wrong network
+          template(v-if="isConnected && isWrongNetwork")
+            .min-h-40.flex.relative.text-smm.font-bold.text-accent1(:class="{'bg-accent2': !switchError, 'bg-accent3': switchError}")
+                //- msg
+                .flex-1.flex.items-center.justify-center.break-all.px-6
+                  div(v-if="!switchError")
+                    | your wallet is not connected to selected network: #[span.uppercase {{ networkName }}]
+                  div(v-else)
+                    | couldn't switch to #[span.uppercase {{ networkName }}] - you may need to add it to your wallet first.
+                
+                //- (cta)
+                .relative.w-32.sm_w-48.justify-center.bg-black-a08.rounded-lg
+                  template(v-if="!switchError")
+                    button.absolute.overlay.flex.items-center.justify-center.rounded-lg(@click.prevent="switchNetwork")
+                      | Switch
+                      <refresh-icon class="ml-3 h-6 w-6 transform scale-110 origin-center"></refresh-icon>
+                  template(v-else)
+                    a.absolute.overlay.flex.items-center.justify-center.rounded-lg(href="https://chainlist.org", target="_blank", rel="noopener noreferrer")
+                      | Add #[span.ml-2(style="font-size:0.75em") ↗]
+
+        //- step: select turmite
         li.relative.-mt-px.bg-accent1.relative(style="z-index:3")
-          .border.rounded-lg(:class="{'opacity-50': !isConnected}")
+          .border.rounded-lg(:class="{'opacity-50': !isConnected || isWrongNetwork}")
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
-                .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 2
+                .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 3
                 h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite pattern #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
 
               .pr-14.sm_pr-20
@@ -45,10 +88,10 @@ article.pb-64
 
         //- step: premove?
         li.relative.-mt-px.bg-accent1(style="z-index:2")
-          .border.rounded-lg(:class="{'opacity-40': !isConnected}")
+          .border.rounded-lg(:class="{'opacity-40': !isConnected || isWrongNetwork}")
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
-                .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 3
+                .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 4
                 h2.leading-none.pb-2px.text-md.sm_text-base move turmite #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
 
               .pr-4.sm_pr-20
@@ -59,9 +102,9 @@ article.pb-64
         //- button.absolute.overlay.bg-black-a60(v-if="selection", @click="clearSelection")
 
         //- (mint step)
-        li(:class="{'opacity-30': !isConnected || selection === undefined}")
+        li(:class="{'opacity-30': !isConnected || selection === undefined || isWrongNetwork}")
           //- mint-btn
-          button.block.w-full.bg-accent1(type="submit", :disabled="!isConnected")
+          button.block.w-full.bg-accent1(type="submit", :disabled="!isConnected || isWrongNetwork")
             .border.rounded-lg.relative(:class="{'mt-3px bg-accent2 text-accent1 border-none': isConnected, '-mt-px': !isConnected}")
               //-
               .flex.h-40.w-full.items-center.justify-center.uppercase.tracking-wide.relative
@@ -69,7 +112,8 @@ article.pb-64
               //- (icon)
               .absolute.w-18.md_w-40.flex-shrink-0.h-full.top-0.left-0.flex.items-center.justify-center(v-if="selection") ꩜
               //- price
-              .absolute.h-full.pr-4.sm_pr-20.top-0.right-0.flex.items-center.justify-center.text-xs(v-if="selection") 0.08 ETH
+              .absolute.h-full.pr-4.sm_pr-20.top-0.right-0.flex.items-center.justify-center.text-xs(v-if="selection")
+                | {{ networkMintPrice || '...' }} ETH
 
           //- (status)
           template(v-if="status")
@@ -115,13 +159,20 @@ import ConnectDisconnectBtn from '@/components/ConnectDisconnectBtn.vue'
 import SvgX from '@/components/SVG-X.vue'
 import SelectorRules from '@/components/SelectorRules.vue'
 import store from '@/store'
+import NetworkSwitcher from '@/components/NetworkSwitcher.vue'
+import { RefreshIcon } from '@heroicons/vue/outline'
+import { utils } from 'ethers'
 export default {
   name: 'MintView',
-  components: { ConnectDisconnectBtn, SvgX, SelectorRules },
+  components: { ConnectDisconnectBtn, SvgX, SelectorRules, NetworkSwitcher, RefreshIcon },
   data () {
     return {
+      networkName: undefined,
+      networkMintCount: undefined,
+      networkMintPrice: undefined,
+      switchError: false,
       selection: undefined,
-      premove: 100,
+      premove: 1000,
       tx: null,
       status: null,
       myMint: null,
@@ -131,7 +182,12 @@ export default {
   computed: {
     ...mapState(['mintCount']),
     isConnected () {
-      return this.$store.state.address !== undefined
+      return this.$store.state.address
+    },
+    isWrongNetwork () {
+      const networks = this.$store.state.networks
+      const targetNetworkId = Object.keys(networks).find(key => networks[key].name === this.networkName)
+      return this.networkName && this.$store.state.givenNetworkId !== Number(targetNetworkId)
     }
   },
 
@@ -172,29 +228,52 @@ export default {
       }
     },
 
-    goToMinted () {
-      return this.$router.push({ name: 'token', params: { token: this.myMint.args.newTokenId.toString() } })
-    }
+    async switchNetwork () {
+      try {
+        this.switchError = false
+        await this.$store.dispatch('switchNetwork', { name: this.networkName })
+      } catch (e) {
+        this.switchError = true
+      }
+    },
 
-    // async getTotalMints () {
-    //   this.totalMints = await this.$store.dispatch('getTotalMints')
-    // },
+    async getMintPrice () {
+      try {
+        this.networkMintPrice = undefined
+        const wei = await this.$store.dispatch('getMintPrice', { network: { name: this.networkName }})
+        this.networkMintPrice = utils.formatEther(wei)
+      } catch (e) {
+        console.error(e)
+      }
+    },
 
-    // listenForMints (interval = 3000) {
-    //   this.checkMintsTmOut = setTimeout(() => {
-    //     this.getTotalMints()
-    //     this.listenForMints(interval)
-    //   }, interval)
-    // }
+    async getMintCount () {
+      try {
+        this.networkMintCount = undefined
+        this.networkMintCount = await this.$store.dispatch('getMintCount', { network: { name: this.networkName }})
+      } catch (e) {
+        console.error(e)
+      }
+    },
+
+    onNetworkChange () {
+      this.getMintPrice()
+      this.getMintCount()
+    },
   },
 
-  created () {
-    this.$store.dispatch('getMintCount')
-    this.$store.dispatch('getMintPrice')
-  },
-
-  mounted () {
-    // this.listenForMints(3000)
+  created () {    
+    this.$store.dispatch('getProvider', {})
+      .then(({ provider, chainId }) => {
+        const networks = this.$store.state.networks
+        let network = networks[Object.keys(networks).find(key => key === chainId.toString())]
+        if (network) {
+          // supported network
+          this.networkName = network.name
+        } else {
+          this.networkName = networks[this.$store.state.appDefaultNetworkId].name
+        }
+      })
   },
 
   watch: {
@@ -202,12 +281,13 @@ export default {
       if (!connected) {
         this.clearSelection()
         this.status = null
+        this.switchError = false
       }
+    },
+    networkName () {
+      this.switchError = false
+      this.onNetworkChange()
     }
-  },
-
-  destroyed () {
-    clearTimeout(this.checkMintsTmOut)
   }
 }
 </script>

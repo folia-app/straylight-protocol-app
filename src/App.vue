@@ -155,22 +155,22 @@ export default {
     }
   },
   methods: {
-    async switchToAppNetwork () {
-      try {
-        if (!window.ethereum) { throw new Error('No provider to change network') }
+    // async switchToAppNetwork () {
+    //   try {
+    //     if (!window.ethereum) { throw new Error('No provider to change network') }
 
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x' + this.$store.state.appDefaultNetworkId }]
-        })
+    //     await window.ethereum.request({
+    //       method: 'wallet_switchEthereumChain',
+    //       params: [{ chainId: '0x' + this.$store.state.appDefaultNetworkId }]
+    //     })
 
-        // reload app
-        window.location.reload()
-      } catch (e) {
-        console.error(e)
-        alert('Could not switch networks')
-      }
-    },
+    //     // reload app
+    //     window.location.reload()
+    //   } catch (e) {
+    //     console.error(e)
+    //     alert('Could not switch networks')
+    //   }
+    // },
     // info overlay
     async openInfoOverlay () {
       this.infoVisible = true
@@ -203,7 +203,7 @@ export default {
     }
   },
   created () {
-    // this.$store.dispatch('init') // , { networkName: this.$route.params.networkName })
+    this.$store.dispatch('init')
   },
   mounted () {
     // this.$store.dispatch('listenForMints')

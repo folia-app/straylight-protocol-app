@@ -9,7 +9,7 @@ import Web3Modal from 'web3modal'
 // see: https://github.com/vitejs/vite/issues/7257
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
 
-let provider, signer, initializing, nftContract, controllerContract
+let /*provider,*/ signer, initializing
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
@@ -131,12 +131,13 @@ export default createStore({
       console.log('signed in', address)
     },
     SIGN_OUT (state) {
-      state.address = null
+      state.address = undefined
+      // state.givenNetworkId = null
       console.log('wallet disconnected')
     },
-    SET_GIVEN_NETWORK_ID (state, id) {
-      state.networkId = id
-      console.log('given network:', id)
+    SET_GIVEN_NETWORK_ID (state, chainId) {
+      state.givenNetworkId = chainId
+      console.log('given network:', chainId)
     },
     SAVE_WORK (state, work) {
       const i = state.works.findIndex(svd => svd.id === work.id)
@@ -152,20 +153,20 @@ export default createStore({
       state.metadatas.push(metadata)
     },
 
-    SET_CONTRACTS (state, { chainId, provider }) {
-      // set network id
-      state.appNetworkId = chainId
-      console.log('app network:', chainId)
+    // SET_CONTRACTS (state, { chainId, provider }) {
+    //   // set network id
+    //   state.appNetworkId = chainId
+    //   console.log('app network:', chainId)
       
-      // nft
-      nftContract = new ethers.Contract(NFTContractDeploy.networks[chainId].address, NFTContractDeploy.abi, provider)
-      state.contractAddr = NFTContractDeploy.networks[chainId].address.toLowerCase()
-      console.log('token contract:', NFTContractDeploy.networks[chainId].address)
+    //   // nft
+    //   nftContract = new ethers.Contract(NFTContractDeploy.networks[chainId].address, NFTContractDeploy.abi, provider)
+    //   state.contractAddr = NFTContractDeploy.networks[chainId].address.toLowerCase()
+    //   console.log('token contract:', NFTContractDeploy.networks[chainId].address)
 
-      // controller
-      controllerContract = new ethers.Contract(ControllerDeploy.networks[chainId].address, ControllerDeploy.abi, provider)
-      console.log('controller contract:', ControllerDeploy.networks[chainId].address)
-    },
+    //   // controller
+    //   controllerContract = new ethers.Contract(ControllerDeploy.networks[chainId].address, ControllerDeploy.abi, provider)
+    //   console.log('controller contract:', ControllerDeploy.networks[chainId].address)
+    // },
 
     SAVE_ADDRESS (state, { address, ens, openSea }) {
       const addrs = JSON.parse(JSON.stringify(state.addresses))
@@ -209,11 +210,11 @@ export default createStore({
 
 
           // fallback provider
-          if (!provider) {
-            await dispatch('setupFallbackProvider')
-          }
+          // if (!provider) {
+          //   await dispatch('setupFallbackProvider')
+          // }
 
-          await dispatch('setupContracts')
+          // await dispatch('setupContracts')
 
 
           initializing = false
@@ -228,6 +229,127 @@ export default createStore({
       initializing = new Promise((resolve, reject) => setup().then(resolve).catch(reject))
 
       return initializing
+    },
+
+    /* connect wallet */
+    async connect ({ state, commit, dispatch }) {
+      try {
+        // connect and update provider, signer
+        const walletProvider = await web3Modal.connect()
+        const provider = new ethers.providers.Web3Provider(walletProvider)
+        signer = provider.getSigner()
+
+        // set user address
+        const address = await signer.getAddress()
+        commit('SIGN_IN', { address })
+
+        // set given network id
+        const { chainId } = await provider.getNetwork()
+        commit('SET_GIVEN_NETWORK_ID', chainId)
+
+        dispatch('listenToWalletProvider', walletProvider)
+        
+        return { address, chainId }
+      } catch (e) {
+        console.error(e)
+        // clear wallet in case
+        dispatch('disconnect')
+        // throw error so stops any flows (closes modal too)
+        throw e
+      }
+    },
+    
+    /* disconnect wallet */
+    disconnect ({ commit, dispatch }) {
+      // clear so they can re-select from scratch
+      web3Modal.clearCachedProvider()
+      // manually clear walletconnect --- https://github.com/Web3Modal/web3modal/issues/354
+      localStorage.removeItem('walletconnect')
+
+      // if (walletProvider.off) {
+      //   walletProvider.off('accountsChanged')
+      //   walletProvider.off('disconnect')
+      // }
+
+      commit('SIGN_OUT')
+      signer = null
+      // givenProvider = null
+      // reset provider
+      // dispatch('setupContracts')
+    },
+    
+    /* wallet events */
+    listenToWalletProvider ({ commit, dispatch }, walletProvider) {
+      if (!walletProvider?.on) return
+
+      // account changed (or disconnected)
+      walletProvider.on('accountsChanged', accounts => {
+        console.log('accountsChanged', accounts)
+        if (!accounts.length) {
+          return dispatch('disconnect')
+        }
+        commit('SIGN_IN', accounts[0])
+      })
+
+      // changed network
+      walletProvider.on('chainChanged', chainId => {
+        console.log('network changed', chainId)
+        // reload page so data is correct...
+        window.location.reload()
+      })
+
+      // random disconnection? (doesn't fire on account disconnect)
+      walletProvider.on('disconnect', error => {
+        console.error('disconnected?', error)
+        dispatch('disconnect')
+      })
+    },
+
+    async switchNetwork ({ dispatch }, { chainId, name }) {
+      // set
+      chainId = chainId || Object.keys(networks).find(key => networks[key].name === name)
+
+      // convert to hex
+      chainId = ethers.utils.hexValue(Number(chainId))
+
+      // if (!window.ethereum) {
+      //   throw new Error('No provider to change network')
+      // }
+
+      try {
+        // switch...
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId }]
+        })  
+
+        // reload app
+        window.location.reload()
+      } catch (e) {
+        console.error(e)
+        
+        // try adding the chain first
+        // if (e?.code === 4902) {
+        //   console.log('trying to add chain...')
+        //   try {
+        //     // add...
+        //     await window.ethereum.request({
+        //       method: 'wallet_addEthereumChain',
+        //       params: [{ chainId }]
+        //     })
+
+        //     // try again
+        //     return dispatch('switchNetwork', { chainId })
+
+        //   } catch (e) {
+        //     // adding failed
+        //     console.error('could not add chain', e)
+        //   }
+        // }
+
+        // alert('Could not switch networks. You may need to add it to your wallet.')
+        throw e
+      }
     },
 
     async getProvider ({ commit }, { network }) {
@@ -270,6 +392,12 @@ export default createStore({
       return contract
     },
 
+    async getControllerContract ({ dispatch }, { network }) {
+      const { provider, chainId } = await dispatch('getProvider', { network })
+      const contract = new ethers.Contract(ControllerDeploy.networks[chainId].address, ControllerDeploy.abi, provider)
+      return contract
+    },
+
     // async setProvider ({ dispatch }, desiredNetworkName) {
     //   let givenChainId
 
@@ -308,24 +436,24 @@ export default createStore({
     //   }
     // },
 
-    async setupFallbackProvider ({ dispatch }) {
-      try {
-        if (window.ethereum) {
-          // metamask/browser
-          provider = new ethers.providers.Web3Provider(window.ethereum)
-        } else {
-          // infura fallback
-          console.log(appDefaultNetworkId)
-          provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
-        }
+    // async setupFallbackProvider ({ dispatch }) {
+    //   try {
+    //     if (window.ethereum) {
+    //       // metamask/browser
+    //       provider = new ethers.providers.Web3Provider(window.ethereum)
+    //     } else {
+    //       // infura fallback
+    //       console.log(appDefaultNetworkId)
+    //       provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
+    //     }
 
-        await dispatch('setupContracts', { provider })
+    //     await dispatch('setupContracts', { provider })
 
-        return true
-      } catch (e) {
-        console.error(e)
-      }
-    },
+    //     return true
+    //   } catch (e) {
+    //     console.error(e)
+    //   }
+    // },
 
     // getNetworkId ({ commit }, provider) {
     //   return provider.getNetwork()
@@ -348,113 +476,40 @@ export default createStore({
     //   }
     // },
 
-    /* connect wallet */
-    async connect ({ state, commit, dispatch }) {
-      try {
-        // connect and update provider, signer
-        const walletProvider = await web3Modal.connect()
-        provider = new ethers.providers.Web3Provider(walletProvider)
-        signer = provider.getSigner()
+    // async setupContracts ({ commit }) {
+    //   let chainId, givenChainId
 
-        // set user address
-        const address = await signer.getAddress()
-        commit('SIGN_IN', { address })
+    //   if (!provider && window.ethereum) {
+    //     // metamask/browser
+    //     provider = new ethers.providers.Web3Provider(window.ethereum)
+    //   }
 
-        // set given network id
-        const { chainId } = await provider.getNetwork()
-        commit('SET_GIVEN_NETWORK_ID', chainId)
+    //   try {
+    //     const { chainId } = await provider.getNetwork()
+    //     givenChainId = chainId
+    //   } catch (e) {
+    //     console.error('error getting given provider chain id', e)
+    //   }
 
-        dispatch('listenToWalletProvider', walletProvider)
+    //   // store even if not provided
+    //   commit('SET_GIVEN_NETWORK_ID', givenChainId)
+
+    //   // check if supported network
+    //   if (!provider || !Object.keys(networks).includes(givenChainId)) {
+    //     console.warn(`Provider/Wallet network not supported (${givenChainId}). Loading from infura default network: ${appDefaultNetworkId}...`)
         
-        return { address }
-      } catch (e) {
-        // clear wallet in case
-        dispatch('disconnect')
-        // throw error so stops any flows (closes modal too)
-        throw e
-      }
-    },
+    //     chainId = appDefaultNetworkId
+    //     provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
+    //   } else {
+    //     // given provider is supported :)
+    //     chainId = givenChainId
+    //   }
 
-    async setupContracts ({ commit }) {
-      let chainId, givenChainId
+    //   // set contracts
+    //   commit('SET_CONTRACTS', { chainId, provider })      
 
-      if (!provider && window.ethereum) {
-        // metamask/browser
-        provider = new ethers.providers.Web3Provider(window.ethereum)
-      }
-
-      try {
-        const { chainId } = await provider.getNetwork()
-        givenChainId = chainId
-      } catch (e) {
-        console.error('error getting given provider chain id', e)
-      }
-
-      // store even if not provided
-      commit('SET_GIVEN_NETWORK_ID', givenChainId)
-
-      // check if supported network
-      if (!provider || !Object.keys(networks).includes(givenChainId)) {
-        console.warn(`Provider/Wallet network not supported (${givenChainId}). Loading from infura default network: ${appDefaultNetworkId}...`)
-        
-        chainId = appDefaultNetworkId
-        provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
-      } else {
-        // given provider is supported :)
-        chainId = givenChainId
-      }
-
-      // set contracts
-      commit('SET_CONTRACTS', { chainId, provider })      
-
-      return true
-    },
-
-    /* disconnect wallet */
-    disconnect ({ commit, dispatch }) {
-      // clear so they can re-select from scratch
-      web3Modal.clearCachedProvider()
-      // manually clear walletconnect --- https://github.com/Web3Modal/web3modal/issues/354
-      localStorage.removeItem('walletconnect')
-
-      // if (walletProvider.off) {
-      //   walletProvider.off('accountsChanged')
-      //   walletProvider.off('disconnect')
-      // }
-
-      commit('SIGN_OUT')
-      signer = null
-      provider = null
-      // reset provider
-      dispatch('setupContracts')
-    },
-
-    /* wallet events */
-    listenToWalletProvider ({ commit, dispatch }, walletProvider) {
-      if (!walletProvider?.on) return
-
-      // account changed (or disconnected)
-      walletProvider.on('accountsChanged', accounts => {
-        console.log('accountsChanged', accounts)
-        if (!accounts.length) {
-          return dispatch('disconnect')
-        }
-        commit('SIGN_IN', accounts[0])
-      })
-
-      // changed network
-      walletProvider.on('chainChanged', chainId => {
-        console.log('network changed', chainId)
-        // reload page so data is correct...
-        window.location.reload()
-      })
-
-      // random disconnection? (doesn't fire on account disconnect)
-      walletProvider.on('disconnect', error => {
-        console.error('disconnected?', error)
-        dispatch('disconnect')
-      })
-    },
+    //   return true
+    // },
 
     // async getNFTContract ({ dispatch }) {
     //   try {
@@ -514,7 +569,7 @@ export default createStore({
 
     async getMints ({ state, commit, dispatch }, { cached = false, filter, network }) {
       try {
-        let mints = cached && state.mints
+        let mints // = cached && state.mints
 
         if (!mints) {
           // get all mint events...
@@ -533,7 +588,7 @@ export default createStore({
           }))
           // console.log({ mints })
           
-          commit('SAVE_MINTS', mints)
+          // commit('SAVE_MINTS', mints)
         }
 
         // filter?
@@ -566,16 +621,10 @@ export default createStore({
     //   }
     // },
 
-    async getMintPrice ({ state, commit, dispatch }) {
+    async getMintPrice ({ state, commit, dispatch }, { network }) {
       try {
-        // saved?
-        if (state.mintPrice) return state.mintPrice
-        //
-        if (!controllerContract) await dispatch('init')
-        // fetch...
-        const price = await controllerContract.mintPrice()
-        // save
-        commit('SET_MINT_PRICE', price)
+        const contract = await dispatch('getControllerContract', { network })
+        const price = await contract.mintPrice()
         return price
       } catch (e) {
         console.error(e)
@@ -626,11 +675,10 @@ export default createStore({
       }
     },
 
-    async getMintCount ({ state, commit, dispatch }) {
+    async getMintCount ({ state, commit, dispatch }, { network }) {
       try {
-        if (!nftContract) await dispatch('init')
+        const nftContract = await dispatch('getNFTContract', { network })
         const count = await nftContract.totalSupply()
-        commit('SET_MINT_COUNT', count)
         return count
       } catch (e) {
         console.error(e)
@@ -638,21 +686,21 @@ export default createStore({
       }
     },
 
-    async listenForMints ({ state, dispatch }) {
-      try {
-        if (!controllerContract) await dispatch('init')
-        // TODO - cancel if sold out?
-        controllerContract.on('editionBought', (contractAddress, tokenId, newTokenId) => {
-          console.log('new mint!', { contractAddress, tokenId, newTokenId })
-          dispatch('getMintCount')
-          dispatch('getMints', {})
-        })
-        console.log('listening for mints...')
-      } catch (e) {
-        console.error(e)
-        throw e
-      }
-    },
+    // async listenForMints ({ state, dispatch }) {
+    //   try {
+    //     if (!controllerContract) await dispatch('init')
+    //     // TODO - cancel if sold out?
+    //     controllerContract.on('editionBought', (contractAddress, tokenId, newTokenId) => {
+    //       console.log('new mint!', { contractAddress, tokenId, newTokenId })
+    //       dispatch('getMintCount')
+    //       dispatch('getMints', {})
+    //     })
+    //     console.log('listening for mints...')
+    //   } catch (e) {
+    //     console.error(e)
+    //     throw e
+    //   }
+    // },
 
     async mint ({ state, dispatch }, { rule, moves = 0 }) {
       try {
