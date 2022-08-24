@@ -43,6 +43,8 @@ export default createStore({
   // modules: { profiles },
   state () {
     return {
+      networks,
+
       address: null,
       givenNetworkId: null,
 
@@ -229,10 +231,9 @@ export default createStore({
     },
 
     async getProvider ({ commit }, { network }) {
-      let provider
+      let provider, givenChainId
       let targetChainId = network?.id
         || Object.keys(networks).find(key => networks[key]['name'] === network?.name)
-        || appDefaultNetworkId
 
       // try browser/wallet provider first
       if (window.ethereum) {
@@ -241,11 +242,12 @@ export default createStore({
         // check on supported network
         try {
           const { chainId } = await provider.getNetwork()
+          givenChainId = chainId
+          
+          commit('SET_GIVEN_NETWORK_ID', givenChainId)
 
-          commit('SET_GIVEN_NETWORK_ID', chainId)
-
-          // unsupported network
-          if (chainId !== Number(targetChainId)) {
+          // given provider is not on the target network
+          if (targetChainId && chainId !== Number(targetChainId)) {
             provider = undefined
           }
         } catch (e) {
@@ -255,10 +257,11 @@ export default createStore({
 
       // fallback to infura
       if (!provider) {
+        targetChainId = targetChainId || appDefaultNetworkId
         provider = new ethers.getDefaultProvider(networks[targetChainId].infura)
       }
 
-      return { provider, chainId: targetChainId }
+      return { provider, chainId: targetChainId || givenChainId }
     },
 
     async getNFTContract ({ dispatch }, { network }) {
