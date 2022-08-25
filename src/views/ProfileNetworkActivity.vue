@@ -2,7 +2,7 @@
 .profile-activity.relative
   //- (loading)
   template(v-if="!loaded")
-    .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 loading...
+    .px-6.lg_px-22.animate-pulse.text-sm.text-accent3 loading...
 
   template(v-else-if="activity && !activity.length")
     p.text-smm.px-6.lg_pl-22.text-accent3 no #[b activity] found

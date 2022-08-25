@@ -126,7 +126,7 @@ article.pb-64
               
               //- (tx link)
               template(v-if="status.tx")
-                a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="$store.getters.txLink({ hash: status.tx.hash, chain: networkName })", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
+                a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="$store.getters.etherscanLink({ hash: status.tx.hash, networkName })", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
                   | Tx#[span(style="font-size:0.85em") ↗]
               
               //- (clear btn)

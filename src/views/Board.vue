@@ -4,10 +4,10 @@ article.board
   .min-h-screen.flex.flex-col
 
     //- title row
-    header.mt-40.md_mt-24.lg_mt-0.h-20.flex.w-full.items-center.justify-center
-      h1 world_{{ boardId }}
+    header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
+      h1.text-md.sm_text-base #[span.opacity-40 {{$route.params.networkName}}_]world_{{ boardId }}
 
-    .flex-1.relative.flex.items-center.justify-center.pb-12.lg_pb-24.px-12.md_px-0
+    .flex-1.relative.flex.items-start.md_items-center.justify-center.pb-12.lg_pb-24.px-12.md_px-0
       .flex.w-full
         //- (prev board link)
         .hidden.md_flex.w-20.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.relative.group

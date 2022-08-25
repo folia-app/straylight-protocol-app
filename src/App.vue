@@ -80,21 +80,28 @@
                 li players #[span.info-tag move()] their turmites with just gas
                 li and the contract #[span.info-tag renders] a new world
 
-              p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
+              //- p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 
-            footer.w-full.grid.grid-cols-2.gap-1.px-3.pb-3
-              template(v-if="$store.state.contractAddr")
-                a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="`${$store.getters.network.explorer.domain}/address/${$store.state.contractAddr}`", target="_blank", rel="noopener noreferrer")
-                  | contract &nbsp;↗
+            footer.mt-em.w-full.grid.grid-cols-2.gap-1.px-3.pb-3
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
+                | discord #[span.ml-1(style="font-size:0.75em") ↗]
+              
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2.opacity-20.pointer-events-none(href="https://snapshot.org/#/decomposer.eth", target="_blank", rel="noopener noreferrer")
+                | wiki #[span.ml-1(style="font-size:0.75em") ↗]
+              
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.etherscanLink({ networkName: 'ethereum' })", target="_blank", rel="noopener noreferrer")
+                | ethereum contract #[span.ml-1(style="font-size:0.75em") ↗]
 
-              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
-                | discord &nbsp;↗
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.etherscanLink({ networkName: 'optimism' })", target="_blank", rel="noopener noreferrer")
+                | optimism contract #[span.ml-1(style="font-size:0.75em") ↗]
 
-              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(:href="$store.getters.quixoticLink({}) + '/collection/' + $store.state.contractAddr", target="_blank", rel="noopener noreferrer")
-                | quixotic &nbsp;↗
 
-              a.text-md.border.pb-1b.rounded-full.flex.items-center.justify-center(href="https://snapshot.org/#/decomposer.eth", target="_blank", rel="noopener noreferrer")
-                | wiki &nbsp;↗
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.marketplaceLink({ networkName: 'ethereum' })", target="_blank", rel="noopener noreferrer")
+                | opensea #[span.ml-1(style="font-size:0.75em") ↗]
+
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.marketplaceLink({ networkName: 'optimism' })", target="_blank", rel="noopener noreferrer")
+                | quixotic #[span.ml-1(style="font-size:0.75em") ↗]
+
 
             //- close btn
             button.absolute.top-0.right-0.w-16.h-16.m-4.border.border-gray-700.rounded-xl.flex.items-center.justify-center.bg-black-a08ff(@click.stop="closeInfoOverlay")

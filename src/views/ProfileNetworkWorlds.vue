@@ -1,9 +1,6 @@
 <template lang="pug">
-section.profile-worlds
-  template(v-if="!props.boards")
-    .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 loading...
-  
-  template(v-else-if="!props.boards.length")
+section.profile-worlds  
+  template(v-if="!props.boards.length")
     p.text-smm.px-6.lg_pl-22.text-accent3 no #[b turmites] found
   
   template(v-else)

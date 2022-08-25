@@ -16,9 +16,9 @@ article.profile
 
         nav.text-xs.-ml-3.lg_ml-8.pb-px.-mb-2.lg_order-1
           //- OS link
-          a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="$store.getters.openSeaLink({ account: address })", target="_blank", rel="noopener noreferrer") OpenSea
+          a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="$store.getters.marketplaceLink({ networkName: 'ethereum', account: address })", target="_blank", rel="noopener noreferrer") OpenSea
           //- quixotic link
-          a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="$store.getters.quixoticLink({ account: address })", target="_blank", rel="noopener noreferrer")
+          a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="$store.getters.marketplaceLink({ networkName: 'optimism', account: address })", target="_blank", rel="noopener noreferrer")
             | Quixotic
           //- ENS link
           template(v-if="ens")

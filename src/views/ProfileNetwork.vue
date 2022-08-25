@@ -14,7 +14,9 @@
   //- view
   section.flex-1.flex.flex-col.mt-14
     //- * wait for 'boards' so activity doesn't fetch until tokenIds is set
-    template(v-if="boards")
+    template(v-if="!boards")
+      .px-6.lg_px-22.animate-pulse.text-sm.text-accent3 loading...
+    template(v-else)
       .flex-1.w-full
         router-view(v-slot="{ Component }", :boards="boards", :tokenIds="tokenIds")
           keep-alive

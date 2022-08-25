@@ -14,9 +14,10 @@ let /*provider,*/ signer, initializing
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
 const networks = {
-  1: { name: 'ethereum', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' } },
-  5: { name: 'goerli', layer: 'ethereum', infura: `https://goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://goerli.etherscan.io' } },
-  420: { name: 'optimism-goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' } },
+  1: { name: 'ethereum', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' }, marketplace: { name: 'OpenSea', domain: 'https://opensea.io'} },
+  5: { name: 'goerli', layer: 'ethereum', infura: `https://goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://goerli.etherscan.io' }, marketplace: { name: 'OpenSea', domain: 'https://testnets.opensea.io'} },
+  10: { name: 'optimism', layer: 'optimism', infura: `https://optimism-mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' }, marketplace: { name: 'Quixotic', domain: 'https://quixotic.io'} },
+  420: { name: 'optimism-goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' }, marketplace: { name: 'Quixotic', domain: 'https://goerli.quixotic.io'} },
 }
 const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1)
 
@@ -71,7 +72,6 @@ export default createStore({
     }
   },
   getters: {
-    network: (state) => networks[state.networkId],
     // weiToETH: () => (wei) => web3?.utils.fromWei(wei) ?? '-',
     weiToETH: () => wei => ethers.utils.formatUnits(wei) ?? '...',
     // ethToWei: () => (eth) => web3?.utils.toWei(eth) ?? '-',
@@ -87,23 +87,37 @@ export default createStore({
       return work && Number(work.editions) && Number(work.printed) >= Number(work.editions)
     },
     isConnectedAddr: (state) => (addr) => addr && addr.toLowerCase() === state.address,
-    txLink: () => ({ hash, chain }) => {
-      const network = networks[Object.keys(networks).find(key => networks[key].name === chain)]
-      return `${network.explorer.domain}/tx/${hash}`
+    chainId: () => ({ networkName }) => {
+      // get chainId from networkName (of supported networks)
+      return Object.keys(networks).find(key => networks[key].name === networkName)
     },
-    openSeaLink: (state, getters) => ({ token, account }) => {
-      const isTestnet = [4].includes(state.networkId)
-      const path = token ? `/assets/${state.contractAddr}/${token}`
-        : account ? `/accounts/${account}`
-          : ''
-      return `https://${isTestnet ? 'testnets.' : ''}opensea.io` + path
+    network: (state, getters) => ({ networkName }) => {
+      const chainId = getters.chainId({ networkName }) || appDefaultNetworkId
+      return networks[chainId]
     },
-    quixoticLink: (state, getters) => ({ token, account }) => {
-      const isGoerli = [420].includes(state.networkId)
-      const path = token ? `/asset/${state.contractAddr}/${token}`
+    contractAddr: (state, getters) => ({ networkName }) => {
+      const chainId = getters.chainId({ networkName })
+      const contractAddr = NFTContractDeploy.networks[chainId]?.address
+    },
+    etherscanLink: (state, getters) => ({ hash, networkName }) => {
+      const network = getters.network({ networkName })
+      const contractAddr = getters.contractAddr({ networkName })
+      let path = network?.explorer.domain
+      path += hash ? `/tx/${hash}`
+        : `/address/${contractAddr}`
+      return path
+    },
+    marketplaceLink: (state, getters) => ({ token, account, networkName }) => {
+      const network = getters.network({ networkName })
+      const contractAddr = getters.contractAddr({ networkName })
+
+      let path = network?.marketplace.domain
+      
+      path += token ? `/asset/${contractAddr}/${token}`
         : account ? `/${account}`
-          : ''
-      return `https://${isGoerli ? 'goerli.' : ''}quixotic.io` + path
+          : `/collection/${contractAddr}` // default to collection ?
+      
+      return path
     },
     meta: state => ({ title, descrip, img }) => {
       const meta = []
