@@ -126,8 +126,9 @@ article.pb-64
               
               //- (tx link)
               template(v-if="status.tx")
-               a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
-                | Tx#[span(style="font-size:0.85em") ↗]
+                //- TODO fix explorer link
+                a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
+                  | Tx#[span(style="font-size:0.85em") ↗]
               
               //- (clear btn)
               button.w-14.flex.items-center.justify-center.absolute.top-0.left-0.h-full(v-if="status.type === 'error'", @click.prevent="status = null")
@@ -208,7 +209,7 @@ export default {
         const moves = this.premove
 
         // confirm...
-        tx = await this.$store.dispatch('mint', { rule, moves })
+        tx = await this.$store.dispatch('mint', { rule, moves, network: { name: this.networkName }})
 
         // wait for confirmation...
         this.status = { msg: 'Waiting for confirmation...', tx }

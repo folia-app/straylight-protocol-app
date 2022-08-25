@@ -702,15 +702,17 @@ export default createStore({
     //   }
     // },
 
-    async mint ({ state, dispatch }, { rule, moves = 0 }) {
+    async mint ({ state, dispatch }, { rule, moves = 0, network }) {
       try {
         // wait for init?
-        if (!controllerContract) await dispatch('init')
+        const contract = await dispatch('getControllerContract', { network })
+
         // connect wallet?
         if (!state.address || !signer) await dispatch('connect')
 
         // check balance
-        const price = await dispatch('getMintPrice')
+        const price = await dispatch('getMintPrice', { network })
+        const { provider } = await dispatch('getProvider', { network })
         const balance = await provider.getBalance(state.address)
 
         if (balance.lt(price)) {
@@ -718,7 +720,7 @@ export default createStore({
         }
 
         // setup
-        const contractSigner = controllerContract.connect(signer)
+        const contractSigner = contract.connect(signer)
 
         // confirm...
         const tx = await contractSigner.publicMint(rule, moves.toString(), { value: price.toString() })

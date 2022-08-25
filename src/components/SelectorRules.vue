@@ -70,7 +70,7 @@
     </Combobox>
 
     <!-- refresh button -->
-    <button class="absolute top-0 right-0 h-full px-4 rounded-full flex items-center transform translate-x-full" @click="randomRule">
+    <button class="absolute top-0 right-0 h-full px-4 rounded-full flex items-center transform translate-x-full" @click.prevent="randomRule">
       <refresh-icon class="h-6 w-6 transform scale-110 origin-center"></refresh-icon>
     </button>
   </div>
