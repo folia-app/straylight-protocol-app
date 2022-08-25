@@ -13,7 +13,7 @@ form.turmite-move-form(@submit.prevent="move")
 <script setup>
 import { ref } from 'vue'
 import store from '@/store'
-const props = defineProps(['tokenId'])
+const props = defineProps(['tokenId', 'networkName'])
 const emit = defineEmits(['moved'])
 
 const moveQty = ref(1)
@@ -24,7 +24,7 @@ const move = async () => {
     status.value = { msg: 'Confirm transaction in your wallet...' }
     
     console.log(props.tokenId, moveQty.value)
-    const tx = await store.dispatch('turmiteMove', { tokenId: props.tokenId, moves: moveQty.value })
+    const tx = await store.dispatch('turmiteMove', { tokenId: props.tokenId, moves: moveQty.value, network: { name: props.networkName } })
 
     // wait for confirmation...
     status.value = { msg: 'Waiting for confirmation...', tx }

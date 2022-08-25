@@ -47,18 +47,36 @@ const routes = [
 
   {
     path: '/:address',
-    component: () => import('../views/Profile.vue'),
     children: [
       {
         path: '',
-        name: 'profile', // worlds,
-        component: () => import('../views/ProfileBoards.vue'),
+        component: () => import('../views/Profile.vue'),
+        children: [
+          // root redirects to network profile after lookup
+          {
+            path: '',
+            name: 'profile',
+            component: () => import('../views/ProfileIndex.vue'),
+          },
+          // 
+          {
+            path: ':networkName',
+            component: () => import('../views/ProfileNetwork.vue'),
+            children: [
+              {
+                path: '',
+                name: 'profile-network__worlds',
+                component: () => import('../views/ProfileNetworkWorlds.vue'),
+              },
+              {
+                path: 'activity',
+                name: 'profile-network__activity',
+                component: () => import('../views/ProfileNetworkActivity.vue'),
+              }
+            ]
+          },
+        ]
       },
-      {
-        path: 'activity',
-        name: 'profile__activity', // worlds,
-        component: () => import('../views/ProfileActivity.vue'),
-      }
     ]
   }
 ]

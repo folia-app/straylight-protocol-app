@@ -87,6 +87,10 @@ export default createStore({
       return work && Number(work.editions) && Number(work.printed) >= Number(work.editions)
     },
     isConnectedAddr: (state) => (addr) => addr && addr.toLowerCase() === state.address,
+    txLink: () => ({ hash, chain }) => {
+      const network = networks[Object.keys(networks).find(key => networks[key].name === chain)]
+      return `${network.explorer.domain}/tx/${hash}`
+    },
     openSeaLink: (state, getters) => ({ token, account }) => {
       const isTestnet = [4].includes(state.networkId)
       const path = token ? `/assets/${state.contractAddr}/${token}`
@@ -735,9 +739,9 @@ export default createStore({
       }
     },
 
-    async turmiteMove ({ state, dispatch }, { tokenId, moves }) {
+    async turmiteMove ({ state, dispatch }, { tokenId, moves, network }) {
       try {
-        if (!nftContract) await dispatch('init')
+        const nftContract = await dispatch('getNFTContract', { network })
 
         const contractSigner = nftContract.connect(signer)
 

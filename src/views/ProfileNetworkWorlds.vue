@@ -4,13 +4,13 @@ section.profile-worlds
     .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 loading...
   
   template(v-else-if="!props.boards.length")
-    p.px-6.text-smm no turmites found
+    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b turmites] found
   
   template(v-else)
     ul.boards-grid
       template(v-for="n in 1")
         li(v-for="board in props.boards")
-          board-thumb(:boardId="board.id")
+          board-thumb(:boardId="board.id", :network="{ name: $route.params.networkName }")
             .absolute.overlay.px-2.pt-1.text-xs.leading-tight(style="mix-blend-mode:difference")
               h6 world_{{board.id}}
               //- div
@@ -21,7 +21,6 @@ section.profile-worlds
 
 <script setup>
 import { ref, computed } from 'vue'
-import store from '@/store'
 import BoardThumb from '@/components/BoardThumb.vue'
 import { turmiteName } from '@/utils.js'
 

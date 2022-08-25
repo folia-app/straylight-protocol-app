@@ -26,7 +26,7 @@ li.turmite-detail.flex.flex-col
                 template(v-if="owner === undefined")
                   span.animate-pulse ...
                 template(v-else)
-                  router-link.flex.items-center(:to="{name: 'profile', params: { address: owner }}")
+                  router-link.flex.items-center(:to="{name: 'profile-network__worlds', params: { address: owner, networkName: $route.params.networkName }}")
                     addr.font-bold.px-3px.rounded-lg.leading-tight(:address="owner", :youOn="true")
                     span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
             //- pattern
@@ -43,14 +43,14 @@ li.turmite-detail.flex.flex-col
       //- ("join/mint")
       template(v-else)
         .h-18.flex.items-start
-          router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(to="/mint") JOIN / MINT
+          router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(:to="{ name: 'mint', query: { network: $route.params.networkName }}") JOIN / MINT
 
   //- (move form)
   .lg_my-px.lg_order-first
     template(v-if="moveFormVisible")
       .mt-px.lg_my-0.relative
         .lg_absolute.bottom-0.left-0.w-full.p-4.pb-5.rounded-lg.bg-accent3.text-accent1
-          turmite-move-form(:tokenId="props.tokenId", @moved="emit('moved')")
+          turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", @moved="emit('moved')")
 </template>
 
 <script setup>

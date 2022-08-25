@@ -9,6 +9,8 @@ import NetworkResolver from '@/components/NetworkResolver.vue'
 const router = useRouter()
 
 const onResolved = (networkName) => {
-  router.replace({name: 'network-index', params: { networkName }})
+  console.log({ networkName })
+  debugger
+  router.replace({name: 'profile-network__worlds', params: { networkName }})
 }
 </script>

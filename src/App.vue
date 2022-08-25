@@ -71,14 +71,14 @@
               p
                 | #[span.inline-block.border.border-dashed.rounded-xl.px-1 straylight protocol] &mdash; a #[span.info-tag multi-player], #[span.info-tag NFT-based game] by #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid(href="https://twitter.com/brachlandberlin", target="_blank", rel="noopener noreferrer") paul seidler] of #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid(href="https://twitter.com/_terra0", target="_blank", rel="noopener noreferrer") terra0]
               
-              p.mt-em the game runs #[span.info-tag entirely on-chain] on the #[span.info-tag optimism] ethereum network
+              p.mt-em the game runs #[span.info-tag entirely on-chain] on the #[span.info-tag ethereum] and #[span.info-tag optimism] networks
 
               ul.mt-em
-                li players mint up to #[span.info-tag 1024] NFT-"turmites"
-                li turmites dig in one of #[span.info-tag ~800] patterns
-                li each #[span.info-tag world] has #[span.info-tag 4 turmites]
+                li players mint NFT-#[span.info-tag turmites]
+                li there are 4 turmites per #[span.info-tag world]
+                li turmites can dig in ~800 #[span.info-tag patterns]
                 li players #[span.info-tag move()] their turmites with just gas
-                li the contract renders a #[span.info-tag new world]
+                li and the contract #[span.info-tag renders] a new world
 
               p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 

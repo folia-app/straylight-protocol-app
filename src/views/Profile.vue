@@ -2,7 +2,7 @@
 article.profile
   .min-h-screen.flex.flex-col
     
-    header.mt-64.lg_mt-56.px-6.lg_pl-20
+    header.mt-64.lg_mt-48.px-6.lg_pl-20
       //- ("YOU")
       .relative(v-if="$store.getters.isConnectedAddr(address)")
         .absolute.top-0.left-0.transform.-translate-y-full.pb-2
@@ -15,50 +15,23 @@ article.profile
         .w-full.mt-2.opacity-40.text-xs.lg_order-2 {{ address }}
 
         nav.text-xs.-ml-3.lg_ml-8.pb-px.-mb-2.lg_order-1
-          //- quixotic link
-          a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.quixoticLink({ account: address })", target="_blank", rel="noopener noreferrer")
-            | Quixotic
           //- OS link
-          a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="$store.getters.openSeaLink({ account: address })", target="_blank", rel="noopener noreferrer") OpenSea
+          a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="$store.getters.openSeaLink({ account: address })", target="_blank", rel="noopener noreferrer") OpenSea
+          //- quixotic link
+          a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="$store.getters.quixoticLink({ account: address })", target="_blank", rel="noopener noreferrer")
+            | Quixotic
           //- ENS link
           template(v-if="ens")
-            a.inline-block.px-3.py-2.mouse_hover_text-accent3(:href="`https://app.ens.domains/name/${ens}`", target="_blank", rel="noopener noreferrer")
+            a.inline-block.px-3.py-2.mouse_hover_text-accent4(:href="`https://app.ens.domains/name/${ens}`", target="_blank", rel="noopener noreferrer")
               | ENS
     
-    section.flex-1
+    section.flex-1.flex.w-full
       template(v-if="!address")
         .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 resolving...
       
       template(v-else)
-        nav.mt-22.flex.px-6.lg_pl-20.text-md
-          .flex
-            router-link.h-8.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile', params: { address: route.params.address }}") turmites
-
-          router-link.h-8.ml-1.border.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile__activity', params: { address: route.params.address }}") activity
-
-        //- view
-        //- * wait for 'boards' so activity doesn't fetch until tokenIds is set
-        router-view.mt-14(v-if="boards", v-slot="{ Component }", :boards="boards", :tokenIds="tokenIds")
-          keep-alive
-            component(:is="Component")
-
-  footer.pb-64.lg_pb-36
-    nav.flex.text-md.items-center
-      .flex-1.flex.justify-center.lg_-mr-28
-        //- template(v-if="boardId - 1 >= 0")
-          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-12.pr-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
-            | world_{{ boardId - 1 }}
-            .absolute.top-0.left-2.h-full.flex.items-center &larr;
-
-      .flex.justify-center
-        router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
-          | all worlds
-
-      .flex-1.flex.justify-center.lg_-ml-28
-        //- template(v-if="boardId + 1 < boardCount")
-          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-7.pr-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
-            | world_{{ boardId + 1 }}
-            .absolute.top-0.right-2.h-full.flex.items-center &rarr;
+        router-view(:address="address", :key="$route.path")
+        
 </template>
 
 <script setup>
@@ -75,22 +48,6 @@ const address = ref()
 
 // Addr.vue will lookup ens
 const ens = computed(() => store.state.addresses[address.value?.toLowerCase()]?.ens)
-
-const tokenIds = ref()
-
-const boards = computed(() => {
-  let boards
-  if (tokenIds.value) {
-    boards = tokenIds.value.map(id => Math.floor(id / 4))
-    boards = [...new Set(boards)]
-    boards.sort().reverse()
-    boards = boards.map(board => ({
-      id: board,
-      tokens: tokenIds.value.filter(id => Math.floor(id / 4) === board)
-    }))
-  }
-  return boards
-})
 
 const resolveAddress = async () => {
   try {
@@ -118,34 +75,11 @@ const resolveAddress = async () => {
   }
 }
 
-const getAddressTokens = async () => {
-  try {    
-    await resolveAddress()
-
-    const contract = await store.dispatch('getNFTContract')
-
-    // get balance
-    const balance = (await contract.balanceOf(address.value)).toString()
-    const ids = []
-
-    if (balance > 0) {
-      for (var i = 0; i < balance; i++) {
-        const tokenId = await contract.tokenOfOwnerByIndex(address.value, i)
-        ids.push(tokenId.toString())
-      }
-    }
-
-    tokenIds.value = ids
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-getAddressTokens()
+resolveAddress()
 </script>
 
 <style lang="postcss">
 .profile nav .router-link-exact-active{
-  @apply bg-accent2 text-accent1;
+  @apply bg-accent2 text-accent1 border-accent2;
 }
 </style>

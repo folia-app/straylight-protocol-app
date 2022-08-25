@@ -34,7 +34,7 @@ article.pb-64
             .pr-2.sm_pr-20
               .min-w-64.flex.justify-center
                 template(v-if="networkName")
-                  network-switcher(:initNetworkName="networkName", @change="val => { networkName = val }")
+                  network-switcher.relative.z-10(:initNetworkName="networkName", @change="val => { networkName = val }")
                 template(v-else)
                   .h-8.flex.items-center.border.border-accent2.block.pl-6.pr-2.rounded-full.flex.items-center.pb-1.animate-pulse loading...
 
@@ -121,13 +121,12 @@ article.pb-64
               //- msg
               span.break-all.text-center(v-html="status.msg")
               //- (success profile link)
-              router-link.absolute.overlay(:to="{name: 'profile', params: { address: $store.state.address }}")
+              router-link.absolute.overlay(:to="{name: 'profile-network__worlds', params: { address: $store.state.address, networkName }}")
                 .sr-only Go to your Profile
               
               //- (tx link)
               template(v-if="status.tx")
-                //- TODO fix explorer link
-                a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="`${$store.getters.network.explorer.domain}/tx/${status.tx.hash}`", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
+                a.absolute.top-0.right-0.h-full.flex.items-center.w-32.sm_w-48.justify-center(:href="$store.getters.txLink({ hash: status.tx.hash, chain: networkName })", target="_blank", rel="noopener noreferrer").bg-black-a08.rounded-lg
                   | Tx#[span(style="font-size:0.85em") ↗]
               
               //- (clear btn)
@@ -261,26 +260,34 @@ export default {
       this.getMintPrice()
       this.getMintCount()
     },
+
+    setInitialNetwork () {
+      if (this.$route.query.network) {
+        this.networkName = this.$route.query.network
+        return
+      }
+      // lookup...
+      this.$store.dispatch('getProvider', {})
+        .then(({ provider, chainId }) => {
+          const networks = this.$store.state.networks
+          let network = networks[Object.keys(networks).find(key => key === chainId.toString())]
+          if (network) {
+            // supported network
+            this.networkName = network.name
+          } else {
+            this.networkName = networks[this.$store.state.appDefaultNetworkId].name
+          }
+        })
+    }
   },
 
-  created () {    
-    this.$store.dispatch('getProvider', {})
-      .then(({ provider, chainId }) => {
-        const networks = this.$store.state.networks
-        let network = networks[Object.keys(networks).find(key => key === chainId.toString())]
-        if (network) {
-          // supported network
-          this.networkName = network.name
-        } else {
-          this.networkName = networks[this.$store.state.appDefaultNetworkId].name
-        }
-      })
+  created () {  
+    this.setInitialNetwork()
   },
 
   watch: {
     isConnected (connected) {
       if (!connected) {
-        this.clearSelection()
         this.status = null
         this.switchError = false
       }

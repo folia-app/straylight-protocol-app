@@ -52,7 +52,9 @@ module.exports = {
       48: '12rem',
       52: '13rem',
       56: '14rem',
+      60: '15rem',
       64: '16rem',
+      68: '17rem',
       72: '18rem',
       80: '20rem',
       'lh-snug': '1.375em'
