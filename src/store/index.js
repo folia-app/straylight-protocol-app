@@ -592,7 +592,7 @@ export default createStore({
         if (!mints) {
           // get all mint events...
           const events = await dispatch('getMintedEvents', { network })
-          console.log({ mintEvents: events })
+          // console.log({ mintEvents: events })
           
           // format
           mints = events.reverse().map(event => ({
@@ -661,7 +661,7 @@ export default createStore({
           
           // get events...
           const events = await nftContract.queryFilter('turmiteMove', fromBlock)
-          console.log({ moveEvents: events })
+          // console.log({ moveEvents: events })
 
           // format
           moves = events.reverse().map(event => ({

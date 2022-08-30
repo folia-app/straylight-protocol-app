@@ -20,7 +20,9 @@ article.board
         
         .flex-1.flex.justify-center.items-center
           //- board image
-          img.border.border-gray-700.transition.duration-500(:src="boardImage", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
+          //- img.border.border-gray-700.transition.duration-500(:src="boardImage", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
+  
+          board-animates(:tokenIds="tokenIds", :boardId="boardId")
 
         //- (next board link)
         .hidden.md_flex.w-20.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
@@ -65,9 +67,10 @@ import { ref } from 'vue'
 import Addr from '@/components/Addr.vue'
 import TurmiteDetails from '@/components/TurmiteDetails.vue'
 import BoardActivity from '@/components/BoardActivity.vue'
+import BoardAnimates from '@/components/BoardAnimates.vue'
 export default {
   name: 'NFT',
-  components: { Addr, TurmiteDetails, BoardActivity },
+  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates },
   data () {
     return {
       mint: undefined,

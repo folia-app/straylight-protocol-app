@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import { splitVendorChunkPlugin } from 'vite'
 import pluginRewriteAll from 'vite-plugin-rewrite-all'
+import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,6 +14,8 @@ export default defineConfig({
     // splits build into app.js and vendor.js
     // TODO - chunk vendor further
     splitVendorChunkPlugin(),
+
+    viteCommonjs()
   ],
   resolve: {
     alias: {
