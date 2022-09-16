@@ -1,37 +1,47 @@
 <template lang="pug">
 article.board
-
   .min-h-screen.flex.flex-col
 
     //- title row
     header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
       h1.text-md.sm_text-base #[span.opacity-40 {{$route.params.networkName}}_]world_{{ boardId }}
 
-    .flex-1.relative.flex.items-start.md_items-center.justify-center.pb-12.lg_pb-24.px-12.md_px-0
-      .flex.w-full
+    .flex-1.relative.px-8.pb-20.md_px-0.lg_pt-20.lg_pb-24.flex.flex-col
+      .sm_flex-1.flex.w-full
         //- (prev board link)
-        .hidden.md_flex.w-20.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.relative.group
-          template(v-if="boardImage && boardId - 1 >= 0")
+        .hidden.sm_flex.w-20.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.relative.group
+          template(v-if="boardImgSrc && boardId - 1 >= 0")
             router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
               .sr-only prev world
               //- label
               .absolute.top-0.h-full.right-0.transform.translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
                 | world_{{ boardId - 1 }}
         
-        .flex-1.flex.justify-center.items-center
-          //- board image
-          //- img.border.border-gray-700.transition.duration-500(:src="boardImage", :class="{'opacity-0': !boardImage, 'animate-pulse': imgIsLoading}")
-  
-          board-animates(:tokenIds="tokenIds", :boardId="boardId")
+        .flex-1.relative.flex.sm_flex-colff.items-centerff.borderff
+          //- contract image (loader + sizer)
+          img.sm_absolute.overlay.object-center.object-contain(v-if="boardImgSrc", ref="boardImg", :src="boardImgSrc", :class="{'opacity-0': !boardImgSrc, 'animate-pulse': !boardScale}")
+          
+          //- p5 board (scales based on <img> .object-contain size)
+          .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:class="{'opacity-0': boardScale === undefined || imgIsLoading}")
+            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="scaleBoard", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }")
+              
 
         //- (next board link)
         .hidden.md_flex.w-20.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
-          template(v-if="boardImage && boardId + 1 < boardCount")
+          template(v-if="boardImgSrc && boardId + 1 < boardCount")
             router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
               .sr-only next world
               //- label
               .absolute.top-0.h-full.left-0.transform.-translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
                 | world_{{ boardId + 1 }}
+
+      //- controls
+      //- .flex.justify-center.pt-4(:class="{'opacity-0': !boardScale}")
+        button.h-9.rounded-full.pl-5.flex.items-center.justify-center.text-sm.tracking-wide.font-bold(ref="previewBtn", @click="playing = !playing", :class="{'animate-pulse bg-accent3 text-accent1': playing, 'text-accent3': !playing}")
+          .pb-1 preview
+          .ml-2.mr-2
+            play-circle-icon.h-7(v-show="!playing")
+            pause-circle-icon.h-7(v-show="playing")
 
     //- turmite list
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
@@ -68,9 +78,11 @@ import Addr from '@/components/Addr.vue'
 import TurmiteDetails from '@/components/TurmiteDetails.vue'
 import BoardActivity from '@/components/BoardActivity.vue'
 import BoardAnimates from '@/components/BoardAnimates.vue'
+import { getImgSizeInfo } from '@/utils.js'
+import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 export default {
   name: 'NFT',
-  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates },
+  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon },
   data () {
     return {
       mint: undefined,
@@ -79,9 +91,12 @@ export default {
       mintedBy: undefined,
       sourceAsset: undefined,
       imgIsLoading: false,
-      boardImage: undefined,
+      boardImgSrc: undefined,
       boardCount: 0,
       activityFetch: 0,
+      boardScale:0,
+      boardSvg: '',
+      playing: false,
     }
   },
   computed: {
@@ -104,7 +119,21 @@ export default {
         })
 
         this.imgIsLoading = false
-        this.boardImage = imgSrc
+        this.boardImgSrc = imgSrc
+        await this.$nextTick()
+        // console.log(getImgSizeInfo(this.$refs.boardImg))
+        // debugger
+
+        // const div = document.createElement('div')
+        // div.innerHTML = atob(imgSrc.split(',')[1])
+        // const svg = div.children[0]
+        // // svg.setAttribute('preserveAspectRatio', 'none')
+        // svg.removeAttribute('width')
+        // svg.removeAttribute('height')
+        // svg.style.display = 'block'
+        // // svg.style.height = '100%'
+        // this.boardSvg = svg.outerHTML
+        this.listenToImgResize()
       } catch (e) {
         console.error(e)
         this.imgIsLoading = false
@@ -115,7 +144,7 @@ export default {
       //   )
       //   .then(imgSrc => {
       //     this.imgIsLoading = false
-      //     this.boardImage = imgSrc
+      //     this.boardImgSrc = imgSrc
       //   })
       //   .catch(e => {
       //     console.error(e)
@@ -126,6 +155,23 @@ export default {
       this.getBoardImage()
       // update activity list
       this.activityFetch++
+    },
+    scaleBoard () {
+      // const imgW = this.$refs.boardImg.offsetWidth
+      const { width } = getImgSizeInfo(this.$refs.boardImg)
+      const boardW = this.$refs.boardAnimator.$el.offsetWidth
+      requestAnimationFrame(() => {
+        this.boardScale = width / boardW  
+      })
+    },
+    listenToImgResize () {
+      const ro = new ResizeObserver(entries => {
+        // resize board if initialized
+        if (this.boardScale) {
+          this.scaleBoard()
+        }
+      });
+      ro.observe(this.$refs.boardImg)
     }
   },
   metaInfo () {

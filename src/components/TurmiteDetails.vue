@@ -7,11 +7,12 @@ li.turmite-detail.flex.flex-col
     
     .relative.z-10.px-5.pt-4.pb-4.flex.flex-col
       //- title
-      .flex
-        a.flex.justify-start.items-end.leading-none.pb-5.group(:class="{'-mb-1': isOwner}", :href="$store.getters.marketplaceLink({ token: tokenId, networkName })", target="_blank", rel="noopener noreferrer")
+      .flex.items-end.pb-5
+        .mr-3.mb-2px(:style="{width:'0.85rem', height:'0.85rem', background: colors[['W', 'N', 'S', 'E'].indexOf(props.label)]}")
+        a.flex.justify-start.items-end.leading-none.group(:class="{'-mb-1': isOwner}", :href="$store.getters.marketplaceLink({ token: tokenId, networkName })", target="_blank", rel="noopener noreferrer")
           .flex(:class="{'opacity-30': !owner}")
             | turmite_{{ props.label }}
-          .flex.items-end.opacity-20.ml-4.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
+          .flex.items-end.opacity-30.ml-4.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
             | \#{{ props.tokenId }} 
             span.ml-1(style="font-size:0.6em") ↗
       
@@ -59,6 +60,8 @@ import store from '@/store'
 import Addr from '@/components/Addr.vue'
 import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
 import rules from '../../contracts/rulesSelected.js'
+
+const colors = ['red', '#03de00', '#0081ff', '#fa8700'] // match from '@/plugins/p5_turmites/sketch.js'
 
 const props = defineProps(['tokenId', 'label', 'networkName'])
 const emit = defineEmits(['moved'])

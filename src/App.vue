@@ -18,7 +18,7 @@
 
           .h-22.sm_h-20.flex-1.flex.items-center.pb-1b
             //- div <b>Straylight Protocol</b>
-            router-link.rounded-lg(to="/")
+            router-link.rounded-lg(:to="$route.params.networkName ? { name: 'network-index', params: { networkName: $route.params.networkName }} : '/'")
               svg-logo.h-12.sm_h-10
 
         //- laptop right

@@ -2,16 +2,17 @@ const colors = ['red', '#03de00', '#0081ff', '#fa8700']
 
 var sketch = function (
   parentElementId,
-  turmiteData0,
-  turmiteData1,
-  turmiteData2,
-  turmiteData3,
+  turmitesData,
+  // turmiteData0,
+  // turmiteData1,
+  // turmiteData2,
+  // turmiteData3,
   turmiteIds,
   boardData,
   playbackButton
 ) {
   new p5(function (p5) {
-    var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
+    // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
     var initalizedTurmites = [];
     var board1 = boardData;
     var running = false;
@@ -77,7 +78,6 @@ var sketch = function (
 
     class turmiteobj {
       constructor(turmite1, field) {
-        console.log({ turmite1 })
         this.posx = parseInt(turmite1.posy);
         this.posy = parseInt(turmite1.posx);
         this.rule = turmite1.rule;
@@ -195,7 +195,7 @@ var sketch = function (
       drawTurmite(index) {
         p5.fill(colors[index]);
         p5.stroke(colors[index]);
-        p5.rect(this.posy * 5, (143 - this.posx) * 5, 5, 5);
+        p5.rect(this.posy * 5, (143 - this.posx) * 5, 4, 4);
       }
 
       step() {
@@ -210,13 +210,13 @@ var sketch = function (
       let myCanvas = p5.createCanvas(720, 720);
       myCanvas.parent(parentElementId)
       
-      p5.background(250);
+      p5.background(00); // black because pixel in bottom-left corner???
 
       for (var z = 0; z < turmiteIds.length; z++) {
         var newname = "Turmite " + String(turmiteIds[z]);
         turmitesToMove[newname] = [z];
       }
-      turmitesToMove["all"] = [0, 1, 2, 3];
+      turmitesToMove["all"] = [0, 1, 2, 3].slice(0, turmitesData.length);
 
       // let startbutton = p5.createButton("start");
       // startbutton.mousePressed(pressStart);
@@ -256,10 +256,12 @@ var sketch = function (
       // sel.changed(changeTurmiteSelection);
 
       boardNew = new board(board1);
+      
       for (var i = 0; i < turmitesData.length; i++) {
         var turmiteNew = new turmiteobj(turmitesData[i], boardNew);
         initalizedTurmites.push(turmiteNew);
       }
+      
       boardNew.reDrawCanvas();
 
       for (var b = 0; b < initalizedTurmites.length; b++) {

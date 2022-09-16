@@ -14,7 +14,7 @@
           <ComboboxButton
             class="absolute inset-y-0 right-0 flex items-center pr-2 focus_ring-0"
           >
-            <SelectorIcon class="h-5 w-5 text-inherit " aria-hidden="true" />
+            <ChevronUpDownIcon class="h-5 w-5 text-inherit " aria-hidden="true" />
           </ComboboxButton>
         </div>
 
@@ -71,7 +71,7 @@
 
     <!-- refresh button -->
     <button class="absolute top-0 right-0 h-full px-4 rounded-full flex items-center transform translate-x-full" @click.prevent="randomRule">
-      <refresh-icon class="h-6 w-6 transform scale-110 origin-center"></refresh-icon>
+      <arrow-path-icon class="h-6 w-6 transform scale-110 origin-center"></arrow-path-icon>
     </button>
   </div>
 </template>
@@ -86,8 +86,8 @@ import {
   ComboboxOption,
   TransitionRoot,
 } from '@headlessui/vue'
-import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
-import { RefreshIcon } from '@heroicons/vue/outline'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/24/solid'
+import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import rules from '../../contracts/rulesSelected.js'
 
 const props = defineProps(['modelValue'])

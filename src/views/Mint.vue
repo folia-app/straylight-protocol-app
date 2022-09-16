@@ -68,7 +68,7 @@ article.pb-64
                   template(v-if="!switchError")
                     button.absolute.overlay.flex.items-center.justify-center.rounded-lg(@click.prevent="switchNetwork")
                       | Switch
-                      <refresh-icon class="ml-3 h-6 w-6 transform scale-110 origin-center"></refresh-icon>
+                      <arrow-path-icon class="ml-3 h-6 w-6 transform scale-110 origin-center"></arrow-path-icon>
                   template(v-else)
                     a.absolute.overlay.flex.items-center.justify-center.rounded-lg(href="https://chainlist.org", target="_blank", rel="noopener noreferrer")
                       | Add #[span.ml-2(style="font-size:0.75em") ↗]
@@ -160,11 +160,11 @@ import SvgX from '@/components/SVG-X.vue'
 import SelectorRules from '@/components/SelectorRules.vue'
 import store from '@/store'
 import NetworkSwitcher from '@/components/NetworkSwitcher.vue'
-import { RefreshIcon } from '@heroicons/vue/outline'
+import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { utils } from 'ethers'
 export default {
   name: 'MintView',
-  components: { ConnectDisconnectBtn, SvgX, SelectorRules, NetworkSwitcher, RefreshIcon },
+  components: { ConnectDisconnectBtn, SvgX, SelectorRules, NetworkSwitcher, ArrowPathIcon },
   data () {
     return {
       networkName: undefined,

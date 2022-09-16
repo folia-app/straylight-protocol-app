@@ -1,8 +1,15 @@
 <template lang="pug">
-.board-animates
-  .border(id="myCanvasContainer")
-  .flex.justify-center.w-full.mt-2
-    button(ref="previewButton") play/pause
+.board-animates.relative
+  div.pointer-events-none(id="myCanvasContainer")
+
+  //- controls
+  button.absolute.overlay(v-show="rendered", ref="previewButton", @click.stop.prevent="playing = !playing")
+    .absolute.bottom-0.right-0.p-3
+      .h-9.rounded-full.pl-5.flex.items-center.justify-center.text-sm.tracking-wide.font-bold.text-accent3(:class="{'animate-pulse': playing}")
+        .pb-1(v-show="playing") preview
+        .ml-2
+          play-circle-icon.h-10(v-show="!playing")
+          pause-circle-icon.h-10(v-show="playing")
 </template>
 
 <script setup>
@@ -10,13 +17,17 @@ import { ref, watch } from 'vue'
 import store from '@/store'
 import tokenUriParser from '@/plugins/p5_turmites/tokenUriParser.js'
 import sketch from '@/plugins/p5_turmites/sketch.js'
+import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 
-const props = defineProps(['tokenIds', 'boardId'])
+const props = defineProps(['tokenIds', 'boardId', 'networkName'])
+const emit = defineEmits(['rendered'])
 
 let contract
 const turmiteData = ref([undefined, undefined, undefined, undefined])
 const boardData = ref()
 const previewButton = ref()
+const playing = ref(false)
+const rendered = ref(false)
 
 const getTokenURI = async (tokenId) => {
   try {
@@ -50,7 +61,13 @@ const init = () => {
     const tokenId = props.tokenIds[i]
     const index = i
     getTokenURI(tokenId).then((data) => {
-      turmiteData.value[index] = tokenUriParser.turmiteParser(data)
+      data = tokenUriParser.turmiteParser(data)
+      
+      if (isNaN(data.rule)) {
+        turmiteData.value[index] = data  
+      } else {
+        turmiteData.value[index] = null // no turmite
+      }
     })    
   }
   // get board data
@@ -71,16 +88,19 @@ const makeSketch = () => {
       board: boardData.value
     })
 
+    // filter out empty (null) turmites
+    const turmites = turmiteData.value.filter(val => val !== null)
+
     sketch(
       'myCanvasContainer',
-      turmiteData.value[0],
-      turmiteData.value[1],
-      turmiteData.value[2],
-      turmiteData.value[3],
+      turmites,
       ['W', 'S', 'N', 'E'],
       boardData.value,
       previewButton.value,
     );
+
+    emit('rendered')
+    rendered.value = true
   }
 }
 
