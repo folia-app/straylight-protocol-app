@@ -15,7 +15,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import store from '@/store'
-import tokenUriParser from '@/plugins/p5_turmites/tokenUriParser.js'
+import tokenUriParser from '@/plugins/p5_turmites/tokenURIParser.js'
 import sketch from '@/plugins/p5_turmites/sketch.js'
 import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 
