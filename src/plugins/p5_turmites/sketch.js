@@ -339,4 +339,4 @@ var sketch = function (
   });
 };
 
-export default sketch;
+export default sketch
