@@ -210,7 +210,7 @@ var sketch = function (
       let myCanvas = p5.createCanvas(720, 720);
       myCanvas.parent(parentElementId)
       
-      p5.background(00); // black because pixel in bottom-left corner???
+      p5.background(0); // black because pixel in bottom-left corner???
 
       for (var z = 0; z < turmiteIds.length; z++) {
         var newname = "Turmite " + String(turmiteIds[z]);
@@ -339,4 +339,4 @@ var sketch = function (
   });
 };
 
-module.exports = sketch;
+export default sketch;

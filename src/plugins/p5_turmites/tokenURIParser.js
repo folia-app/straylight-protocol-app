@@ -1,4 +1,4 @@
-var tparse = require("svg-parser");
+import { parse as tparse } from "svg-parser"
 
 var getTurmiteData = function (uriData) {
   var turmiteData = {
@@ -44,7 +44,7 @@ var parseBMPFromBoard = function (uriBoardData) {
   return withoutheader;
 };
 
-module.exports = {
+export default {
   turmiteParser: function (uriData) {
     var decodeJSON = decodeUri(uriData);
     var uriData = JSON.parse(decodeJSON);
