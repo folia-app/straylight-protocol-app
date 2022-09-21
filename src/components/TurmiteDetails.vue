@@ -8,7 +8,7 @@ li.turmite-detail.flex.flex-col
     .relative.z-10.px-5.pt-4.pb-4.flex.flex-col
       //- title
       .flex.items-end.pb-5
-        .mr-3.mb-2px(:style="{width:'0.85rem', height:'0.85rem', background: colors[['W', 'N', 'S', 'E'].indexOf(props.label)]}")
+        .mr-3.mb-2px(:style="{width:'0.9rem', height:'0.9rem', background: colors[['W', 'N', 'S', 'E'].indexOf(props.label)]}")
         a.flex.justify-start.items-end.leading-none.group(:class="{'-mb-1': isOwner}", :href="$store.getters.marketplaceLink({ token: tokenId, networkName })", target="_blank", rel="noopener noreferrer")
           .flex(:class="{'opacity-30': !owner}")
             | turmite_{{ props.label }}
