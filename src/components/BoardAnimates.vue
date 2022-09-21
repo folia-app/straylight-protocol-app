@@ -5,11 +5,11 @@
   //- controls
   button.absolute.overlay(v-show="rendered", ref="previewButton", @click.stop.prevent="playing = !playing")
     .absolute.bottom-0.right-0.p-3
-      .h-9.rounded-full.pl-5.flex.items-center.justify-center.text-sm.tracking-wide.font-bold.text-accent3(:class="{'animate-pulse': playing}")
+      .rounded-full.pl-5.flex.items-center.justify-center.text-lg.md_text-smm.tracking-wide.font-bold.text-accent3(:class="{'animate-pulse': playing}")
         .pb-1(v-show="playing") preview
         .ml-2
-          play-circle-icon.h-10(v-show="!playing")
-          pause-circle-icon.h-10(v-show="playing")
+          play-circle-icon.h-16.md_h-12(v-show="!playing")
+          pause-circle-icon.h-16.md_h-12(v-show="playing")
 </template>
 
 <script setup>

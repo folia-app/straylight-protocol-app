@@ -4,7 +4,7 @@ article.board
 
     //- title row
     header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
-      h1.text-md.sm_text-base #[span.opacity-40 {{$route.params.networkName}}_]world_{{ boardId }}
+      h1.text-md.sm_text-base.group #[router-link.opacity-40.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
 
     .flex-1.relative.px-8.pb-20.md_px-0.lg_pt-20.lg_pb-24.flex.flex-col
       .sm_flex-1.flex.w-full

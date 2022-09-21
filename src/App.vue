@@ -4,13 +4,13 @@
   .min-h-screen.flex.flex-col
 
     //- HEADER AS INTRO
-    header.fixed.top-0.left-0.w-full.z-20
+    header.fixed.top-0.left-0.w-full.z-20.pointer-events-none
       //- top bar
       .flex.flex-wrap.w-full.items-start.relative.z-10
         //- h1.sr-only Straylight Protocol
         
         //- laptop left
-        .flex
+        .flex.pointer-events-auto
           //- folia logo link
           a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
             .w-22.h-22.sm_w-20.sm_h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
@@ -23,7 +23,7 @@
 
         //- laptop right
         nav.sm_h-20.w-full.sm_w-auto.sm_flex-1.flex.justify-end.lg_justify-end.items-center.px-6.md_px-12.leading-none.text-md
-          .flex.flex-1.lg_flex-none
+          .flex.flex-1.lg_flex-none.pointer-events-auto
             //- border cell
             .w-full.lg_w-auto.flex.justify-evenly.border.rounded-full.border-current.flex.overflow-hiddenff.bg-accent1.text-center
               //- (info btn)
