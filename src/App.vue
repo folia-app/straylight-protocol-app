@@ -78,7 +78,7 @@
                 li there are 4 turmites per #[span.info-tag world]
                 li turmites can dig in ~800 #[span.info-tag patterns]
                 li players #[span.info-tag move()] their turmites with just gas
-                li and the contract #[span.info-tag renders] a new world
+                li the contract #[span.info-tag renders] a new world
 
               //- p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 

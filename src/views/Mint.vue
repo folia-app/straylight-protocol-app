@@ -16,22 +16,22 @@ article.pb-64
   form(@submit.prevent="mint", validate)
 
     //- preview
-    figure.mt-8.mb-12.px-4.flex.justify-center.w-full
+    //- figure.mt-8.mb-12.px-4.flex.justify-center.w-full
       .w-full(style="max-width:300px")
         .aspect-square.border.border-gray-700
 
-    section.w-full.lg_w-1x2.mx-auto
+    section.mt-12.w-full.max-w-6xl.mx-auto.px-2
       
       //- steps
       ol.px-px
         //- step: connect
-        li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex: !isConnected ? 4 : 1}")
+        li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex: 5}")
           .flex.items-center.justify-between
             header.relative.flex.items-center.h-40
               .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 1
-              h2.leading-none.pb-2px.text-md.sm_text-base select network #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+              h2.leading-none.pb-2px.text-md.sm_text-base select network #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
               //- <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            .pr-2.sm_pr-20
+            .pr-3.sm_pr-20
               .min-w-64.flex.justify-center
                 template(v-if="networkName")
                   network-switcher.relative.z-10(:initNetworkName="networkName", @change="val => { networkName = val }")
@@ -43,13 +43,13 @@ article.pb-64
             | {{ networkMintCount !== undefined ? networkMintCount : '...' }}/1024 minted
         
         //- step: connect
-        li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndexff: !isConnected ? 4 : 1}", :class="{'mb-5': isWrongNetwork || switchError }")
+        li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex:4}", :class="{'mb-5': (isConnected && isWrongNetwork) || switchError }")
           .flex.items-center.justify-between
             header.relative.flex.items-center.h-40
               .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 2
-              h2.leading-none.pb-2px.text-md.sm_text-base connect wallet #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+              h2.leading-none.pb-2px.text-md.sm_text-base connect wallet #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
               //- <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            .pr-2.sm_pr-20
+            .pr-3.sm_pr-20
               .min-w-64.flex.justify-center
                 connect-disconnect-btn.text-md.h-8(connectLbl="connect")
 
@@ -75,20 +75,24 @@ article.pb-64
 
         //- step: select turmite
         li.relative.-mt-px.bg-accent1.relative(style="z-index:3")
-          .border.rounded-lg(:class="{'opacity-50': !isConnected || isWrongNetwork}")
+          .border.rounded-lg(:class="{'opacity-30 pointer-events-none': !isConnected || isWrongNetwork}")
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
                 .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 3
-                h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite pattern #[span.opacity-50.ml-2(style="font-size:0.8em") &rarr;]
+                h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite pattern #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
 
               .pr-14.sm_pr-20
                 selector-rules.w-64(v-model="selection")
+
+            figure.mb-14.px-4.flex.justify-center.w-full(v-show="isConnected")
+              .w-full(style="max-width:250px")
+                .aspect-square.border.border-gray-700
 
             //- div.text-center.lowercase(v-if="selection") {{ selection.nickname || selection.name }}
 
         //- step: premove?
         li.relative.-mt-px.bg-accent1(style="z-index:2")
-          .border.rounded-lg(:class="{'opacity-40': !isConnected || isWrongNetwork}")
+          .border.rounded-lg(:class="{'opacity-30 pointer-events-none': !isConnected || isWrongNetwork}")
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
                 .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 4
@@ -102,12 +106,12 @@ article.pb-64
         //- button.absolute.overlay.bg-black-a60(v-if="selection", @click="clearSelection")
 
         //- (mint step)
-        li(:class="{'opacity-30': !isConnected || selection === undefined || isWrongNetwork}")
+        li(:class="{'opacity-30 pointer-events-none': !isConnected || selection === undefined || isWrongNetwork}")
           //- mint-btn
           button.block.w-full.bg-accent1(type="submit", :disabled="!isConnected || isWrongNetwork")
             .border.rounded-lg.relative(:class="{'mt-3px bg-accent2 text-accent1 border-none': isConnected, '-mt-px': !isConnected}")
               //-
-              .flex.h-40.w-full.items-center.justify-center.uppercase.tracking-wide.relative
+              .flex.h-40.w-full.items-center.justify-center.uppercase.tracking-wide.relative.font-bold
                 | Mint
               //- (icon)
               .absolute.w-18.md_w-40.flex-shrink-0.h-full.top-0.left-0.flex.items-center.justify-center(v-if="selection") ꩜

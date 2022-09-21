@@ -11,7 +11,7 @@
 
   .relative(v-if="menuVisible", v-click-outside="() => { menuVisible = false }")
     .absolute.top-0.left-0.pt-2
-      ul.bg-accent4.rounded-lg.pb-3.whitespace-nowrap.shadow-2xl
+      ul.bg-accent4.rounded-lg.pb-3.whitespace-nowrap.shadow
         .text-xxs.pl-3.pb-1b networks:
         li
           button.block.pl-6.pr-6.rounded-full.opacity-40(disabled, @click.prevent="setNetwork('ethereum')") ethereum
