@@ -1,7 +1,7 @@
 <template lang="pug">
 section.profile-worlds  
   template(v-if="!props.boards.length")
-    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b turmites] found
+    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b turmites] found on this network
   
   template(v-else)
     ul.boards-grid

@@ -84,9 +84,11 @@ article.pb-64
               .pr-14.sm_pr-20
                 selector-rules.w-64(v-model="selection")
 
-            figure.mb-14.px-4.flex.justify-center.w-full(v-show="isConnected")
-              .w-full(style="max-width:250px")
-                .aspect-square.border.border-gray-700
+            figure.mb-14.px-4.flex.justify-center.w-full(v-if="selection", v-show="isConnected")
+              .w-full(style="max-width:300px")
+                .aspect-square.border.border-gray-700.relative
+                  .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-sm.text-accent3 loading...
+                  .absolute.overlay(:style="{ background: `url(https://nascent.energy/straylightdocs/_images/${selection.nickname}_0.png)`, backgroundRepeat: 'no-repeat', backgroundSize: 'auto 100%' }", :key="selection.nickname")
 
             //- div.text-center.lowercase(v-if="selection") {{ selection.nickname || selection.name }}
 

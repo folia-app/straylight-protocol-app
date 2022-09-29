@@ -1,5 +1,5 @@
 <template>
-  <div class="selector-rules lowercase text-smm relative flex">
+  <div class="selector-rules lowercase text-smm relative z-20 flex">
     <Combobox v-model="selected">
       <div class="relative mt-1">
         <!-- input -->
