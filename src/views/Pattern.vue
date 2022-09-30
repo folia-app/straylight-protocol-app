@@ -18,7 +18,7 @@ article.pattern-view
       div.mt-18.flex
         //- mint pattern btn
         router-link.border.h-9.flex.items-center.justify-center.pl-4.pr-2.mouse_hover_bg-accent2.mouse_hover_text-black.rounded-full.text-md(:to="{name: 'mint', query: { network: networkName, rule: rule.rule }}")
-          .pb-1.lowercase mint pattern
+          .pb-1.lowercase mint {{ rule ? (rule.nickname || '??') : '' }}
           //- div(style="font-size:0.75em;padding:0 0.5em 0.1em;") ꩜
           div(style="font-size:0.75em;padding:0 0.5em 0em;") &rarr;
 
@@ -38,7 +38,7 @@ article.pattern-view
     //- (worlds with pattern)
     template(v-else)
       nav.relative.z-10.flex.px-6.lg_pl-20.text-md.justify-center.sm_justify-start.items-center
-        .h-9.border.border-accent2.rounded-full.px-7.flex.items-center.justify-center.pb-1.lowercase
+        .h-9.border.border-accent2.rounded-full.px-7.flex.items-center.justify-center.pb-1.lowercase.bg-accent2.text-accent1
           div worlds with #[b {{ rule ? rule.nickname : '??' }}]
 
         .flex-1.sm_flex-none.sm_w-16.border-t

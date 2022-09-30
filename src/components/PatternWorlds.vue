@@ -10,7 +10,7 @@ section.pattern-worlds.pb-64.lg_pb-36
         //- (loading...)
         .animate-pulse(v-else) loading...
 
-  template(v-else)
+  template(v-if="worlds")
     .flex-1.w-full.boards-grid
       //- boards...
       template(v-for="boardId in worlds")
