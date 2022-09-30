@@ -79,7 +79,7 @@ article.pb-64
             .flex.items-center.justify-between
               header.relative.flex.items-center.h-40
                 .w-18.md_w-40.flex-shrink-0.flex.items-center.justify-center.rounded-lg.text-smm 3
-                h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite pattern #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
+                h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite #[router-link.border-b.border-dashed.mouse_hover_border-solid(to="/patterns") pattern] #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
 
               .pr-14.sm_pr-20
                 selector-rules.w-64(v-model="selection", :initRule="$route.query.rule")
