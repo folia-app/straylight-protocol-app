@@ -1,5 +1,5 @@
 <template lang="pug">
-article.patterns-view
+article.patterns-view.pb-64.lg_pb-36
   header.mt-64.lg_mt-48.px-6.lg_pl-20
     h1.text-6xl.leading-none.text-accent3
       | patterns

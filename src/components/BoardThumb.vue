@@ -1,6 +1,6 @@
 <template lang="pug">
 //- TODO change url
-router-link.relative.group.block.hover_border.border.border-gray-800.-mr-1.-mb-1(:to="{name: 'board', params: {board:  boardId, networkName: network.name }}")
+router-link.relative.group.block.hover_border.border.border-gray-800.-mr-px.-mt-px(:to="{name: 'board', params: {board:  boardId, networkName: network.name }}")
   //- mint-image(:mint="mint")
   .relative
     board-image(:boardId="boardId", :network="network")

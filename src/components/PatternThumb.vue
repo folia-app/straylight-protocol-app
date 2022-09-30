@@ -1,5 +1,5 @@
 <template lang="pug">
-router-link.pattern-thumb.block.aspect-square.border.border-gray-700.relative.text-xs.lg_text-sm.group(:to="{name: 'pattern', params: { pattern: props.rule.rule }}")
+router-link.pattern-thumb.block.aspect-square.border.border-gray-700.relative.text-xs.lg_text-sm.group.-mr-px.-mb-px(:to="{name: 'pattern', params: { pattern: props.rule.rule }}")
   //- (loading...)
   .absolute.overlay.flex.items-center.justify-center.text-accent3(v-if="!loaded || error", :class="{'animate-pulse': !error}")
     | {{ !error ? 'loading...' : 'error :(' }}
