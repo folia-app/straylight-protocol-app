@@ -142,6 +142,9 @@ export default createStore({
       // meta.push({ property: 'og:url', content: ##ADDCANNONICAL## })
       return meta
     },
+    docsLink: state => (path) => {
+      return `${import.meta.env.VITE_APP_DOCS_ORIGIN}/${path}`
+    }
   },
   mutations: {
     SIGN_IN (state, { address }) {
@@ -592,7 +595,7 @@ export default createStore({
         if (!mints) {
           // get all mint events...
           const events = await dispatch('getMintedEvents', { network })
-          // console.log({ mintEvents: events })
+          console.log({ mintEvents: events })
           
           // format
           mints = events.reverse().map(event => ({

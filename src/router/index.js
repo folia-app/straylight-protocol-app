@@ -46,6 +46,18 @@ const routes = [
   },
 
   {
+    path: '/patterns',
+    name: 'patterns',
+    component: () => import('../views/Patterns.vue')
+  },
+
+  {
+    path: '/patterns/:pattern',
+    name: 'pattern',
+    component: () => import('../views/Patterns.vue')
+  },
+
+  {
     path: '/:address',
     children: [
       {
