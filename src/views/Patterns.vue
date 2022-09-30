@@ -1,6 +1,6 @@
 <template lang="pug">
 article.patterns-view
-  header.mt-56.lg_mt-48.px-6.lg_pl-20
+  header.mt-64.lg_mt-48.px-6.lg_pl-20
     h1.text-6xl.leading-none.text-accent3
       | patterns
 

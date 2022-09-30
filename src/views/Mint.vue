@@ -55,16 +55,16 @@ article.pb-64
 
           //- !! wrong network
           template(v-if="isConnected && isWrongNetwork")
-            .min-h-40.flex.relative.text-smm.font-bold.text-accent1(:class="{'bg-accent2': !switchError, 'bg-accent3': switchError}")
+            .min-h-40.flex.relative.text-smm.font-boldff.text-accent1(:class="{'bg-accent2': !switchError, 'bg-accent3': switchError}")
                 //- msg
                 .flex-1.flex.items-center.justify-center.break-all.px-6
                   div(v-if="!switchError")
-                    | your wallet is not connected to selected network: #[span.uppercase {{ networkName }}]
+                    | your wallet is #[b not connected] to the #[b selected network] – #[span.uppercase.font-bold {{ networkName }}]
                   div(v-else)
                     | couldn't switch to #[span.uppercase {{ networkName }}] - you may need to add it to your wallet first.
                 
                 //- (cta)
-                .relative.w-32.sm_w-48.justify-center.bg-black-a08.rounded-lg
+                .relative.w-32.sm_w-48.justify-center.bg-black-a08.rounded-lg.font-bold
                   template(v-if="!switchError")
                     button.absolute.overlay.flex.items-center.justify-center.rounded-lg(@click.prevent="switchNetwork")
                       | Switch
@@ -82,13 +82,13 @@ article.pb-64
                 h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite pattern #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
 
               .pr-14.sm_pr-20
-                selector-rules.w-64(v-model="selection")
+                selector-rules.w-64(v-model="selection", :initRule="$route.query.rule")
 
             figure.mb-14.px-4.flex.justify-center.w-full(v-if="selection", v-show="isConnected")
               .w-full(style="max-width:300px")
                 .aspect-square.border.border-gray-700.relative
                   .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-sm.text-accent3 loading...
-                  .absolute.overlay(:style="{ background: `url(https://nascent.energy/straylightdocs/_images/${selection.nickname}_0.png)`, backgroundRepeat: 'no-repeat', backgroundSize: 'auto 100%' }", :key="selection.nickname")
+                  img.absolute.overlay.object-contain.object-center(:src="$store.getters.docsLink(`/straylightdocs/_images/turmites/${selection.nickname}_0.png`)", :key="selection.nickname")
 
             //- div.text-center.lowercase(v-if="selection") {{ selection.nickname || selection.name }}
 
@@ -237,6 +237,14 @@ export default {
     async switchNetwork () {
       try {
         this.switchError = false
+        
+        if (this.$route.query.network) {
+          // if route loaded a network, update it so network-change refresh doesn't try to load previous network
+          const rt = JSON.parse(JSON.stringify(this.$route))
+          rt.query.network = this.networkName
+          this.$router.replace(rt)  
+        }
+
         await this.$store.dispatch('switchNetwork', { name: this.networkName })
       } catch (e) {
         this.switchError = true

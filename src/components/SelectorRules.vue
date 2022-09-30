@@ -8,7 +8,7 @@
         >
           <ComboboxInput
             class="selector-rules__input w-full border-none py-2 pl-3 pr-10  leading-5 focus_bg-accent2 focus_text-accent1 lowercase"
-            :displayValue="(rule) => rule.nickname || rule.name"
+            :displayValue="(rule) => rule.nickname || rule.name || rule.rule"
             @change="query = $event.target.value"
           />
           <ComboboxButton
@@ -90,12 +90,10 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/24/solid'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import rules from '../../contracts/rulesSelected.js'
 
-const props = defineProps(['modelValue'])
+const props = defineProps(['modelValue', 'initRule'])
 const emit = defineEmits(['update:modelValue'])
 
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
-
-const selected = ref(rules[randInt(0, rules.length - 1)])
+const selected = ref({})
 const query = ref('')
 
 const fileteredRules = computed(() =>
@@ -110,9 +108,23 @@ const fileteredRules = computed(() =>
 )
 
 const randomRule = () => {
+  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+
   selected.value = rules[randInt(0, rules.length - 1)]
 }
 
+const setIntialValue = () => {
+  if (props.initRule) {
+    const ruleset = rules.find(set => set.rule === props.initRule)
+    if (ruleset) {
+      selected.value = ruleset
+      return
+    }
+  }
+  randomRule()
+}
+
+setIntialValue()
 // emit init value
 emit('update:modelValue', selected.value)
 

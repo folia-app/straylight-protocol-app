@@ -1,15 +1,15 @@
 <template lang="pug">
 .profile-network.flex.flex-col.w-full
-  nav.relative.z-10.mt-22.flex.px-6.lg_pl-20.text-md.justify-center.sm_justify-start.items-center
-    network-switcher(:initNetworkName="$route.params.networkName", @change="onNetworkChange")
-    
-    .flex-1.sm_flex-none.sm_w-16.border-t
-    
+  nav.relative.z-10.mt-22.flex.px-6.lg_pl-20.text-md.justify-center.sm_justify-start.items-center    
     router-link.h-9.border.border-accent2.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile-network__worlds', params: { address: route.params.address }}") turmites
 
     .w-2.border-t
 
     router-link.h-9.border.border-accent2.rounded-full.px-7.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'profile-network__activity', params: { address: route.params.address }}") activity
+
+    .flex-1.sm_flex-none.sm_w-16.border-t
+
+    network-switcher(:initNetworkName="$route.params.networkName", @change="onNetworkChange")
 
   //- view
   section.flex-1.flex.flex-col.mt-14

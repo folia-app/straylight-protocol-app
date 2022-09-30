@@ -76,7 +76,7 @@
               ul.mt-em
                 li players mint NFT-#[span.info-tag turmites]
                 li there are 4 turmites per #[span.info-tag world]
-                li turmites can dig in ~800 #[span.info-tag patterns]
+                li turmites can dig in ~60,000 #[span.info-tag #[router-link(to="/patterns") patterns #[span(style="font-size:0.8em") &rarr;]]]
                 li players #[span.info-tag move()] their turmites with just gas
                 li the contract #[span.info-tag renders] a new world
 
@@ -86,8 +86,8 @@
               a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
                 | discord #[span.ml-1(style="font-size:0.75em") ↗]
               
-              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2.opacity-20.pointer-events-none(href="https://snapshot.org/#/decomposer.eth", target="_blank", rel="noopener noreferrer")
-                | wiki #[span.ml-1(style="font-size:0.75em") ↗]
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.docsLink()", target="_blank", rel="noopener noreferrer")
+                | docs #[span.ml-1(style="font-size:0.75em") ↗]
               
               a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.etherscanLink({ networkName: 'ethereum' })", target="_blank", rel="noopener noreferrer")
                 | ethereum contract #[span.ml-1(style="font-size:0.75em") ↗]
@@ -220,6 +220,7 @@ export default {
   watch: {
     '$route' () {
       this.userMenuVisible = false
+      this.infoVisible = false
     }
   }
 }

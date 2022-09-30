@@ -2,24 +2,27 @@
 article.pattern-view
   
   .mt-64.lg_mt-48.flex.w-full.justify-between.flex-row-reverse.px-6.lg_px-12.lg_pl-20
-    //- left col
     header.flex-1.pl-12.lg_pl-20
       .relative.z-10.mb-1
+        //- back link
         router-link.px-2.text-sm.leading-tight.rounded-lg.bg-accent3.text-accent1.font-bold(:to="{name: 'patterns'}")
           | &larr; PATTERNS
       
+      //- nickname
       h1.text-6xl.leading-none.lowercase
         | {{ name }}
       
+      //- rule id
       .w-full.mt-2.opacity-40.text-xs.lg_order-2 {{ route.params.pattern }}
 
-      div.mt-18
-        button.border.h-9.flex.items-center.justify-center.pl-4.pr-2.mouse_hover_bg-accent2.mouse_hover_text-black.rounded-full.text-md
+      div.mt-18.flex
+        //- mint pattern btn
+        router-link.border.h-9.flex.items-center.justify-center.pl-4.pr-2.mouse_hover_bg-accent2.mouse_hover_text-black.rounded-full.text-md(:to="{name: 'mint', query: { network: networkName, rule: rule.rule }}")
           .pb-1.lowercase mint pattern
           //- div(style="font-size:0.75em;padding:0 0.5em 0.1em;") ꩜
           div(style="font-size:0.75em;padding:0 0.5em 0em;") &rarr;
 
-    //- figure.w-1x2.sm_w-auto.pl-6.md_pl-8
+    //- preview img
     figure.w-1x2.sm_flex-1.border.border-gray-700(style="max-width:360px")
       .aspect-square.flex.items-center.justify-center.relative
         .animate-pulse.text-sm.text-accent2 loading...

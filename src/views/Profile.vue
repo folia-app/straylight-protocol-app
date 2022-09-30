@@ -9,7 +9,7 @@ article.profile
           .px-1.text-sm.leading-tight.rounded-lg.bg-accent3.text-accent1.font-bold YOU
       
       .flex.flex-wrap.items-end
-        h1.text-6xl.leading-none.lg_order-1
+        h1.text-6xl.leading-none.lg_order-1.text-accent3
           addr(:address="address")
         
         .w-full.mt-2.opacity-40.text-xs.lg_order-2 {{ address }}

@@ -6,7 +6,7 @@ section.pattern-worlds.pb-64.lg_pb-36
         template(v-if="status")
           div(v-if="status", v-html="status")
           div
-            | #[router-link.border-b.border-dashed.mouse_hover_border-solid(v-if="worlds && !worlds.length", :to="{ name: 'mint' }") mint one]&nbsp;!
+            | #[router-link.border-b.border-dashed.mouse_hover_border-solid(v-if="worlds && !worlds.length", :to="{ name: 'mint', query: { network: props.networkName, rule: rule.rule }}") mint one]&nbsp;!
         //- (loading...)
         .animate-pulse(v-else) loading...
 
