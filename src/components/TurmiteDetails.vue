@@ -11,9 +11,10 @@ li.turmite-detail.flex.flex-col
         .mr-3.mb-2px(:style="{width:'0.9rem', height:'0.9rem', background: colors[['W', 'N', 'S', 'E'].indexOf(props.label)]}")
         a.flex.justify-start.items-end.leading-none.group(:class="{'-mb-1': isOwner}", :href="$store.getters.marketplaceLink({ token: tokenId, networkName })", target="_blank", rel="noopener noreferrer")
           .flex(:class="{'opacity-30': !owner}")
-            | turmite_{{ props.label }}
-          .flex.items-end.opacity-30.ml-4.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
-            | \#{{ props.tokenId }} 
+            | turmite_{{ props.tokenId }}
+            //- | turmite_{{ props.label }}
+          .flex.items-end.opacity-30.ml-1.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
+            //- | \#{{ props.tokenId }} 
             span.ml-1(style="font-size:0.6em") ↗
       
       //- (owner, moves)
@@ -33,9 +34,10 @@ li.turmite-detail.flex.flex-col
             //- pattern
             .h-9.flex.items-center
               .inline-block.opacity-30(style="min-width:3.5em") pattern
-              .inline-block.lowercase 
-                | {{ ruleNickname || '...' }}
-                //- span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
+              template(v-if="ruleset")
+                router-link.inline-block.lowercase(:to="{name: 'pattern', params: { pattern: ruleset.rule }, query: { network: $route.params.networkName }}")
+                  span.font-bold {{ ruleset.nickname || '??' }}
+                  span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
 
           //- (owner actions)
           template(v-if="isOwner")
@@ -82,7 +84,6 @@ const getOwner = async () => {
 }
 
 const attributes = ref()
-const ruleNickname = computed(() => attributes.value && (rules.find(row => row.rule === attributes.value[1].value))?.nickname)
 
 const getAttr = async () => {
   try {
@@ -95,6 +96,10 @@ const getAttr = async () => {
     rule.value = '??'
   }
 }
+
+const ruleset = computed(() => {
+  return attributes.value && (rules.find(row => row.rule === attributes.value[1].value))
+})
 
 getOwner()
 </script>

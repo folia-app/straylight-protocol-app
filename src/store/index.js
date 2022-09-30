@@ -58,6 +58,7 @@ export default createStore({
 
       mints: null,
       mintCount: undefined,
+      mintEvents: {}, // save per network
       tokens: [],
 
       moves: undefined,
@@ -209,6 +210,10 @@ export default createStore({
 
     SAVE_MOVES (state, moves) {
       state.moves = moves
+    },
+
+    SAVE_NETWORK_MINT_EVENTS (state, { networkName, mintEvents }) {
+      state.mintEvents[networkName] = mintEvents
     }
   },
   actions: {
@@ -572,14 +577,23 @@ export default createStore({
       }
     },
 
-    async getMintedEvents ({ state, dispatch }, { network }) {
+    async getMintedEvents ({ state, commit, dispatch }, { network, cached = false }) {
       try {
+        if (cached) {
+          const events = state.mintEvents[network.name] ?? []
+          if (events.length) {
+            return events
+          }
+        }
+
         const fromBlock = await dispatch('getDeployBlock', { network })
 
         const nftContract = await dispatch('getNFTContract', { network })
 
         // get events...
         const mintEvents = await nftContract.queryFilter('turmiteMint', fromBlock)
+
+        commit('SAVE_NETWORK_MINT_EVENTS', { networkName: network.name, mintEvents })
 
         return mintEvents
       } catch (e) {

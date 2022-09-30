@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/patterns/:pattern',
     name: 'pattern',
-    component: () => import('../views/Patterns.vue')
+    component: () => import('../views/Pattern.vue')
   },
 
   {
