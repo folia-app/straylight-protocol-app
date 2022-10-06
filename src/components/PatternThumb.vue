@@ -4,7 +4,7 @@ router-link.pattern-thumb.block.aspect-square.border.border-gray-700.relative.te
   .absolute.overlay.flex.items-center.justify-center.text-accent3(v-if="!loaded || error", :class="{'animate-pulse': !error}")
     | {{ !error ? 'loading...' : 'error :(' }}
   //- (observer)
-  observer(v-if="!loaded", @visible="load = true")
+  observer(v-if="!loaded", @visible="load = true", :threshold="0.1")
 
   //- title
   h6.absolute.overlay.z-10.p-px.text-xs.leading-tight.lowercase.flex

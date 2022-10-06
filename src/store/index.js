@@ -90,7 +90,7 @@ export default createStore({
     isConnectedAddr: (state) => (addr) => addr && addr.toLowerCase() === state.address,
     chainId: () => ({ networkName }) => {
       // get chainId from networkName (of supported networks)
-      return Object.keys(networks).find(key => networks[key].name === networkName)
+      return Object.keys(networks).find(key => networks[key].name === networkName.toLowerCase())
     },
     network: (state, getters) => ({ networkName }) => {
       const chainId = getters.chainId({ networkName }) || appDefaultNetworkId

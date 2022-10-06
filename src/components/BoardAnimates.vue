@@ -1,9 +1,9 @@
 <template lang="pug">
 .board-animates.relative
-  div.pointer-events-none(id="myCanvasContainer")
+  div.pointer-events-none(ref="containerEl", id="myCanvasContainer")
 
   //- controls
-  button.absolute.overlay(v-show="rendered", ref="previewButton", @click.stop.prevent="playing = !playing")
+  //- button.absolute.overlay(v-show="rendered", ref="previewButton", @click.stop.prevent="playing = !playing")
     .absolute.bottom-0.right-0.p-3
       .rounded-full.pl-5.flex.items-center.justify-center.text-lg.md_text-smm.tracking-wide.font-bold.text-accent3(:class="{'animate-pulse': playing}")
         .pb-1(v-show="playing") preview
@@ -19,8 +19,8 @@ import tokenUriParser from '@/plugins/p5_turmites/tokenURIParser.js'
 import sketch from '@/plugins/p5_turmites/sketch.js'
 import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 
-const props = defineProps(['tokenIds', 'boardId', 'networkName'])
-const emit = defineEmits(['rendered'])
+const props = defineProps(['tokenIds', 'boardId', 'networkName', 'previewButton'])
+const emit = defineEmits(['rendered', 'loading'])
 
 let contract
 const turmiteData = ref([undefined, undefined, undefined, undefined])
@@ -28,6 +28,7 @@ const boardData = ref()
 const previewButton = ref()
 const playing = ref(false)
 const rendered = ref(false)
+const containerEl = ref()
 
 const getTokenURI = async (tokenId) => {
   try {
@@ -76,6 +77,13 @@ const init = () => {
 }
 
 const makeSketch = () => {
+  emit('loading', true)
+
+  // clear any existing canvases
+  while (containerEl.value.lastChild) {
+    containerEl.value.removeChild(containerEl.value.lastChild)
+  }
+
   const hasTurmiteData = turmiteData.value.filter(val => val === undefined).length === 0
   const hasBoardData = boardData.value !== undefined
   
@@ -96,7 +104,7 @@ const makeSketch = () => {
       turmites,
       ['W', 'S', 'N', 'E'],
       boardData.value,
-      previewButton.value,
+      props.previewButton,
     );
 
     emit('rendered')

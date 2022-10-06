@@ -1,4 +1,4 @@
-const colors = ['red', '#03de00', '#0081ff', '#fa8700']
+const colors = ['red', '#0081ff', '#03de00', '#fa8700']
 
 var sketch = function (
   parentElementId,
@@ -11,7 +11,7 @@ var sketch = function (
   boardData,
   playbackButton
 ) {
-  new p5(function (p5) {
+  const new p5(function (p5) {
     // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
     var initalizedTurmites = [];
     var board1 = boardData;
@@ -22,6 +22,9 @@ var sketch = function (
     var choosenTurmites = "all";
     let sel;
     let boardNew
+    let frameRate = 30
+    // exp
+    let stateOfField
 
     class board {
       constructor(initBoard) {
