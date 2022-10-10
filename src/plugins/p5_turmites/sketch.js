@@ -209,13 +209,12 @@ var sketch = function (
       // p5.background(250);
       p5.background(0);
 
-      console.log({ frameRate })
       p5.frameRate(frameRate)
       
       //p5.noLoop();
 
       for (let z = 0; z < turmiteIds.length; z++) {
-        var newname = "Turmite " + String(turmiteIds[z]);
+        var newname = turmiteIds[z];
         turmitesToMove[newname] = [z];
       }
       turmitesToMove["all"] = [0, 1, 2, 3].slice(0, turmitesData.length);
@@ -301,8 +300,13 @@ var sketch = function (
   });
 
   myp5.myMethods = {
-    changeTurmiteSelection: function () {
-      choosenTurmites = sel.value();
+    changeTurmiteSelection: function (value = '') {
+      if (!turmiteIds.includes(value)) {
+        console.warn(`${value} not found in turmiteIds:`, JSON.stringify(turmiteIds))
+        value = undefined
+      }
+      value = value || 'all'
+      choosenTurmites = value
     },
 
     // pressStart: function () {
@@ -330,11 +334,16 @@ var sketch = function (
       userinput = this.value();
     },
 
-    simulateSteps: function () {
+    simulateSteps: function ({ turmiteId, steps }) {
       if (myp5.isLooping() == true) {
         myp5.noLoop();
       }
-      let val = slider.value();
+      
+      if (turmiteId) {
+        myp5.myMethods.changeTurmiteSelection(turmiteId)
+      }
+
+      let val = steps // slider.value();
       var tumitesToMOVE = turmitesToMove[choosenTurmites];
       for (var u = 0; u < tumitesToMOVE.length; u++) {
         for (var moves = 0; moves < val; moves++) {

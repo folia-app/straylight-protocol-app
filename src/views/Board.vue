@@ -62,7 +62,7 @@ article.board
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName")
+        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName", @preview="previewTurmite", @moveFormOpened="onMoveFormVisible")
       
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch")
 
@@ -199,6 +199,7 @@ export default {
       ro.observe(this.$refs.boardImg)
     },
     onBoardRender (myp5) {
+      console.log('RENDER', this.boardKey)
       this.myp5 = myp5
       this.scaleBoard()
       this.controlsVisible = true
@@ -211,6 +212,9 @@ export default {
       }
     },
     async resetBoard () {
+      this.myp5.myMethods.reset()
+      return
+
       this.boardScale = undefined // flashes img as loader
       await this.$nextTick()
       this.boardKey++
@@ -218,6 +222,16 @@ export default {
       this.controlsVisible = false
       this.resetBtnVisible = false
     },
+    onMoveFormVisible () {
+      // reset board so can properly preview
+      if (this.resetBtnVisible) {
+        this.resetBoard()
+      }
+    },
+    previewTurmite ({ tokenId, moveQty }) {
+      this.myp5.myMethods.simulateSteps({ turmiteId: tokenId, steps: moveQty })
+      this.resetBtnVisible = true
+    }
   },
   metaInfo () {
     const title = `world_` + this.boardId

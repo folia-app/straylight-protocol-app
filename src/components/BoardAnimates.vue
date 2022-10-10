@@ -29,6 +29,55 @@ const previewButton = ref()
 const playing = ref(false)
 const containerEl = ref()
 
+const getTokenURI = async (tokenId) => {
+  try {
+    contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
+    const data = await contract.tokenURI(tokenId)
+    console.log(tokenId, { data })
+    return data
+    // convert from base64
+    // const json = JSON.parse(atob(data.split(',')[1]))
+    // attributes.value = json.attributes
+  } catch (e) {
+    console.error(e)
+    return 0
+  }
+}
+
+const getBitmap = async (boardId) => {
+  try {
+    contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
+    const data = await contract.getBitmap(boardId, 0, 0, true)
+    console.log('boardData', { data })
+    return data
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const init = () => {
+  // get each tokendata async...
+  for (var i = 0; i < props.tokenIds.length; i++) {
+    const tokenId = props.tokenIds[i]
+    const index = i
+
+    getTokenURI(tokenId).then((data) => {
+      data = tokenUriParser.turmiteParser(data)
+      
+      if (isNaN(data.rule)) {
+        turmiteData.value[index] = data  
+      } else {
+        turmiteData.value[index] = null // no turmite
+      }
+    })    
+  }
+
+  // get board data
+  getBitmap(props.boardId)
+    .then(data => { boardData.value = tokenUriParser.boardParser(data) })
+}
+
+// p5 library lazy loader
 const loadP5Library = async () => {
   if (!window.p5Loader && !window.p5) {
     window.p5Loader = new Promise((resolve, reject) => {
@@ -57,55 +106,10 @@ const loadP5Library = async () => {
   return window.p5Loader
 }
 
-const getTokenURI = async (tokenId) => {
-  try {
-    contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
-    const data = await contract.tokenURI(tokenId)
-    console.log(tokenId, { data })
-    return data
-    // convert from base64
-    // const json = JSON.parse(atob(data.split(',')[1]))
-    // attributes.value = json.attributes
-  } catch (e) {
-    console.error(e)
-    return 0
-  }
-}
-
-const getBitmap = async (boardId) => {
-  try {
-    contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
-    const data = await contract.getBitmap(boardId, 0, 0, true)
-    console.log('boardData', { data })
-    return data
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-const init = () => {
-  // get tokendata
-  for (var i = 0; i < props.tokenIds.length; i++) {
-    const tokenId = props.tokenIds[i]
-    const index = i
-    getTokenURI(tokenId).then((data) => {
-      data = tokenUriParser.turmiteParser(data)
-      
-      if (isNaN(data.rule)) {
-        turmiteData.value[index] = data  
-      } else {
-        turmiteData.value[index] = null // no turmite
-      }
-    })    
-  }
-  // get board data
-  getBitmap(props.boardId)
-    .then(data => { boardData.value = tokenUriParser.boardParser(data) })
-}
-
 const makeSketch = async () => {
   emit('loading', true)
-  
+    
+  // wait to load p5 library
   try {
     await loadP5Library()  
   } catch (e) {
@@ -117,9 +121,6 @@ const makeSketch = async () => {
   if (myp5) {
     myp5.remove()
   }
-  // while (containerEl.value.lastChild) {
-  //   containerEl.value.removeChild(containerEl.value.lastChild)
-  // }
 
   const hasTurmiteData = turmiteData.value.filter(val => val === undefined).length === 0
   const hasBoardData = boardData.value !== undefined
@@ -140,7 +141,7 @@ const makeSketch = async () => {
     myp5 = sketch(
       'myCanvasContainer',
       turmites,
-      ['W', 'S', 'N', 'E'],
+      props.tokenIds,
       boardData.value,
       props.frameRate
     );
