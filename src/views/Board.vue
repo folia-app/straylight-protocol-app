@@ -23,7 +23,7 @@ article.board
           
           //- p5 board (scales based on <img> .object-contain size)
           .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:class="{'opacity-0': boardScale === undefined || imgIsLoading}")
-            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :key="boardKey", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :frameRate="15")
+            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :key="boardKey", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :frameRate="60")
 
             //- controls, below board
             .absolute.bottom-0.left-0.w-full(v-show="controlsVisible")
@@ -62,7 +62,7 @@ article.board
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName")
+        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName", @preview="previewTurmite", @moveFormOpened="onMoveFormVisible")
       
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch")
 
@@ -218,6 +218,16 @@ export default {
       this.controlsVisible = false
       this.resetBtnVisible = false
     },
+    onMoveFormVisible () {
+      // reset board so can properly preview
+      if (this.resetBtnVisible) {
+        this.resetBoard()
+      }
+    },
+    previewTurmite ({ tokenId, moveQty }) {
+      this.myp5.myMethods.simulateSteps({ turmiteId: tokenId, steps: moveQty })
+      this.resetBtnVisible = true
+    }
   },
   metaInfo () {
     const title = `world_` + this.boardId

@@ -41,7 +41,8 @@ li.turmite-detail.flex.flex-col
 
           //- (owner actions)
           template(v-if="isOwner")
-            button.w-full.md_w-auto.mt-2.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="moveFormVisible = !moveFormVisible") {{ moveFormVisible ? 'cancel' : 'move' }}
+            button.w-full.md_w-auto.mt-2.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="toggleMoveForm")
+              | {{ moveFormVisible ? 'cancel' : 'move' }}
       
       //- ("join/mint")
       template(v-else)
@@ -53,7 +54,7 @@ li.turmite-detail.flex.flex-col
     template(v-if="moveFormVisible")
       .mt-px.lg_my-0.relative
         .lg_absolute.bottom-0.left-0.w-full.p-4.pb-5.rounded-lg.bg-accent3.text-accent1
-          turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", @moved="emit('moved')")
+          turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", v-bind="$attrs")
 </template>
 
 <script setup>
@@ -66,12 +67,19 @@ import rules from '../../contracts/rulesSelected.js'
 const colors = ['red', '#03de00', '#0081ff', '#fa8700'] // match from '@/plugins/p5_turmites/sketch.js'
 
 const props = defineProps(['tokenId', 'label', 'networkName'])
-const emit = defineEmits(['moved'])
+const emit = defineEmits(['moveFormOpened'])
 
 const owner = ref()
 const isOwner = computed(() => store.getters.isConnectedAddr(owner.value))
 
 const moveFormVisible = ref(false)
+
+const toggleMoveForm = () => {
+  if (!moveFormVisible.value) {
+    emit('moveFormOpened')
+  }
+  moveFormVisible.value = !moveFormVisible.value
+}
 
 const getOwner = async () => {
   try {
