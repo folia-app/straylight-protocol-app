@@ -9,21 +9,21 @@ var sketch = function (
   // turmiteData3,
   turmiteIds,
   boardData,
-  playbackButton
+  frameRate = 60
 ) {
-  new p5(function (p5) {
-    // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
-    var initalizedTurmites = [];
-    var board1 = boardData;
-    let slider;
-    var userinput;
-    var turmitesToMove = {};
-    var choosenTurmites = "all";
-    let sel;
-    let boardNew
-    //p5.noLoop();
+  // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
+  var initalizedTurmites = [];
+  var board1 = boardData;
+  let slider;
+  var userinput;
+  var turmitesToMove = {};
+  var choosenTurmites = "all";
+  let sel;
+  let boardNew
+  let initializing = true
+  //p5.noLoop();
 
-
+  const myp5 = new p5(function (p5) {
     class board {
       constructor(initBoard) {
         this.computationBoard = this.construct2DArray(initBoard, 144, 144);
@@ -65,11 +65,11 @@ var sketch = function (
         for (var t = 0; t < this.boardCache.length; t++){
           if (this.boardCache[t][2] == 255) {
             p5.fill("white");
-            p5.stroke("white");
+            p5.noStroke()
             p5.rect(this.boardCache[t][1] * 5, (143 -this.boardCache[t][0]) * 5, 5, 5);
           }
           else if (this.boardCache[t][2] == 0) {
-            p5.stroke("black");
+            p5.noStroke()
             p5.fill("black");
             p5.rect(this.boardCache[t][1] * 5, (143 - this.boardCache[t][0]) * 5, 5, 5);
           }
@@ -83,11 +83,11 @@ var sketch = function (
           for (var y = 0; y < 144; y++) {
             if (plzreverse[x][y] == 255) {
               p5.fill("white");
-              p5.stroke("white");
+              p5.noStroke()
               p5.rect(y * 5, x * 5, 5, 5);
             }
             else if (plzreverse[x][y] == 0) {
-              p5.stroke("black");
+              p5.noStroke()
               p5.fill("black");
               p5.rect(y * 5, x * 5, 5, 5);
             }
@@ -189,7 +189,7 @@ var sketch = function (
 
       drawTurmite(index) {
         p5.fill(colors[index]);
-        p5.stroke(colors[index]);
+        // p5.noStroke()
         p5.rect(this.posy * 5, (143 - this.posx) * 5, 5, 5);
       }
 
@@ -208,6 +208,9 @@ var sketch = function (
       
       // p5.background(250);
       p5.background(0);
+
+      console.log({ frameRate })
+      p5.frameRate(frameRate)
       
       //p5.noLoop();
 
@@ -225,7 +228,7 @@ var sketch = function (
       // stopbutton.mousePressed(pressStop);
       // stopbutton.position(80, 20);
 
-      playbackButton.addEventListener('click', () => togglePlayback())
+      // playbackButton.addEventListener('click', () => togglePlayback())
 
       // slider = p5.createSlider(0, 8000, 100);
       // slider.position(210, 20);
@@ -264,41 +267,72 @@ var sketch = function (
       for (var b = 0; b < initalizedTurmites.length; b++) {
         initalizedTurmites[b].drawTurmite(b);
       }
+
+      p5.noLoop()
     };
 
+    p5.draw = function draw() {
+      console.log('running')
+      // draw loop...
 
-    function changeTurmiteSelection() {
+      // prevent extra step since draw() is always called on setup() and loop()
+      if (!p5.isLooping()) {
+        return
+      }
+
+      // step
+      var tumitesToMOVE = turmitesToMove[choosenTurmites];
+      // for (var u = 0; u < tumitesToMOVE.length; u++) {
+      for (var u = 0; u < tumitesToMOVE.length; u++) {
+        initalizedTurmites[tumitesToMOVE[u]].step();
+      }
+      boardNew.reDrawCache();
+
+      // draw turmite in new position
+      for (var u = 0; u < tumitesToMOVE.length; u++) {
+        initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
+      }
+      //console.log(p5.frameRate()); 
+    };
+
+    // p5.windowResized = function windowResized() {
+    //   p5.resizeCanvas();
+    // };
+  });
+
+  myp5.myMethods = {
+    changeTurmiteSelection: function () {
       choosenTurmites = sel.value();
-    }
+    },
 
-    function pressStart() {
-      console.log("start");
-      //button.html('stop');
-      if (p5.isLooping() == false) {
-        p5.loop()
-        console.log("lets go");
-      }
-    }
+    // pressStart: function () {
+    //   console.log("start");
+    //   //button.html('stop');
+    //   if (myp5.isLooping() == false) {
+    //     myp5.loop()
+    //     console.log("lets go");
+    //   }
+    // },
 
-    function pressStop() {
-      if (p5.isLooping() == true) {
-        p5.noLoop()
-        console.log("stop");
-      }
-    }
+    // pressStop: function () {
+    //   if (myp5.isLooping() == true) {
+    //     myp5.noLoop()
+    //     console.log("stop");
+    //   }
+    // },
 
-    function togglePlayback () {
+    togglePlayback: function  () {
       // running = !running
-      return p5.isLooping() ? p5.noLoop() : p5.loop()
-    }
+      return myp5.isLooping() ? myp5.noLoop() : myp5.loop()
+    },
 
-    function myInputEvent() {
+    myInputEvent: function () {
       userinput = this.value();
-    }
+    },
 
-    function simulateSteps() {
-      if (p5.isLooping() == true) {
-        p5.noLoop();
+    simulateSteps: function () {
+      if (myp5.isLooping() == true) {
+        myp5.noLoop();
       }
       let val = slider.value();
       var tumitesToMOVE = turmitesToMove[choosenTurmites];
@@ -311,32 +345,18 @@ var sketch = function (
       for (var u = 0; u < tumitesToMOVE.length; u++) {
         initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
       }
-    }
+    },
 
-    function reprogramm() {
+    reprogramm: function () {
       console.log("reprogrammed!");
       var tumitesToReprogramm = turmitesToMove[choosenTurmites];
       for (var u = 0; u < tumitesToReprogramm.length; u++) {
         initalizedTurmites[tumitesToReprogramm[u]].rule = String(userinput);
       }
     }
-
-    p5.draw = function draw() {
-      var tumitesToMOVE = turmitesToMove[choosenTurmites];
-      // for (var u = 0; u < tumitesToMOVE.length; u++) {
-      for (var u = 0; u < tumitesToMOVE.length; u++) {
-        initalizedTurmites[tumitesToMOVE[u]].step();
-      }
-      boardNew.reDrawCache();
-      for (var u = 0; u < tumitesToMOVE.length; u++) {
-        initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
-      }
-      //console.log(p5.frameRate()); 
-    };
-    // p5.windowResized = function windowResized() {
-    //   p5.resizeCanvas();
-    // };
-  });
+  }
+  
+  return myp5
 };
 
 export default sketch

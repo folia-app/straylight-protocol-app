@@ -23,7 +23,7 @@ article.board
           
           //- p5 board (scales based on <img> .object-contain size)
           .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:class="{'opacity-0': boardScale === undefined || imgIsLoading}")
-            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :key="boardKey", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }")
+            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :key="boardKey", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :frameRate="15")
 
             //- controls, below board
             .absolute.bottom-0.left-0.w-full(v-show="controlsVisible")
@@ -115,7 +115,8 @@ export default {
       controlsMaxW: 'auto',
       controlsVisible: false,
       resetBtnVisible: false,
-      boardKey: 0
+      boardKey: 0,
+      myp5: null
     }
   },
   computed: {
@@ -174,8 +175,12 @@ export default {
       this.getBoardImage()
       // update activity list
       this.activityFetch++
+      this.resetBoard()
     },
     scaleBoard () {
+      if (!this.$refs.boardImg) {
+        return
+      }
       // const imgW = this.$refs.boardImg.offsetWidth
       const { width } = getImgSizeInfo(this.$refs.boardImg)
       const boardW = this.$refs.boardAnimator.$el.offsetWidth
@@ -193,19 +198,26 @@ export default {
       });
       ro.observe(this.$refs.boardImg)
     },
-    onBoardRender () {
+    onBoardRender (myp5) {
+      this.myp5 = myp5
       this.scaleBoard()
       this.controlsVisible = true
     },
     toggleBoardSimulation () {
-      this.playing = !this.playing
-      this.resetBtnVisible = true
+      if (this.myp5) {
+        this.resetBtnVisible = true  
+        this.myp5.myMethods.togglePlayback()
+        this.playing = this.myp5.isLooping()
+      }
     },
-    resetBoard () {
+    async resetBoard () {
+      this.boardScale = undefined // flashes img as loader
+      await this.$nextTick()
       this.boardKey++
       this.playing = false
       this.controlsVisible = false
-    }
+      this.resetBtnVisible = false
+    },
   },
   metaInfo () {
     const title = `world_` + this.boardId
