@@ -8,6 +8,7 @@ import Web3Modal from 'web3modal'
 // Wallet Connect - directly import .js file since import breaks `vite build`
 // see: https://github.com/vitejs/vite/issues/7257
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
+import rules from '../../contracts/rulesSelected.js'
 
 let /*provider,*/ signer, initializing
 
@@ -63,6 +64,8 @@ export default createStore({
 
       moves: undefined,
       movesMax: 4000, // above seems to throw rpc error?
+
+      reprogrammedEvents: {}, // save per networkre
 
       // old
       reserveAuctionContract: null,
@@ -214,6 +217,10 @@ export default createStore({
 
     SAVE_NETWORK_MINT_EVENTS (state, { networkName, mintEvents }) {
       state.mintEvents[networkName] = mintEvents
+    },
+
+    SAVE_NETWORK_REPROGRAM_EVENTS (state, { networkName, events }) {
+      state.reprogrammedEvents[networkName] = events
     }
   },
   actions: {
@@ -779,6 +786,81 @@ export default createStore({
         const tx = await contractSigner.moveTurmite(tokenId, moves)
 
         return tx
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
+    async reprogramTurmite ({ state, dispatch }, { tokenId, rule, network }) {
+      console.log(arguments[1])
+      try {
+        const nftContract = await dispatch('getNFTContract', { network })
+        
+        const contractSigner = nftContract.connect(signer)
+
+        const tx = await contractSigner.reprogrammTurmite(tokenId, '0x' + rule)
+
+        return tx
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
+    async getReprograms ({ state, commit, dispatch }, { cached = false, filter, network }) {
+      try {
+        if (cached) {
+          const events = state.reprogrammedEvents[network.name] ?? []
+          if (events.length) {
+            return events
+          }
+        }
+
+        // else, get latest events
+
+        const fromBlock = await dispatch('getDeployBlock', { network })
+        const nftContract = await dispatch('getNFTContract', { network })
+        
+        // get events...
+        let events = await nftContract.queryFilter('turmiteReprogramm', fromBlock)
+
+        // get all mint events...
+        console.log({ reprogrammedEvents: events })
+
+        // format
+        events = events.reverse().map(event => {
+          const tokenId = event.args[0].toString()
+          const boardId = Math.floor(tokenId / 4).toString()
+          const ruleId = event.args[1].toString().substr(2).toLowerCase()
+          
+          return {
+            type: 'reprogram',
+            blockNumber: event.blockNumber,
+            tokenId,
+            boardId,
+            rule: {
+              id: ruleId,
+              meta: rules.find(rule => rule.rule === ruleId)
+            },
+            getBlock: event.getBlock,
+            getReceipt: event.getTransactionReceipt,
+          }
+        })
+        
+        // save for caching
+        commit('SAVE_NETWORK_REPROGRAM_EVENTS', { networkName: network.name, events })
+
+        // filter?
+        if (filter) {
+          if (typeof filter[1] === 'object') {
+            events = events.filter(event => filter[1].includes(event[filter[0]]))
+          } else {
+            events = events.filter(event => event[filter[0]] === filter[1])  
+          }
+        }
+
+        return events
       } catch (e) {
         console.error(e)
         throw e

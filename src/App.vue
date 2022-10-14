@@ -1,5 +1,5 @@
 <template lang="pug">
-#app.text-base.font-sans.leading-snug
+#app.text-base
 
   .min-h-screen.flex.flex-col
 
@@ -226,13 +226,13 @@ export default {
 }
 </script>
 
-<style lang="postcss">
+<style>
 /*@import './style/global';*/
 /*@import './style/imports';*/
 /*@import './style/variables';*/
 /* @import './style/transitions'; */
 
-#app {
+html {
   /*font-family: var(--serif);*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

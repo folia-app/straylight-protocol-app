@@ -1,6 +1,6 @@
 <template lang="pug">
 //- TODO color based on address / account >:)
-observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide.mb-1(@visible="getInfo", :class="{'text-accent3': props.event.type === 'move', 'text-accent2': props.event.type === 'mint'}")
+observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide.mb-1(@visible="getInfo", :class="{'text-accent3': props.event.type === 'move', 'text-accent2': props.event.type === 'mint', 'text-accent4': props.event.type === 'reprogram'}")
   //- time
   .w-1x4.lg_w-1x4.text-left.text-xs.flex.pr-2.lg_pr-0(style="min-width:10em")
     .w-3.border-b.opacity-30.mb-1.mr-2
@@ -16,13 +16,17 @@ observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide
     
     //- (move)
     template(v-if="props.event.type === 'move'")
-      | #[router-link.border.rounded-lg.px-3px.text-smm.mr-1.font-bold.tracking-wider.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }}
+      | #[router-link.link.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }}
     //- (mint)
     template(v-else-if="props.event.type === 'mint'")
-      | #[router-link.border.rounded-lg.px-3px.text-smm.mr-1.font-bold.tracking-wider.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }}
+      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }}
+    
+    //- (reprogram)
+    template(v-else-if="props.event.type === 'reprogram'")
+      | #[router-link.link.mouse_hover_bg-accent4.mouse_hover_text-accent1.mouse_hover_border-accent4(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] reprogrammed #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🧠] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] {{ turmiteName(props.event.tokenId) }} to #[router-link.link.mouse_hover_bg-accent4.mouse_hover_text-accent1.mouse_hover_border-accent4.lowercase(:to="{name: 'pattern', params: { pattern: props.event.rule.id }}") {{ props.event.rule.meta.nickname || props.event.rule.id.slice(4) + '...' }}]
 
     span.ml-2(v-if="props.includeWorld && props.event.boardId")
-      | in #[router-link.ml-1.border.rounded-lg.px-3px.text-smm.mr-1.font-bold.tracking-wider.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") world_{{ event.boardId }}]
+      | in #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") world_{{ event.boardId }}]
   
   .flex-1.border-b.opacity-30.mb-1
 </template>
@@ -58,3 +62,9 @@ const getInfo = () => {
   }
 }
 </script>
+
+<style scoped>
+.link{
+  @apply border rounded-lg px-3px text-smm mr-1 font-bold tracking-wider;
+}
+</style>

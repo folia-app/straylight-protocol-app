@@ -17,15 +17,16 @@ import store from '@/store'
 import ActivityList from '@/components/ActivityList.vue'
 import Observer from '@/components/Observer.vue'
 
-const props = defineProps(['boardId', 'networkName'])
+const props = defineProps(['boardId', 'networkName', 'cached'])
 
 const loaded = ref(0)
 
 const moves = ref([])
 const mints = ref([])
+const reprograms = ref([])
 
 const activity = computed(() => {
-  let activity = [...moves.value, ...mints.value]
+  let activity = [...moves.value, ...mints.value, ...reprograms.value]
   activity.sort((a, b) => b.blockNumber - a.blockNumber)
   return activity
 })
@@ -48,8 +49,19 @@ const getMints = async ({ cached = false }) => {
   }
 }
 
+const getReprograms = async ({ cached = false }) => {
+  try {
+    reprograms.value = await store.dispatch('getReprograms', { cached, filter: ['boardId', props.boardId], network: { name: props.networkName }})  
+    loaded.value++
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 const onVisible = () => {
-  getMints({ cached: false })
-  getMoves({ cached: false })
+  const cached = props.cached ?? false
+  getMints({ cached })
+  getMoves({ cached })
+  getReprograms({ cached })
 }
 </script>

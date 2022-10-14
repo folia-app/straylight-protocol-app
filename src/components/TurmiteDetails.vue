@@ -41,7 +41,7 @@ li.turmite-detail.flex.flex-col
 
           //- (owner actions)
           template(v-if="isOwner")
-            button.w-full.md_w-auto.mt-2.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="toggleMoveForm")
+            button.w-full.sm_w-auto.mt-2.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="toggleMoveForm")
               | {{ moveFormVisible ? 'cancel' : 'move' }}
       
       //- ("join/mint")
@@ -54,7 +54,10 @@ li.turmite-detail.flex.flex-col
     template(v-if="moveFormVisible")
       .mt-px.lg_my-0.relative
         .lg_absolute.bottom-0.left-0.w-full.p-4.pb-5.rounded-lg.bg-accent3.text-accent1
-          turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", v-bind="$attrs")
+          turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", v-bind="$attrs", @reprogramClick="reprogramModalVisible = true")
+  
+  //- (reprogramm modal)
+  modal-reprogram-turmite(v-if="reprogramModalVisible", @close="reprogramModalVisible = false", :tokenId="props.tokenId", @reporgrammed="onTurmiteReprogrammed")
 </template>
 
 <script setup>
@@ -63,16 +66,18 @@ import store from '@/store'
 import Addr from '@/components/Addr.vue'
 import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
 import rules from '../../contracts/rulesSelected.js'
+import ModalReprogramTurmite from '@/components/ModalReprogramTurmite.vue'
 
 const colors = ['red', '#03de00', '#0081ff', '#fa8700'] // match from '@/plugins/p5_turmites/sketch.js'
 
 const props = defineProps(['tokenId', 'label', 'networkName'])
-const emit = defineEmits(['moveFormOpened'])
+const emit = defineEmits(['moveFormOpened', 'reprogrammed'])
 
 const owner = ref()
 const isOwner = computed(() => store.getters.isConnectedAddr(owner.value))
 
 const moveFormVisible = ref(false)
+const reprogramModalVisible = ref(false)
 
 const toggleMoveForm = () => {
   if (!moveFormVisible.value) {
@@ -108,6 +113,11 @@ const getAttr = async () => {
 const ruleset = computed(() => {
   return attributes.value && (rules.find(row => row.rule === attributes.value[1].value))
 })
+
+const onTurmiteReprogrammed = () => {
+  getAttr()
+  emit('reprogrammed')
+}
 
 getOwner()
 </script>

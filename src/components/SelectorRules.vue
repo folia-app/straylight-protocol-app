@@ -1,10 +1,10 @@
 <template>
-  <div class="selector-rules lowercase text-smm relative z-20 flex">
-    <Combobox v-model="selected">
+  <div class="selector-rules lowercase text-smm relative z-20 flex justify-between">
+    <Combobox ref="comboboxRef" v-model="selected" class="w-64" v-slot="{ activeOption }">
       <div class="relative mt-1">
         <!-- input -->
         <div
-          class="relative w-full cursor-default overflow-hidden rounded-lg border text-left shadow-md"
+          class="relative w-full cursor-default overflow-hidden rounded-lg border text-left"
         >
           <ComboboxInput
             class="selector-rules__input w-full border-none py-2 pl-3 pr-10  leading-5 focus_bg-accent2 focus_text-accent1 lowercase"
@@ -26,7 +26,7 @@
           @after-leave="query = ''"
         >
           <ComboboxOptions
-            class="absolute mt-1 max-h-80 w-full overflow-auto rounded-md bg-accent2 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus_outline-none"
+            class="absolute mt-1 max-h-80 w-full overflow-auto rounded-md bg-accent2 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus_outline-none text-left"
           >
             <div
               v-if="fileteredRules.length === 0 && query !== ''"
@@ -66,18 +66,22 @@
             </ComboboxOption>
           </ComboboxOptions>
         </TransitionRoot>
+
+        <!-- bootleg activeOption emitter -->
+        <img v-show="false" :key="activeOption ? activeOption.rule : 'empty'" src="fail" @error="emit('activeOptionChanged', activeOption)" />
+
       </div>
     </Combobox>
 
     <!-- refresh button -->
-    <button class="absolute top-0 right-0 h-full px-4 rounded-full flex items-center transform translate-x-full" @click.prevent="randomRule">
+    <button class="px-4 rounded-full flex items-center" @click.prevent.stop="randomRule">
       <arrow-path-icon class="h-6 w-6 transform scale-110 origin-center"></arrow-path-icon>
     </button>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
   Combobox,
   ComboboxInput,
@@ -90,11 +94,15 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/24/solid'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import rules from '../../contracts/rulesSelected.js'
 
-const props = defineProps(['modelValue', 'initRule'])
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps(['modelValue', 'initRule', 'autoFocus'])
+const emit = defineEmits(['update:modelValue', 'activeOptionChanged'])
 
 const selected = ref({})
 const query = ref('')
+const comboboxRef = ref()
+
+onMounted(() => console.log(comboboxRef.value.$slots.activeOption))
+
 
 const fileteredRules = computed(() =>
   query.value === ''

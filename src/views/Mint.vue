@@ -82,7 +82,7 @@ article.pb-64
                 h2.leading-none.pb-2px.text-md.sm_text-base.pr-4 select turmite #[router-link.border-b.border-dashed.mouse_hover_border-solid(to="/patterns") pattern] #[span.opacity-30.ml-2(style="font-size:0.8em") &rarr;]
 
               .pr-14.sm_pr-20
-                selector-rules.w-64(v-model="selection", :initRule="$route.query.rule")
+                selector-rules.-mr-14(v-model="selection", :initRule="$route.query.rule")
 
             figure.mb-14.px-4.flex.justify-center.w-full(v-if="selection", v-show="isConnected")
               .w-full(style="max-width:300px")

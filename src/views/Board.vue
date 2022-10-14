@@ -62,9 +62,9 @@ article.board
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName", @preview="previewTurmite", @moveFormOpened="onMoveFormVisible")
+        turmite-details(:tokenId="tokenId", :label="['W', 'S', 'N', 'E'][i]" @moved="onTurmiteMoved", :networkName="$route.params.networkName", @preview="previewTurmite", @moveFormOpened="onMoveFormVisible", @reprogrammed="onTurmiteReprogrammed")
       
-  board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch")
+  board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
 
   footer.pt-24.pb-64.lg_pb-36
     nav.flex.text-md.items-center
@@ -176,6 +176,9 @@ export default {
       // update activity list
       this.activityFetch++
       this.resetBoard()
+    },
+    onTurmiteReprogrammed () {
+      this.activityFetch++
     },
     scaleBoard () {
       if (!this.$refs.boardImg) {

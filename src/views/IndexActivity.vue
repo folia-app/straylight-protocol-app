@@ -20,11 +20,11 @@ const route = useRoute()
 const loaded = ref(0)
 
 const moves = ref([])
-
 const mints = ref([])
+const reprograms = ref([])
 
 const activity = computed(() => {
-  let activity = [...moves.value, ...mints.value]
+  let activity = [...moves.value, ...mints.value, ...reprograms.value]
   activity.sort((a, b) => b.blockNumber - a.blockNumber)
   return activity
 })
@@ -47,6 +47,16 @@ const getMints = async ({ cached = false }) => {
   }
 }
 
+const getReprograms = async ({ cached = false }) => {
+  try {
+    reprograms.value = await store.dispatch('getReprograms', { cached, network: { name: route.params.networkName }})  
+    loaded.value++
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+getReprograms({ cached: true })
 getMints({ cached: true })
 getMoves({ cached: true })
 </script>
