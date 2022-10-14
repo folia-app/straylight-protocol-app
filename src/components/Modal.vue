@@ -1,7 +1,7 @@
 <template>
 <Dialog :open="true" class="relative z-50 text-md">
   <!-- The backdrop, rendered as a fixed sibling to the panel container -->
-  <div class="fixed inset-0 bg-black/80" aria-hidden="true" />
+  <div class="fixed inset-0 bg-black/90" aria-hidden="true" />
 
   <!-- Full-screen scrollable container -->
   <div class="fixed inset-0 overflow-y-auto cursor-pointer" @click="close()">

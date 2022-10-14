@@ -7,7 +7,7 @@
       button.block.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1(@click.prevent="emit('preview', { tokenId, moveQty })") PREVIEW
       button.block.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1(type="submit") MOVE
 
-  .mt-1.w-full.flex
+  //- .mt-1.w-full.flex
     button.w-full.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1(@click.prevent="$emit('reprogramClick')") REPROGRAM...
 
   template(v-if="status")

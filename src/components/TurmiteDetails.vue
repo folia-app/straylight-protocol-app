@@ -10,7 +10,7 @@ li.turmite-detail.flex.flex-col
       .flex.items-end.pb-5
         .mr-3.mb-2px(:style="{width:'0.9rem', height:'0.9rem', background: colors[['W', 'N', 'S', 'E'].indexOf(props.label)]}")
         a.flex.justify-start.items-end.leading-none.group(:class="{'-mb-1': isOwner}", :href="$store.getters.marketplaceLink({ token: tokenId, networkName })", target="_blank", rel="noopener noreferrer")
-          .flex(:class="{'opacity-30': !owner}")
+          .flex.font-bold(:class="{'opacity-30': !owner}")
             | turmite_{{ props.tokenId }}
             //- | turmite_{{ props.label }}
           .flex.items-end.opacity-30.ml-1.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
@@ -41,8 +41,12 @@ li.turmite-detail.flex.flex-col
 
           //- (owner actions)
           template(v-if="isOwner")
-            button.w-full.sm_w-auto.mt-2.h-9.rounded-full.px-6.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="toggleMoveForm")
-              | {{ moveFormVisible ? 'cancel' : 'move' }}
+            .w-full.md_w-auto.grid.grid-cols-2.gap-1.mt-2
+              button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.borderff.border-gray-600.font-bold(@click="reprogramModalVisible = true", class="bg-black/10")
+                | reprogram
+              button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="toggleMoveForm")
+                | {{ moveFormVisible ? 'cancel' : 'move' }}
+              
       
       //- ("join/mint")
       template(v-else)
