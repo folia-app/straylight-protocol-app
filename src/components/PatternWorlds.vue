@@ -53,13 +53,29 @@ const ruleNickname = computed(() => props.rule.nickname?.toLowerCase() || '??')
 
 const getWorldsWithPattern = async () => {
   try {
-    let events = await store.dispatch('getMintedEvents', { network: { name: props.networkName }, cached: true })
+    // get mints
+    let mints = await store.dispatch('getMints', { network: { name: props.networkName }, cached: true })
+    
+    // filter mints by pattern
+    mints = mints.filter(event => event.rule === props.rule.rule)
 
-    // filter by pattern
-    events = events.reverse().filter(event => event.args[1].toLowerCase() === '0x' + props.rule.rule.toLowerCase())
+    // get ALL reprograms
+    let reprograms = await store.dispatch('getReprograms', { network: { name: props.networkName }, cached: true })
+    
+    // remove mints that were reprogrammed
+    let reprogrammedTokens = reprograms.map(r => r.tokenId)
+    reprogrammedTokens = [...new Set(reprogrammedTokens)] // de-dupe
+    mints = mints.filter(mint => !reprogrammedTokens.includes(mint.tokenId))
 
-    // save as boardIds
-    worlds.value = events.map(event => event.args[2].toString())
+    // filter reprograms by pattern
+    reprograms = reprograms.filter(event => event.rule === props.rule.rule)
+
+    // merge + sort filtered lists
+    const events =  [...mints, ...reprograms]
+    events.sort((a, b) => b.blockNumber - a.blockNumber)
+
+    // map as boardIds
+    worlds.value = events.map(event => event.boardId)
 
     if (!worlds.value.length) {
       status.value = `no worlds with <b>${ruleNickname.value}</b> pattern found on <b>${props.networkName}</b> network`

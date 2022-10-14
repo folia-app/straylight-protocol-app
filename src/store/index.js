@@ -8,7 +8,6 @@ import Web3Modal from 'web3modal'
 // Wallet Connect - directly import .js file since import breaks `vite build`
 // see: https://github.com/vitejs/vite/issues/7257
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
-import rules from '../../contracts/rulesSelected.js'
 
 let /*provider,*/ signer, initializing
 
@@ -584,65 +583,44 @@ export default createStore({
       }
     },
 
-    async getMintedEvents ({ state, commit, dispatch }, { network, cached = false }) {
-      try {
-        if (cached) {
-          const events = state.mintEvents[network.name] ?? []
-          if (events.length) {
-            return events
-          }
-        }
-
-        const fromBlock = await dispatch('getDeployBlock', { network })
-
-        const nftContract = await dispatch('getNFTContract', { network })
-
-        // get events...
-        const mintEvents = await nftContract.queryFilter('turmiteMint', fromBlock)
-
-        commit('SAVE_NETWORK_MINT_EVENTS', { networkName: network.name, mintEvents })
-
-        return mintEvents
-      } catch (e) {
-        console.error(e)
-        throw e
-      }
-    },
-
     async getMints ({ state, commit, dispatch }, { cached = false, filter, network }) {
       try {
-        let mints // = cached && state.mints
+        let events = state.mintEvents[network.name] ?? []
 
-        if (!mints) {
-          // get all mint events...
-          const events = await dispatch('getMintedEvents', { network })
+        if (!events.length || !cached) {
+          // else, get fresh events
+          const fromBlock = await dispatch('getDeployBlock', { network })
+          const nftContract = await dispatch('getNFTContract', { network })
+
+          // get...
+          events = await nftContract.queryFilter('turmiteMint', fromBlock)
           console.log({ mintEvents: events })
-          
+
           // format
-          mints = events.reverse().map(event => ({
+          events = events.reverse().map(event => ({
             type: 'mint',
             blockNumber: event.blockNumber,
             boardId: event.args[2].toString(),
             tokenId: event.args[0].toString(),
-            rule: event.args[1].toString().toLowerCase(),
+            rule: event.args[1].toString().toLowerCase().substr(2),
             getBlock: event.getBlock,
             getReceipt: event.getTransactionReceipt,
           }))
-          // console.log({ mints })
-          
-          // commit('SAVE_MINTS', mints)
+
+          // SAVE
+          commit('SAVE_NETWORK_MINT_EVENTS', { networkName: network.name, events })
         }
 
         // filter?
         if (filter) {
           if (typeof filter[1] === 'object') {
-            mints = mints.filter(event => filter[1].includes(event[filter[0]]))
+            events = events.filter(event => filter[1].includes(event[filter[0]]))
           } else {
-            mints = mints.filter(event => event[filter[0]] === filter[1])  
+            events = events.filter(event => event[filter[0]] === filter[1])  
           }
         }
 
-        return mints
+        return events
       } catch (e) {
         console.error(e)
         throw e
@@ -810,53 +788,44 @@ export default createStore({
 
     async getReprograms ({ state, commit, dispatch }, { cached = false, filter, network }) {
       try {
-        if (cached) {
-          const events = state.reprogrammedEvents[network.name] ?? []
-          if (events.length) {
-            return events
-          }
-        }
-
-        // else, get latest events
-
-        const fromBlock = await dispatch('getDeployBlock', { network })
-        const nftContract = await dispatch('getNFTContract', { network })
+        let events = state.reprogrammedEvents[network.name] ?? []
         
-        // get events...
-        let events = await nftContract.queryFilter('turmiteReprogramm', fromBlock)
-
-        // get all mint events...
-        console.log({ reprogrammedEvents: events })
-
-        // format
-        events = events.reverse().map(event => {
-          const tokenId = event.args[0].toString()
-          const boardId = Math.floor(tokenId / 4).toString()
-          const ruleId = event.args[1].toString().substr(2).toLowerCase()
+        if (!events.length || !cached) {
+          // get latest events
+          const fromBlock = await dispatch('getDeployBlock', { network })
+          const nftContract = await dispatch('getNFTContract', { network })
           
-          return {
-            type: 'reprogram',
-            blockNumber: event.blockNumber,
-            tokenId,
-            boardId,
-            rule: {
-              id: ruleId,
-              meta: rules.find(rule => rule.rule === ruleId)
-            },
-            getBlock: event.getBlock,
-            getReceipt: event.getTransactionReceipt,
-          }
-        })
-        
-        // save for caching
-        commit('SAVE_NETWORK_REPROGRAM_EVENTS', { networkName: network.name, events })
+          // get events...
+          events = await nftContract.queryFilter('turmiteReprogramm', fromBlock)
+
+          // format
+          events = events.reverse().map(event => {
+            const tokenId = event.args[0].toString()
+            const boardId = Math.floor(tokenId / 4).toString()
+            
+            return {
+              type: 'reprogram',
+              blockNumber: event.blockNumber,
+              tokenId,
+              boardId,
+              rule: event.args[1].toString().toLowerCase().substr(2),
+              getBlock: event.getBlock,
+              getReceipt: event.getTransactionReceipt,
+            }
+          })
+
+          // save for caching
+          commit('SAVE_NETWORK_REPROGRAM_EVENTS', { networkName: network.name, events })
+        }
 
         // filter?
         if (filter) {
+          const key = filter[0]
+          const value = filter[1]
           if (typeof filter[1] === 'object') {
-            events = events.filter(event => filter[1].includes(event[filter[0]]))
+            events = events.filter(event => value.includes(event[key]))
           } else {
-            events = events.filter(event => event[filter[0]] === filter[1])  
+            events = events.filter(event => event[key] === value)  
           }
         }
 
