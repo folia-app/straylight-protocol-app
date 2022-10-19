@@ -12,6 +12,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.m
 let /*provider,*/ signer, initializing
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
+console.log(import.meta.env.VITE_APP_INFURA_PROJECT_ID)
 
 const networks = {
   1: { name: 'ethereum', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' }, marketplace: { name: 'OpenSea', domain: 'https://opensea.io'} },
@@ -414,6 +415,8 @@ export default createStore({
 
     async getNFTContract ({ dispatch }, { network }) {
       const { provider, chainId } = await dispatch('getProvider', { network })
+      console.log(provider)
+      console.log(chainId)
       const contract = new ethers.Contract(NFTContractDeploy.networks[chainId].address, NFTContractDeploy.abi, provider)
       return contract
     },

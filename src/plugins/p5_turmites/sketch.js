@@ -1,4 +1,3 @@
-const colors = ['red', '#0081ff', '#03de00', '#fa8700']
 
 var sketch = function (
   parentElementId,
@@ -10,20 +9,27 @@ var sketch = function (
   turmiteIds,
   boardData,
   frameRate = 60
-) {
-  // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
-  var initalizedTurmites = [];
-  var board1 = boardData;
-  let slider;
-  var userinput;
-  var turmitesToMove = {};
-  var choosenTurmites = "all";
-  let sel;
-  let boardNew
-  let initializing = true
-  //p5.noLoop();
+  ) {
+    // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
+    //p5.noLoop();
+    let myMethods
+    
+    const myp5 = new p5(function (p5) {
+    const colors = ['red', '#0081ff', '#03de00', '#fa8700']
+    var initalizedTurmites = [];
+    const board1 = boardData;
+    const initalBoard = {
+      board:boardData
+    }
+    Object.freeze(initalBoard);
+    let slider;
+    var userinput;
+    var turmitesToMove = {};
+    var choosenTurmites = "all";
+    let sel;
+    let boardNew
+    let initializing = true
 
-  const myp5 = new p5(function (p5) {
     class board {
       constructor(initBoard) {
         this.computationBoard = this.construct2DArray(initBoard, 144, 144);
@@ -219,43 +225,6 @@ var sketch = function (
       }
       turmitesToMove["all"] = [0, 1, 2, 3].slice(0, turmitesData.length);
 
-      // let startbutton = p5.createButton("start");
-      // startbutton.mousePressed(pressStart);
-      // startbutton.position(20, 20);
-
-      // let stopbutton = p5.createButton("stop");
-      // stopbutton.mousePressed(pressStop);
-      // stopbutton.position(80, 20);
-
-      // playbackButton.addEventListener('click', () => togglePlayback())
-
-      // slider = p5.createSlider(0, 8000, 100);
-      // slider.position(210, 20);
-      // slider.style("width", "80px");
-
-      // let simulatebutton = p5.createButton("simulate steps");
-      // simulatebutton.position(300, 20);
-      // simulatebutton.mousePressed(simulateSteps);
-
-      // let inp = p5.createInput("");
-      // inp.position(210, 60);
-      // inp.size(200);
-      // inp.input(myInputEvent);
-
-      // let reprogramButton = p5.createButton("reprogram");
-      // reprogramButton.position(420, 60);
-      // reprogramButton.mousePressed(reprogramm);
-
-      // sel = p5.createSelect();
-      // sel.position(500, 30);
-      // sel.option("Turmite " + String(turmiteIds[0]));
-      // sel.option("Turmite " + String(turmiteIds[1]));
-      // sel.option("Turmite " + String(turmiteIds[2]));
-      // sel.option("Turmite " + String(turmiteIds[3]));
-      // sel.option("all");
-      // sel.selected("all");
-      // sel.changed(changeTurmiteSelection);
-
       boardNew = new board(board1);
       for (var i = 0; i < turmitesData.length; i++) {
         let turmiteNew = new turmiteobj(turmitesData[i], boardNew);
@@ -297,9 +266,10 @@ var sketch = function (
     // p5.windowResized = function windowResized() {
     //   p5.resizeCanvas();
     // };
-  });
 
-  myp5.myMethods = {
+  //});
+
+  myMethods = {
     changeTurmiteSelection: function (value = '') {
       if (!turmiteIds.includes(value)) {
         console.warn(`${value} not found in turmiteIds:`, JSON.stringify(turmiteIds))
@@ -327,7 +297,31 @@ var sketch = function (
 
     togglePlayback: function  () {
       // running = !running
+      console.log("toggle stuff")
       return myp5.isLooping() ? myp5.noLoop() : myp5.loop()
+    },
+
+    reset: function () {
+      console.log('restart')
+      // myp5.setup();
+
+      //initalizedTurmites = [];
+
+      //const emptyBoard = new Uint8Array(new Array(20736).fill(0)); //Uint8Array(20736)
+      //const boardData1 = emptyBoard
+      //console.log(board1)
+      console.log(initalBoard.board)
+      boardNew = new board(initalBoard.board);
+      boardNew.reDrawCanvas();
+
+      // for (var i = 0; i < turmitesData.length; i++) {
+      //   let turmiteNew = new turmiteobj(turmitesData[i], boardNew);
+      //   initalizedTurmites.push(turmiteNew);
+      // }
+      
+      // for (var b = 0; b < initalizedTurmites.length; b++) {
+      //   initalizedTurmites[b].drawTurmite(b);
+      // }
     },
 
     myInputEvent: function () {
@@ -364,7 +358,9 @@ var sketch = function (
       }
     }
   }
+});
   
+  myp5.myMethods = myMethods
   return myp5
 };
 
