@@ -202,6 +202,7 @@ export default {
       ro.observe(this.$refs.boardImg)
     },
     onBoardRender (myp5) {
+      console.log('RENDER', this.boardKey)
       this.myp5 = myp5
       this.scaleBoard()
       this.controlsVisible = true
@@ -214,6 +215,9 @@ export default {
       }
     },
     async resetBoard () {
+      this.myp5.myMethods.reset()
+      return
+
       this.boardScale = undefined // flashes img as loader
       await this.$nextTick()
       this.boardKey++
