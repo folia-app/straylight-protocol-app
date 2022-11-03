@@ -1,29 +1,25 @@
-const colors = ['red', '#0081ff', '#03de00', '#fa8700']
-
-var sketch = function (
-  parentElementId,
+var sketch = function ({
+  target,
   turmitesData,
-  // turmiteData0,
-  // turmiteData1,
-  // turmiteData2,
-  // turmiteData3,
   turmiteIds,
   boardData,
-  frameRate = 60
-) {
-  // var turmitesData = [turmiteData0, turmiteData1, turmiteData2, turmiteData3];
-  var initalizedTurmites = [];
-  var board1 = boardData;
-  let slider;
-  var userinput;
-  var turmitesToMove = {};
-  var choosenTurmites = "all";
-  let sel;
-  let boardNew
-  let initializing = true
-  //p5.noLoop();
+  colors,
+  frameRate = 60,
+  colorTail = 0
+}) {
+  let myMethods
 
   const myp5 = new p5(function (p5) {
+    let initalizedTurmites = [];
+    let board1 = boardData;
+    let turmitesToMove = {};
+    let choosenTurmites = "all";
+    let boardNew
+    let drawcounter = 0;
+    
+    // can remove "co" i believe:
+    let co = 1 // 0.78;
+
     class board {
       constructor(initBoard) {
         this.computationBoard = this.construct2DArray(initBoard, 144, 144);
@@ -42,17 +38,17 @@ var sketch = function (
         return result;
       }
 
-      setField(colorOfField, posx, posy) {
+      setField(colorOfField, posx, posy, cacheColor) {
         //setstate turmite  - current field
         if (colorOfField == "00") {
           // console.log("new colorfield:black")
           this.computationBoard[posx][posy] = 0;
-          this.boardCache.push([posx,posy,0])
+          this.boardCache.push([posx,posy,0,cacheColor])
         }
         if (colorOfField == "ff") {
           // console.log("new colorfield:white")
           this.computationBoard[posx][posy] = 255;
-          this.boardCache.push([posx,posy,255])
+          this.boardCache.push([posx,posy,255,cacheColor])
         }
         //this.renderBoard = this.updateRenderBoard(this.computationBoard, 144);
       }
@@ -63,16 +59,20 @@ var sketch = function (
 
       reDrawCache(){
         for (var t = 0; t < this.boardCache.length; t++){
-          if (this.boardCache[t][2] == 255) {
-            p5.fill("white");
+          if (this.boardCache[t][2] == 255) {            
+            // highlight path or just white?
+            const fillColor = colorTail ? this.boardCache[t][3] : 'white'
+            p5.fill(fillColor)
+            
             p5.noStroke()
-            p5.rect(this.boardCache[t][1] * 5, (143 -this.boardCache[t][0]) * 5, 5, 5);
+            p5.rect(this.boardCache[t][1] * 5 , (143 -this.boardCache[t][0]) * 5  , 5*co, 5*co);
           }
           else if (this.boardCache[t][2] == 0) {
             p5.noStroke()
             p5.fill("black");
-            p5.rect(this.boardCache[t][1] * 5, (143 - this.boardCache[t][0]) * 5, 5, 5);
+            p5.rect(this.boardCache[t][1] * 5 , (143 - this.boardCache[t][0]) * 5  , 5*co, 5*co);
           }
+          p5.noStroke()
         }
         this.boardCache = []
       }
@@ -97,13 +97,14 @@ var sketch = function (
     }
 
     class turmiteobj {
-      constructor(turmite1, field) {
+      constructor(turmite1, field, color) {
         this.posx = parseInt(turmite1.posy);
         this.posy = parseInt(turmite1.posx);
         this.rule = turmite1.rule;
         this.board = field;
         this.direction = turmite1.direction;
         this.state = turmite1.state;
+        this.color = color;
 
         /// temp slots
         this.newDirection = 0;
@@ -184,13 +185,13 @@ var sketch = function (
       }
 
       newSetField() {
-        this.board.setField(this.colorOfField, this.posx, this.posy);
+        this.board.setField(this.colorOfField, this.posx, this.posy, this.color);
       }
 
-      drawTurmite(index) {
-        p5.fill(colors[index]);
-        // p5.noStroke()
-        p5.rect(this.posy * 5, (143 - this.posx) * 5, 5, 5);
+      drawTurmite() {
+        p5.noStroke()
+        p5.fill(this.color);
+        p5.rect(this.posy * 5, (143 - this.posx) * 5, 5*co, 5*co);
       }
 
       step() {
@@ -203,75 +204,36 @@ var sketch = function (
 
     p5.setup = function () {
       let myCanvas = p5.createCanvas(720, 720);
-      myCanvas.parent(parentElementId)
-      // p5.createCanvas(p5.windowWidth, p5.windowHeight);
-      
-      // p5.background(250);
+      myCanvas.parent(target)
+
       p5.background(0);
 
       p5.frameRate(frameRate)
-      
-      //p5.noLoop();
 
       for (let z = 0; z < turmiteIds.length; z++) {
-        var newname = turmiteIds[z];
+        var newname = turmiteIds[z]; // "Turmite " + String(turmiteIds[z]);
         turmitesToMove[newname] = [z];
       }
-      turmitesToMove["all"] = [0, 1, 2, 3].slice(0, turmitesData.length);
+      turmitesToMove["all"] = [0, 1, 2, 3];
 
-      // let startbutton = p5.createButton("start");
-      // startbutton.mousePressed(pressStart);
-      // startbutton.position(20, 20);
-
-      // let stopbutton = p5.createButton("stop");
-      // stopbutton.mousePressed(pressStop);
-      // stopbutton.position(80, 20);
-
-      // playbackButton.addEventListener('click', () => togglePlayback())
-
-      // slider = p5.createSlider(0, 8000, 100);
-      // slider.position(210, 20);
-      // slider.style("width", "80px");
-
-      // let simulatebutton = p5.createButton("simulate steps");
-      // simulatebutton.position(300, 20);
-      // simulatebutton.mousePressed(simulateSteps);
-
-      // let inp = p5.createInput("");
-      // inp.position(210, 60);
-      // inp.size(200);
-      // inp.input(myInputEvent);
-
-      // let reprogramButton = p5.createButton("reprogram");
-      // reprogramButton.position(420, 60);
-      // reprogramButton.mousePressed(reprogramm);
-
-      // sel = p5.createSelect();
-      // sel.position(500, 30);
-      // sel.option("Turmite " + String(turmiteIds[0]));
-      // sel.option("Turmite " + String(turmiteIds[1]));
-      // sel.option("Turmite " + String(turmiteIds[2]));
-      // sel.option("Turmite " + String(turmiteIds[3]));
-      // sel.option("all");
-      // sel.selected("all");
-      // sel.changed(changeTurmiteSelection);
+      // 
 
       boardNew = new board(board1);
+      
       for (var i = 0; i < turmitesData.length; i++) {
-        let turmiteNew = new turmiteobj(turmitesData[i], boardNew);
+        let turmiteNew = new turmiteobj(turmitesData[i], boardNew, colors[i]);
         initalizedTurmites.push(turmiteNew);
       }
       boardNew.reDrawCanvas();
 
       for (var b = 0; b < initalizedTurmites.length; b++) {
-        initalizedTurmites[b].drawTurmite(b);
+        initalizedTurmites[b].drawTurmite();
       }
 
       p5.noLoop()
     };
 
     p5.draw = function draw() {
-      console.log('running')
       // draw loop...
 
       // prevent extra step since draw() is always called on setup() and loop()
@@ -281,89 +243,114 @@ var sketch = function (
 
       // step
       var tumitesToMOVE = turmitesToMove[choosenTurmites];
-      // for (var u = 0; u < tumitesToMOVE.length; u++) {
       for (var u = 0; u < tumitesToMOVE.length; u++) {
         initalizedTurmites[tumitesToMOVE[u]].step();
       }
-      boardNew.reDrawCache();
 
+      boardNew.reDrawCache();
+      
       // draw turmite in new position
       for (var u = 0; u < tumitesToMOVE.length; u++) {
-        initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
+        initalizedTurmites[tumitesToMOVE[u]].drawTurmite();
       }
-      //console.log(p5.frameRate()); 
+      
+      // color tail has finite length?
+      if (typeof colorTail === 'number') {
+        drawcounter = drawcounter + 1;
+        if (drawcounter % colorTail === 0){
+          boardNew.reDrawCanvas()
+          drawcounter = 0;
+        }
+      }
     };
 
     // p5.windowResized = function windowResized() {
     //   p5.resizeCanvas();
     // };
-  });
 
-  myp5.myMethods = {
-    changeTurmiteSelection: function (value = '') {
-      if (!turmiteIds.includes(value)) {
-        console.warn(`${value} not found in turmiteIds:`, JSON.stringify(turmiteIds))
-        value = undefined
-      }
-      value = value || 'all'
-      choosenTurmites = value
-    },
+    myMethods = {
+      changeTurmiteSelection: function (value = '') {
+        if (!turmiteIds.includes(value)) {
+          console.warn(`${value} not found in turmiteIds:`, JSON.stringify(turmiteIds))
+          value = undefined
+        }
+        value = value ?? 'all'
+        choosenTurmites = value
+        console.log({ choosenTurmites })
+      },
 
-    // pressStart: function () {
-    //   console.log("start");
-    //   //button.html('stop');
-    //   if (myp5.isLooping() == false) {
-    //     myp5.loop()
-    //     console.log("lets go");
-    //   }
-    // },
+      pressStart: function () {
+        console.log("start");
+        //button.html('stop');
+        if (myp5.isLooping() == false) {
+          myp5.loop()
+          console.log("lets go");
+        }
+      },
 
-    // pressStop: function () {
-    //   if (myp5.isLooping() == true) {
-    //     myp5.noLoop()
-    //     console.log("stop");
-    //   }
-    // },
+      pressStop: function () {
+        if (myp5.isLooping() == true) {
+          myp5.noLoop()
+          console.log("stop");
+        }
+      },
 
-    togglePlayback: function  () {
-      // running = !running
-      return myp5.isLooping() ? myp5.noLoop() : myp5.loop()
-    },
+      togglePlayback: function  () {
+        return myp5.isLooping() ? myp5.noLoop() : myp5.loop()
+      },
 
-    myInputEvent: function () {
-      userinput = this.value();
-    },
+      simulateSteps: function ({ turmiteId, steps }) {
+        if (myp5.isLooping() == true) {
+          myp5.noLoop();
+        }
 
-    simulateSteps: function ({ turmiteId, steps }) {
-      if (myp5.isLooping() == true) {
-        myp5.noLoop();
-      }
-      
-      if (turmiteId) {
-        myp5.myMethods.changeTurmiteSelection(turmiteId)
-      }
+        if (turmiteId) {
+          myp5.myMethods.changeTurmiteSelection(turmiteId)
+        }
 
-      let val = steps // slider.value();
-      var tumitesToMOVE = turmitesToMove[choosenTurmites];
-      for (var u = 0; u < tumitesToMOVE.length; u++) {
-        for (var moves = 0; moves < val; moves++) {
-          initalizedTurmites[tumitesToMOVE[u]].step();
+        let val = steps
+
+        var tumitesToMOVE = turmitesToMove[choosenTurmites];
+        for (var u = 0; u < tumitesToMOVE.length; u++) {
+          for (var moves = 0; moves < val; moves++) {
+            initalizedTurmites[tumitesToMOVE[u]].step();
+          }
+        }
+        boardNew.reDrawCanvas();
+        for (var u = 0; u < tumitesToMOVE.length; u++) {
+          initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
+        }
+      },
+
+      reprogramm: function (value) {
+        console.log("reprogrammed!");
+        var tumitesToReprogramm = turmitesToMove[choosenTurmites];
+        for (var u = 0; u < tumitesToReprogramm.length; u++) {
+          initalizedTurmites[tumitesToReprogramm[u]].rule = String(value);
+        }
+      },
+
+      restart: function () {
+        console.log('restart')
+        initalizedTurmites = [];
+        boardNew = new board(board1);
+
+        for (var i = 0; i < turmitesData.length; i++) {
+          let turmiteNew = new turmiteobj(turmitesData[i], boardNew, colors[i]);
+          initalizedTurmites.push(turmiteNew);
+        }
+
+        boardNew.reDrawCanvas();
+
+        for (var b = 0; b < initalizedTurmites.length; b++) {
+          initalizedTurmites[b].drawTurmite();
         }
       }
-      boardNew.reDrawCanvas();
-      for (var u = 0; u < tumitesToMOVE.length; u++) {
-        initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
-      }
-    },
-
-    reprogramm: function () {
-      console.log("reprogrammed!");
-      var tumitesToReprogramm = turmitesToMove[choosenTurmites];
-      for (var u = 0; u < tumitesToReprogramm.length; u++) {
-        initalizedTurmites[tumitesToReprogramm[u]].rule = String(userinput);
-      }
     }
-  }
+  });
+
+  // ugly but... p5
+  myp5.myMethods = myMethods
   
   return myp5
 };

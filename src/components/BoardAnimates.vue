@@ -138,13 +138,14 @@ const makeSketch = async () => {
     const turmites = turmiteData.value.filter(val => val !== null)
 
     // render
-    myp5 = sketch(
-      'myCanvasContainer',
-      turmites,
-      props.tokenIds,
-      boardData.value,
-      props.frameRate
-    );
+    myp5 = sketch({
+      target: 'myCanvasContainer',
+      turmitesData: turmites,
+      turmiteIds: props.tokenIds,
+      boardData: boardData.value,
+      frameRate: props.frameRate,
+      colors: ['red', '#0081ff', '#03de00', '#fa8700']
+    });
 
     emit('rendered', myp5)
   }

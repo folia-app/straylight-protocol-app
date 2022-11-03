@@ -215,8 +215,9 @@ export default {
       }
     },
     async resetBoard () {
-      this.myp5.myMethods.reset()
-      return
+      // doesn't work for some weird vue/p5 spookiness!
+      // this.myp5.myMethods.reset()
+      // return
 
       this.boardScale = undefined // flashes img as loader
       await this.$nextTick()
