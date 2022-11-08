@@ -214,7 +214,7 @@ var sketch = function ({
         var newname = turmiteIds[z]; // "Turmite " + String(turmiteIds[z]);
         turmitesToMove[newname] = [z];
       }
-      turmitesToMove["all"] = [0, 1, 2, 3];
+      turmitesToMove["all"] = [0, 1, 2, 3].slice(0, turmitesData.length)
 
       // 
 

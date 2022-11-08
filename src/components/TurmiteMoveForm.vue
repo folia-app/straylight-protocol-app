@@ -4,7 +4,7 @@
     input.w-full.border.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.text-center(v-model="moveQty", type="number", min="1", step="1", :max="$store.state.movesMax", v-autofocus)
     
     .mt-2.grid.grid-cols-2.gap-1
-      button.block.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1(@click.prevent="emit('preview', { tokenId, moveQty })") PREVIEW
+      button.block.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1(@click.prevent="onPreviewClick") PREVIEW
       button.block.bg-accent1.text-accent2.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.mouse_hover_text-accent2.mouse_hover_bg-accent1(type="submit") MOVE
 
   template(v-if="status")
@@ -40,5 +40,12 @@ const move = async () => {
     // show error to user
     status.value = { type: 'error', msg: 'Error - ' + (e.reason || e.message || e) }
   }
+}
+
+const previewClickCounter = ref(0)
+const onPreviewClick = () => {
+  emit('preview', { tokenId: props.tokenId, moveQty: moveQty.value })
+  // previewClickCounter.value++
+  // moveQty.value = moveQty.value * previewClickCounter.value
 }
 </script>

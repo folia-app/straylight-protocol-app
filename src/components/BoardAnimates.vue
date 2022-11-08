@@ -1,5 +1,6 @@
 <template lang="pug">
-.board-animates.relative
+board-animates-canvas(:key="`${props.boardKey}`", :boardKey="boardKey", :tokenIds="props.tokenIds", :boardData="boardData", :turmiteData="turmiteData", v-bind="$attrs")
+//- .board-animates.relative
   div.pointer-events-none(ref="containerEl", id="myCanvasContainer")
 
   //- controls
@@ -13,151 +14,68 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
-import store from '@/store'
-import tokenUriParser from '@/plugins/p5_turmites/tokenURIParser.js'
-import sketch from '@/plugins/p5_turmites/sketch.js'
-import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
+  import { ref } from 'vue'
+  import store from '@/store'
+  import tokenUriParser from '@/plugins/p5_turmites/tokenURIParser.js'
+  import { useAttrs } from 'vue'
+  import BoardAnimatesCanvas from '@/components/BoardAnimatesCanvas.vue'
+  // import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 
-const props = defineProps(['tokenIds', 'boardId', 'networkName', 'previewButton', 'frameRate'])
-const emit = defineEmits(['rendered', 'loading'])
+  const props = defineProps(['tokenIds', 'boardId', 'networkName', 'previewButton', 'frameRate', 'boardKey'])
+  // const emit = defineEmits(['rendered', 'loading'])
 
-let contract, myp5
-const turmiteData = ref([undefined, undefined, undefined, undefined])
-const boardData = ref()
-const previewButton = ref()
-const playing = ref(false)
-const containerEl = ref()
+  let contract
+  const turmiteData = ref([undefined, undefined, undefined, undefined])
+  const boardData = ref()
 
-const getTokenURI = async (tokenId) => {
-  try {
-    contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
-    const data = await contract.tokenURI(tokenId)
-    console.log(tokenId, { data })
-    return data
-    // convert from base64
-    // const json = JSON.parse(atob(data.split(',')[1]))
-    // attributes.value = json.attributes
-  } catch (e) {
-    console.error(e)
-    return 0
-  }
-}
-
-const getBitmap = async (boardId) => {
-  try {
-    contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
-    const data = await contract.getBitmap(boardId, 0, 0, true)
-    console.log('boardData', { data })
-    return data
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-const init = () => {
-  // get each tokendata async...
-  for (var i = 0; i < props.tokenIds.length; i++) {
-    const tokenId = props.tokenIds[i]
-    const index = i
-
-    getTokenURI(tokenId).then((data) => {
-      data = tokenUriParser.turmiteParser(data)
-      
-      if (isNaN(data.rule)) {
-        turmiteData.value[index] = data  
-      } else {
-        turmiteData.value[index] = null // no turmite
-      }
-    })    
+  const getTokenURI = async (tokenId) => {
+    try {
+      contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
+      const data = await contract.tokenURI(tokenId)
+      // console.log(tokenId, { data })
+      return data
+    } catch (e) {
+      console.error(e)
+      return 0
+    }
   }
 
-  // get board data
-  getBitmap(props.boardId)
-    .then(data => { boardData.value = tokenUriParser.boardParser(data) })
-}
-
-// p5 library lazy loader
-const loadP5Library = async () => {
-  if (!window.p5Loader && !window.p5) {
-    window.p5Loader = new Promise((resolve, reject) => {
-      console.log('loading p5 library...')
-
-      var script = document.createElement('script');
-      script.src = '/p5.min.js';
-      script.type = 'text/javascript';
-      script.id = 'p5script'
-
-      script.onload = function () {
-        delete window.p5Loader
-        console.log("loaded p5 library")
-        resolve()
-      };
-      
-      script.onerror = function (e) {
-        console.error(e)
-        delete window.p5Loader
-        reject(new Error("Couldn't load p5 library."))
-      }
-
-      document.body.appendChild(script)
-    })
-  }
-  return window.p5Loader
-}
-
-const makeSketch = async () => {
-  emit('loading', true)
-    
-  // wait to load p5 library
-  try {
-    await loadP5Library()  
-  } catch (e) {
-    console.error(e)
-    return
+  const getBitmap = async (boardId) => {
+    try {
+      contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
+      const data = await contract.getBitmap(boardId, 0, 0, true)
+      // console.log('boardData', { data })
+      return data
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  // clear any existing canvases
-  if (myp5) {
-    myp5.remove()
+  const getData = () => {
+    // get each tokendata async...
+    for (var i = 0; i < props.tokenIds.length; i++) {
+      const tokenId = props.tokenIds[i]
+      const index = i
+
+      getTokenURI(tokenId).then((data) => {
+        data = tokenUriParser.turmiteParser(data)
+        
+        if (isNaN(data.rule)) {
+          turmiteData.value[index] = data
+        } else {
+          turmiteData.value[index] = null // no turmite
+        }
+      })    
+    }
+
+    // get board data
+    getBitmap(props.boardId)
+      .then(data => {
+        const buffer = tokenUriParser.boardParser(data)
+        const array = JSON.parse(JSON.stringify(buffer)).data
+        boardData.value = array
+      })
   }
 
-  const hasTurmiteData = turmiteData.value.filter(val => val === undefined).length === 0
-  const hasBoardData = boardData.value !== undefined
-  
-  if (hasTurmiteData && hasBoardData) {
-    // console.log("ready!", {
-    //   0: turmiteData.value[0],
-    //   1: turmiteData.value[1],
-    //   2: turmiteData.value[2],
-    //   3: turmiteData.value[3],
-    //   board: boardData.value
-    // })
-
-    // filter out empty (null) turmites
-    const turmites = turmiteData.value.filter(val => val !== null)
-
-    // render
-    myp5 = sketch({
-      target: 'myCanvasContainer',
-      turmitesData: turmites,
-      turmiteIds: props.tokenIds,
-      boardData: boardData.value,
-      frameRate: props.frameRate,
-      colors: ['red', '#0081ff', '#03de00', '#fa8700']
-    });
-
-    emit('rendered', myp5)
-  }
-}
-
-onUnmounted(() => {
-  myp5.remove() // stops loop and removes canvas el
-  console.log('destroyed')
-})
-
-watch(turmiteData, () => makeSketch(), { deep: true })
-watch(boardData, () => makeSketch())
-
-init()
+  getData()
 </script>

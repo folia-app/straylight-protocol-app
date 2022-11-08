@@ -23,7 +23,7 @@ article.board
           
           //- p5 board (scales based on <img> .object-contain size)
           .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:class="{'opacity-0': boardScale === undefined || imgIsLoading}")
-            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :key="boardKey", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :frameRate="60")
+            board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :boardKey="boardKey")
 
             //- controls, below board
             .absolute.bottom-0.left-0.w-full(v-show="controlsVisible")
@@ -219,11 +219,11 @@ export default {
       // this.myp5.myMethods.reset()
       // return
 
-      this.boardScale = undefined // flashes img as loader
-      await this.$nextTick()
+      // this.boardScale = undefined // flashes img as loader
+      // await this.$nextTick()
       this.boardKey++
       this.playing = false
-      this.controlsVisible = false
+      // this.controlsVisible = false
       this.resetBtnVisible = false
     },
     onMoveFormVisible () {
