@@ -16,6 +16,7 @@ var sketch = function ({
     let choosenTurmites = "all";
     let boardNew
     let drawcounter = 0;
+    let stepCounter = 0;
     
     // can remove "co" i believe:
     let co = 1 // 0.78;
@@ -262,6 +263,8 @@ var sketch = function ({
           drawcounter = 0;
         }
       }
+
+      stepCounter++
     };
 
     // p5.windowResized = function windowResized() {
@@ -298,6 +301,7 @@ var sketch = function ({
       togglePlayback: function  () {
         return myp5.isLooping() ? myp5.noLoop() : myp5.loop()
       },
+      
 
       simulateSteps: function ({ turmiteId, steps }) {
         if (myp5.isLooping() == true) {
@@ -322,6 +326,10 @@ var sketch = function ({
         }
       },
 
+      getStepCount: function () {
+        return stepCounter
+      },
+
       reprogramm: function (value) {
         console.log("reprogrammed!");
         var tumitesToReprogramm = turmitesToMove[choosenTurmites];
@@ -334,6 +342,7 @@ var sketch = function ({
         console.log('restart')
         initalizedTurmites = [];
         boardNew = new board(board1);
+        stepCounter = 0;
 
         for (var i = 0; i < turmitesData.length; i++) {
           let turmiteNew = new turmiteobj(turmitesData[i], boardNew, colors[i]);

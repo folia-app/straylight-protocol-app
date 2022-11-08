@@ -1,8 +1,9 @@
 export function turmiteName (tokenId) {
+  return `turmite_${tokenId}`
   // first turmite is W, ...
-  const labels = ['W', 'S', 'N', 'E']
-  const position = tokenId % 4
-  return `turmite_${tokenId}` // ${labels[position]}`
+  // const labels = ['W', 'S', 'N', 'E']
+  // const position = tokenId % 4
+  // return ${labels[position]}`
 }
 
 // object fit helpers

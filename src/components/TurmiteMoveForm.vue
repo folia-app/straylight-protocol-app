@@ -18,8 +18,11 @@ import store from '@/store'
 const props = defineProps(['tokenId', 'networkName'])
 const emit = defineEmits(['moved', 'preview'])
 
-const moveQty = ref(1000)
+const moveQty = ref(500)
 const status = ref()
+
+const previewStep = ref(500)
+const previewClickCounter = ref(0)
 
 const move = async () => {
   try {
@@ -42,10 +45,9 @@ const move = async () => {
   }
 }
 
-const previewClickCounter = ref(0)
+
 const onPreviewClick = () => {
+  // preview current move qty
   emit('preview', { tokenId: props.tokenId, moveQty: moveQty.value })
-  // previewClickCounter.value++
-  // moveQty.value = moveQty.value * previewClickCounter.value
 }
 </script>

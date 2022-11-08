@@ -6,6 +6,7 @@
 <script setup>
   import { watch, onUnmounted, onMounted } from 'vue'
   import sketch from '@/plugins/p5_turmites/sketch.js'
+  import colors from '@/colors'
   
   const props = defineProps(['turmiteData', 'boardData', 'tokenIds', 'boardKey'])
   const emit = defineEmits(['rendered', 'loading'])
@@ -60,7 +61,7 @@
         turmiteIds: props.tokenIds,
         boardData: props.boardData,
         frameRate: 60,
-        colors: ['red', '#0081ff', '#03de00', '#fa8700']
+        colors,
       });
 
       emit('rendered', myp5)
