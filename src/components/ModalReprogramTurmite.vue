@@ -1,8 +1,8 @@
 <template lang="pug">
 modal(@close="close")
-  <DialogTitle class="uppercase text-lg font-bold">Reprogram #[span.text-accent4 Turmite_{{ props.tokenId }}]</DialogTitle>
+  <DialogTitle class="uppercase text-lg font-bold">#[span.text-accent4.uppercase Reprogram] Turmite_{{ props.tokenId }}</DialogTitle>
   
-  <DialogDescription class="mt-6">Select a new <a href="/patterns" class="border-b border-dashed mouse_hover_border-solid font-bold" target="_blank">pattern</a><span style="font-size:0.75em">↗</span> for your turmite.</DialogDescription>
+  <DialogDescription class="mt-6">select a new <a href="/patterns" class="border-b border-dashed mouse_hover_border-solid font-bold" target="_blank">pattern</a><span style="font-size:0.75em">↗</span> for your turmite.</DialogDescription>
 
   form(@submit.prevent="submit")
     figure.mt-12.px-4.flex.justify-center.w-full(v-if="previewOption")

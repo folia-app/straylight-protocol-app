@@ -22,7 +22,8 @@ article.board
           img.sm_absolute.overlay.object-center.object-contain(v-if="boardImgSrc", ref="boardImg", :src="boardImgSrc", :class="{'opacity-0': !boardImgSrc, 'animate-pulse': !boardScale}")
           
           //- p5 board (scales based on <img> .object-contain size)
-          .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:class="{'opacity-0': boardScale === undefined || imgIsLoading}")
+          .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:key="activityFetch", :class="{'opacity-0': boardScale === undefined || imgIsLoading}")
+            //- 
             board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :boardKey="boardKey")
 
             //- controls, below board
@@ -88,7 +89,7 @@ article.board
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName", @moveFormOpened="onMoveFormVisible", @reprogrammed="onTurmiteReprogrammed")
+        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed")
       
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
 
@@ -131,7 +132,6 @@ import {
 } from '@headlessui/vue'
 import { turmiteName } from '@/utils.js'
 import colors from '@/colors'
-import { nextTick } from 'process'
 
 export default {
   name: 'Board',
@@ -203,7 +203,8 @@ export default {
         // svg.style.display = 'block'
         // // svg.style.height = '100%'
         // this.boardSvg = svg.outerHTML
-        this.listenToImgResize()
+        
+        // this.listenToImgResize()
       } catch (e) {
         console.error(e)
         this.imgIsLoading = false
@@ -211,9 +212,8 @@ export default {
     },
     onTurmiteMoved () {
       this.getBoardImage()
-      // update activity list
+      // update activity list (+p5 board)
       this.activityFetch++
-      this.resetBoard()
     },
     onTurmiteReprogrammed () {
       this.activityFetch++
@@ -245,6 +245,8 @@ export default {
       this.scaleBoard()
       this.controlsVisible = true
     },
+
+    // controls
     toggleBoardSimulation () {
       if (this.myp5) {
         this.myp5.myMethods.togglePlayback()
@@ -256,22 +258,8 @@ export default {
       this.stepCount = this.myp5.myMethods.getStepCount()
       this.playing = false
     },
-    onMoveFormVisible () {
-      // reset board so can properly preview
-      if (this.resetBtnVisible) {
-        this.resetBoard()
-      }
-    },
 
-    // preview
-    // previewTurmite ({ tokenId, moveQty }) {
-    //   if (this.resetBtnVisible) {
-    //     this.resetBoard()
-    //   }
-    //   this.myp5.myMethods.simulateSteps({ turmiteId: tokenId, steps: moveQty })
-    //   this.resetBtnVisible = true
-    // },
-    
+    // preview    
     async openStepCountInput () {
       this.myp5.myMethods.pressStop()
       this.playing = false
@@ -324,6 +312,7 @@ export default {
   },
   created () {
     this.getBoardImage()
+      .then(() => this.listenToImgResize())
     this.$store.dispatch('getBoardCount', { network: { name: this.$route.params.networkName }})
       .then(count => { this.boardCount = count })
 
@@ -331,15 +320,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-input::-moz-selection { /* Code for Firefox */
-  color: black;
-  background: var(--color-accent2);
-}
-
-input::selection {
-  color: black;
-  background: var(--color-accent2);
-}
-</style>

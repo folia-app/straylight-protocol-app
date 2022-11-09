@@ -44,8 +44,8 @@ li.turmite-detail.flex.flex-col
             .w-full.md_w-auto.grid.grid-cols-2.gap-1.mt-2
               button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.borderff.border-gray-600.font-bold(@click="reprogramModalVisible = true", class="bg-black/10")
                 | reprogram
-              button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="toggleMoveForm")
-                | {{ moveFormVisible ? 'cancel' : 'move' }}
+              button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="moveModalVisible = true")
+                | move
               
       
       //- ("join/mint")
@@ -54,7 +54,7 @@ li.turmite-detail.flex.flex-col
           router-link.w-full.block.border.border-dashed.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.animate-pulse.font-bold.mouse_hover_bg-accent2.mouse_hover_text-accent1.text-md(:to="{ name: 'mint', query: { network: $route.params.networkName }}") JOIN / MINT
 
   //- (move form)
-  .lg_my-px.lg_order-first
+  //- .lg_my-px.lg_order-first
     template(v-if="moveFormVisible")
       .mt-px.lg_my-0.relative
         .lg_absolute.bottom-0.left-0.w-full.p-4.pb-5.rounded-lg.bg-accent3.text-accent1
@@ -62,6 +62,9 @@ li.turmite-detail.flex.flex-col
   
   //- (reprogramm modal)
   modal-reprogram-turmite(v-if="reprogramModalVisible", @close="reprogramModalVisible = false", :tokenId="props.tokenId", @reporgrammed="onTurmiteReprogrammed")
+
+  //- (move modal)
+  modal-move-turmite(v-if="moveModalVisible", @close="moveModalVisible = false", :tokenId="props.tokenId", @moved="onTurmiteMoved")
 </template>
 
 <script setup>
@@ -71,6 +74,7 @@ import Addr from '@/components/Addr.vue'
 import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
 import rules from '../../contracts/rulesSelected.js'
 import ModalReprogramTurmite from '@/components/ModalReprogramTurmite.vue'
+import ModalMoveTurmite from '@/components/ModalMoveTurmite.vue'
 import colors from '@/colors'
 
 const props = defineProps(['tokenId', 'tokenIndex', 'networkName'])
@@ -81,6 +85,7 @@ const isOwner = computed(() => store.getters.isConnectedAddr(owner.value))
 
 const moveFormVisible = ref(false)
 const reprogramModalVisible = ref(false)
+const moveModalVisible = ref(false)
 
 const toggleMoveForm = () => {
   if (!moveFormVisible.value) {
@@ -120,6 +125,10 @@ const ruleset = computed(() => {
 const onTurmiteReprogrammed = () => {
   getAttr()
   emit('reprogrammed')
+}
+
+const onTurmiteMoved = () => {
+  emit('moved')
 }
 
 getOwner()

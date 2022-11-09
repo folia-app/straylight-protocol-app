@@ -32,7 +32,7 @@ board-animates-canvas(:key="`${props.boardKey}`", :boardKey="boardKey", :tokenId
     try {
       contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
       const data = await contract.tokenURI(tokenId)
-      // console.log(tokenId, { data })
+      console.log(tokenId, { data })
       return data
     } catch (e) {
       console.error(e)
@@ -44,7 +44,7 @@ board-animates-canvas(:key="`${props.boardKey}`", :boardKey="boardKey", :tokenId
     try {
       contract = contract || await store.dispatch('getNFTContract', { network: { name: props.networkName }})
       const data = await contract.getBitmap(boardId, 0, 0, true)
-      // console.log('boardData', { data })
+      console.log('boardData', { data })
       return data
     } catch (e) {
       console.error(e)
