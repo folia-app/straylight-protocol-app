@@ -1,23 +1,25 @@
 <template lang="pug">
 article.board
-  .min-h-screen.flex.flex-col
+  //- main
+  .min-h-screen.flex.flex-col.overflow-hidden
 
     //- title row
     header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
       h1.text-md.sm_text-base.group #[router-link.opacity-40.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
 
-    .flex-1.relative.px-8.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col.overflow-hidden
+    .flex-1.relative.px-8.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col
       .sm_flex-1.flex.w-full
         //- (prev board link)
-        .hidden.md_flex.w-20.relative.z-10.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.group
-          template(v-if="boardImgSrc && boardId + 1 < boardCount")
-            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
-              .sr-only next world
-              //- label
-              .absolute.top-0.h-full.left-full.pl-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
-                | world_{{ boardId + 1 }}
+        .hidden.md_flex.w-20.relative.z-10
+          .w-full.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.group.flex
+            template(v-if="boardImgSrc && boardId + 1 < boardCount")
+              router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
+                .sr-only next world
+                //- label
+                .absolute.top-0.h-full.left-full.pl-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
+                  | world_{{ boardId + 1 }}
         
-        .flex-1.relative.flex.sm_flex-colff.items-centerff.borderff
+        .flex-1.relative.flex
           //- contract image (loader + sizer)
           img.sm_absolute.overlay.object-center.object-contain(v-if="boardImgSrc", ref="boardImg", :src="boardImgSrc", :class="{'opacity-0': !boardImgSrc, 'animate-pulse': !boardScale}")
           
@@ -77,22 +79,25 @@ article.board
                         arrow-path-icon(class="h-7 w-7")
 
         //- (next board link)
-        .hidden.md_flex.w-20.relative.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
-          template(v-if="boardImgSrc && boardId - 1 >= 0")
-            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
-              .sr-only prev world
-              //- label
-              .absolute.top-0.h-full.right-full.pr-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
-                | world_{{ boardId - 1 }}
+        .hidden.md_flex.w-20.relative
+          .w-full.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group.flex
+            template(v-if="boardImgSrc && boardId - 1 >= 0")
+              router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
+                .sr-only prev world
+                //- label
+                .absolute.top-0.h-full.right-full.pr-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
+                  | world_{{ boardId - 1 }}
 
     //- turmite list
-    ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
+    ul.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
         turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed")
-      
+  
+  //- activity
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
 
+  //- next/prv links
   footer.pt-24.pb-64.lg_pb-36
     nav.flex.text-md.items-center
       .flex-1.flex.justify-center.lg_-mr-28
