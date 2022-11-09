@@ -68,7 +68,7 @@
         </TransitionRoot>
 
         <!-- bootleg activeOption emitter -->
-        <img v-show="false" :key="activeOption ? activeOption.rule : 'empty'" src="fail" @error="emit('activeOptionChanged', activeOption)" />
+        <img v-show="false" :key="activeOption ? activeOption.rule : 'empty'" :src="'/fail.jpg'" @error="emit('activeOptionChanged', activeOption)" />
 
       </div>
     </Combobox>
