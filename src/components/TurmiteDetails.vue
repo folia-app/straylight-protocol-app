@@ -3,17 +3,17 @@ li.turmite-detail.flex.flex-col
 
   .rounded-lg.relative(:class="{'bg-accent2 text-accent1 border-none': isOwner}")
     //- (background)
-    .absolute.overlay.bg-accent1.opacity-90.rounded-lg(v-if="!isOwner")
+    .absolute.overlay.bg-accent2.opacity-10.rounded-lg(v-if="!isOwner")
     
-    .relative.z-10.px-5.pt-4.pb-4.flex.flex-col
+    .relative.z-10.pl-5.pr-4.pt-4.pb-4.flex.flex-col
       //- title
-      .flex.items-end.pb-5
+      .flex.items-end.pb-4
         .mr-3.mb-2px(:style="{width:'0.9rem', height:'0.9rem', background: colors[props.tokenIndex]}")
         a.flex.justify-start.items-end.leading-none.group(:class="{'-mb-1': isOwner}", :href="$store.getters.marketplaceLink({ token: tokenId, networkName })", target="_blank", rel="noopener noreferrer")
-          .flex.font-bold(:class="{'opacity-30': !owner}")
+          .flex.font-bold(:class="{'opacity-50': !owner}")
             | turmite_{{ props.tokenId }}
             //- | turmite_{{ props.tokenIndex }}
-          .flex.items-end.opacity-30.ml-1.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
+          .flex.items-end.opacity-40.ml-1.text-smmff.mouse_group-hover_text-accent3.mouse_group-hover_opacity-100(v-if="owner")
             //- | \#{{ props.tokenId }} 
             span.ml-1(style="font-size:0.6em") ↗
       
@@ -23,25 +23,25 @@ li.turmite-detail.flex.flex-col
           .flex-1.text-smm
             //- owner
             .h-9.flex.items-center
-              .inline-block.opacity-30(style="min-width:3.5em") owner
+              .inline-block.opacity-50(style="min-width:3.5em") owner
               .inline-block
                 template(v-if="owner === undefined")
                   span.animate-pulse ...
                 template(v-else)
                   router-link.flex.items-center(:to="{name: 'profile-network__worlds', params: { address: owner, networkName: $route.params.networkName }}")
                     addr.font-bold.px-3px.rounded-lg.leading-tight(:address="owner", :youOn="true")
-                    span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
+                    span.ml-2.opacity-40(style="font-size:0.75em") &rarr;
             //- pattern
             .h-9.flex.items-center
-              .inline-block.opacity-30(style="min-width:3.5em") pattern
+              .inline-block.opacity-50(style="min-width:3.5em") pattern
               template(v-if="ruleset")
                 router-link.inline-block.lowercase(:to="{name: 'pattern', params: { pattern: ruleset.rule }, query: { network: $route.params.networkName }}")
                   span.font-bold {{ ruleset.nickname || '??' }}
-                  span.ml-2.opacity-20(style="font-size:0.75em") &rarr;
+                  span.ml-2.opacity-40(style="font-size:0.75em") &rarr;
 
           //- (owner actions)
           template(v-if="isOwner")
-            .w-full.md_w-auto.grid.grid-cols-2.gap-1.mt-2
+            .w-full.md_w-auto.lg_w-full.xl_w-auto.grid.grid-cols-2.gap-1.mt-2
               button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.borderff.border-gray-600.font-bold(@click="reprogramModalVisible = true", class="bg-black/10")
                 | reprogram
               button.mt-2.h-9.rounded-full.px-4.text-sm.borderff.flex.items-center.justify-center.pb-1.bg-accent3.font-bold(@click="moveModalVisible = true")

@@ -6,16 +6,16 @@ article.board
     header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
       h1.text-md.sm_text-base.group #[router-link.opacity-40.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
 
-    .flex-1.relative.px-8.pb-20.md_px-0.lg_pt-20.lg_pb-24.flex.flex-col
+    .flex-1.relative.px-8.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col.overflow-hidden
       .sm_flex-1.flex.w-full
         //- (prev board link)
-        .hidden.sm_flex.w-20.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.relative.group
-          template(v-if="boardImgSrc && boardId - 1 >= 0")
-            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
-              .sr-only prev world
+        .hidden.md_flex.w-20.relative.z-10.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.group
+          template(v-if="boardImgSrc && boardId + 1 < boardCount")
+            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
+              .sr-only next world
               //- label
-              .absolute.top-0.h-full.right-0.transform.translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
-                | world_{{ boardId - 1 }}
+              .absolute.top-0.h-full.left-full.pl-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
+                | world_{{ boardId + 1 }}
         
         .flex-1.relative.flex.sm_flex-colff.items-centerff.borderff
           //- contract image (loader + sizer)
@@ -77,13 +77,13 @@ article.board
                         arrow-path-icon(class="h-7 w-7")
 
         //- (next board link)
-        .hidden.md_flex.w-20.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
-          template(v-if="boardImgSrc && boardId + 1 < boardCount")
-            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
-              .sr-only next world
+        .hidden.md_flex.w-20.relative.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
+          template(v-if="boardImgSrc && boardId - 1 >= 0")
+            router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
+              .sr-only prev world
               //- label
-              .absolute.top-0.h-full.left-0.transform.-translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
-                | world_{{ boardId + 1 }}
+              .absolute.top-0.h-full.right-full.pr-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
+                | world_{{ boardId - 1 }}
 
     //- turmite list
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
@@ -96,20 +96,20 @@ article.board
   footer.pt-24.pb-64.lg_pb-36
     nav.flex.text-md.items-center
       .flex-1.flex.justify-center.lg_-mr-28
-        template(v-if="boardId - 1 >= 0")
-          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-12.pr-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
-            | world_{{ boardId - 1 }}
+        template(v-if="boardId + 1 < boardCount")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-7.pl-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
             .absolute.top-0.left-2.h-full.flex.items-center &larr;
+            | world_{{ boardId + 1 }}
 
       .flex.justify-center
         router-link.max-w-full.h-8.pb-px.px-8.rounded-full.border.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{ name: 'network-index', params: { networkName: $route.params.networkName }}")
           | all worlds
 
       .flex-1.flex.justify-center.lg_-ml-28
-        template(v-if="boardId + 1 < boardCount")
-          router-link.max-w-full.h-8.pb-px.rounded-full.border.pl-7.pr-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
-            | world_{{ boardId + 1 }}
+        template(v-if="boardId - 1 >= 0")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-12.pl-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
             .absolute.top-0.right-2.h-full.flex.items-center &rarr;
+            | world_{{ boardId - 1 }}
           
       
 </template>
