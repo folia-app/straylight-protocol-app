@@ -16,7 +16,7 @@ var sketch = function ({
     let choosenTurmites = "all";
     let boardNew
     let drawcounter = 0;
-    let stepCounter = 0;
+    let stepCount = 0;
     
     // can remove "co" i believe:
     let co = 1 // 0.78;
@@ -264,7 +264,7 @@ var sketch = function ({
         }
       }
 
-      stepCounter++
+      stepCount++
     };
 
     // p5.windowResized = function windowResized() {
@@ -324,10 +324,12 @@ var sketch = function ({
         for (var u = 0; u < tumitesToMOVE.length; u++) {
           initalizedTurmites[tumitesToMOVE[u]].drawTurmite(u);
         }
+
+        stepCount = stepCount + steps
       },
 
       getStepCount: function () {
-        return stepCounter
+        return stepCount
       },
 
       reprogramm: function (value) {
@@ -342,7 +344,7 @@ var sketch = function ({
         console.log('restart')
         initalizedTurmites = [];
         boardNew = new board(board1);
-        stepCounter = 0;
+        stepCount = 0;
 
         for (var i = 0; i < turmitesData.length; i++) {
           let turmiteNew = new turmiteobj(turmitesData[i], boardNew, colors[i]);

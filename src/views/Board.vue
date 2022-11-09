@@ -26,23 +26,23 @@ article.board
             board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :boardKey="boardKey")
 
             //- controls, below board
-            .absolute.bottom-0.left-0.w-full(v-show="controlsVisible")
+            .absolute.bottom-0.left-0.w-full.leading-none.text-smm.font-bold.tracking-wide.text-accent3(v-show="controlsVisible")
               .absolute.top-0.left-0.w-full.flex.justify-center
                 //- container matches imgW dynamically
-                .w-full.flex.justify-between.items-center.leading-none.text-smm.font-bold.tracking-wide.text-accent3.pt-2(:style="{ maxWidth: controlsMaxW }")
+                .w-full.flex.justify-between.items-center.pt-2(:style="{ maxWidth: controlsMaxW }")
                   .flex.items-center
                     //- simulate btn
                     button.rounded-full.flex.items-center.pr-3.pl-1.-ml-1.justify-center(ref="previewBtn", @click="toggleBoardSimulation", :class="{'animate-pulse': playing}")
                       .mr-2
                         play-circle-icon.h-8(v-show="!playing")
                         pause-circle-icon.h-8(v-show="playing")
-                      div {{ playing ? 'simulating' : 'simulate' }}
+                      .h-8.flex.items-center {{ playing ? 'simulating' : 'simulate' }}
                     //- divider
                     div.h-px.w-6.bg-current.mt-1.opacity-50
                     //- selector
                     listbox(v-model="simulateSelection")
                       .relative
-                        listbox-button.flex.items-center.px-3.rounded-full.pb-1ff
+                        listbox-button.h-8.flex.items-center.px-3.rounded-full.pb-1ff
                           .flex.items-end.leading-none
                             .mr-2.mb-2px(v-if="typeof simulateSelection.value === 'number'", :style="{width:'0.9rem', height:'0.9rem', background: colors[tokenIds.indexOf(simulateSelection.value)]}")
                             | {{ simulateSelection.label }}
@@ -54,10 +54,26 @@ article.board
                               .mr-3.mb-2px(:style="{width:'0.9rem', height:'0.9rem', background: colors[index - 1]}")
                               | {{ option.label }}
               
-                  .flex
-                    | {{stepCount}}
-                    button.px-3.-mr-3.rounded-full.flex.items-center.justify-center(@click="resetBoard", v-show="resetBtnVisible")
-                      arrow-path-icon(class="h-6 w-6 transform scale-110 origin-center")
+                  .flex.items-center
+                    //- (step count / btn)
+                    .max-w-full.w-24.border-b.h-8.flex.items-center.justify-end(v-show="!stepCountInputVisible")
+                      button.p-1.-m-1.rounded-full.mouse_hover_text-accent4ff(@click="openStepCountInput", aria-label="Edit Step Count")
+                        | {{stepCount}}
+                    
+                    //- (edit step form)
+                    form.flex.items-center.-mr-1(v-if="stepCountInputVisible", @submit.prevent="previewStepCountInput", v-click-outside="() => { stepCountInputVisible = false }")
+                      label.sr-only(for="stepCountInput") Preview Step
+                      //- step input
+                      input.border-b.leading-none.h-8.py-0.max-w-full.w-24.text-right.focus_outline-none.focus-visible_ring-0.focus-visible_outline-none(id="stepCountInput", size="10", v-model="stepCountInputValue", v-autofocus, type="number")
+                      //- submit btn
+                      .h-8.flex.items-center.ml-1
+                        button.p-1.rounded-full.block(type="submit")
+                          check-circle-icon(class="h-7 w-7")
+                    
+                    //- (reset btn)
+                    .h-8.flex.items-center.ml-1.-mr-1(v-show="stepCount")
+                      button.p-1.rounded-full.flex.items-center(@click="resetBoard")
+                        arrow-path-icon(class="h-7 w-7")
 
         //- (next board link)
         .hidden.md_flex.w-20.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group
@@ -68,19 +84,11 @@ article.board
               .absolute.top-0.h-full.left-0.transform.-translate-x-full.px-6.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
                 | world_{{ boardId + 1 }}
 
-      //- controls
-      //- .flex.justify-center.pt-4(:class="{'opacity-0': !boardScale}")
-        button.h-9.rounded-full.pl-5.flex.items-center.justify-center.text-sm.tracking-wide.font-bold(ref="previewBtn", @click="playing = !playing", :class="{'animate-pulse bg-accent3 text-accent1': playing, 'text-accent3': !playing}")
-          .pb-1 preview
-          .ml-2.mr-2
-            play-circle-icon.h-7(v-show="!playing")
-            pause-circle-icon.h-7(v-show="playing")
-
     //- turmite list
     ul.lg_sticky.bottom-0.left-0.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName", @preview="previewTurmite", @moveFormOpened="onMoveFormVisible", @reprogrammed="onTurmiteReprogrammed")
+        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName", @moveFormOpened="onMoveFormVisible", @reprogrammed="onTurmiteReprogrammed")
       
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
 
@@ -114,6 +122,7 @@ import { getImgSizeInfo } from '@/utils.js'
 import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 import SvgChevronDown from '@/components/SvgChevronDown.vue'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { CheckCircleIcon } from '@heroicons/vue/24/solid'
 import {
   Listbox,
   ListboxButton,
@@ -122,10 +131,11 @@ import {
 } from '@headlessui/vue'
 import { turmiteName } from '@/utils.js'
 import colors from '@/colors'
+import { nextTick } from 'process'
 
 export default {
   name: 'Board',
-  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon },
+  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon },
   data () {
     return {
       mint: undefined,
@@ -142,12 +152,14 @@ export default {
       playing: false,
       controlsMaxW: 'auto',
       controlsVisible: false,
-      resetBtnVisible: false,
       boardKey: 0,
       myp5: null,
       simulateSelection: undefined,
       colors,
+      // 
       stepCount: 0,
+      stepCountInputVisible: false,
+      stepCountInputValue: 0
     }
   },
   computed: {
@@ -196,18 +208,6 @@ export default {
         console.error(e)
         this.imgIsLoading = false
       }
-      // this.$store.dispatch('getBoardImage', {
-      //   id: this.boardId.toString(),
-      //   network: { name: this.$route.params.networkName }}
-      //   )
-      //   .then(imgSrc => {
-      //     this.imgIsLoading = false
-      //     this.boardImgSrc = imgSrc
-      //   })
-      //   .catch(e => {
-      //     console.error(e)
-      //     this.imgIsLoading = false
-      //   })
     },
     onTurmiteMoved () {
       this.getBoardImage()
@@ -247,7 +247,6 @@ export default {
     },
     toggleBoardSimulation () {
       if (this.myp5) {
-        this.resetBtnVisible = true  
         this.myp5.myMethods.togglePlayback()
         this.playing = this.myp5.isLooping()
       }
@@ -256,7 +255,6 @@ export default {
       this.myp5.myMethods.restart()
       this.stepCount = this.myp5.myMethods.getStepCount()
       this.playing = false
-      this.resetBtnVisible = false
     },
     onMoveFormVisible () {
       // reset board so can properly preview
@@ -264,12 +262,29 @@ export default {
         this.resetBoard()
       }
     },
-    previewTurmite ({ tokenId, moveQty }) {
-      if (this.resetBtnVisible) {
-        this.resetBoard()
-      }
-      this.myp5.myMethods.simulateSteps({ turmiteId: tokenId, steps: moveQty })
-      this.resetBtnVisible = true
+
+    // preview
+    // previewTurmite ({ tokenId, moveQty }) {
+    //   if (this.resetBtnVisible) {
+    //     this.resetBoard()
+    //   }
+    //   this.myp5.myMethods.simulateSteps({ turmiteId: tokenId, steps: moveQty })
+    //   this.resetBtnVisible = true
+    // },
+    
+    async openStepCountInput () {
+      this.myp5.myMethods.pressStop()
+      this.playing = false
+      this.stepCountInputValue = this.stepCount = this.myp5.myMethods.getStepCount()
+      this.stepCountInputVisible = true
+      // await this.$nextTick()
+      // this.$refs.stepCountInput.focus()
+    },
+    previewStepCountInput () {
+      this.myp5.myMethods.restart()
+      this.myp5.myMethods.simulateSteps({ turmiteId: this.simulateSelection.value, steps: this.stepCountInputValue })
+      this.stepCount = this.myp5.myMethods.getStepCount()
+      this.stepCountInputVisible = false
     }
   },
   watch: {
@@ -316,3 +331,15 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+input::-moz-selection { /* Code for Firefox */
+  color: black;
+  background: var(--color-accent2);
+}
+
+input::selection {
+  color: black;
+  background: var(--color-accent2);
+}
+</style>
