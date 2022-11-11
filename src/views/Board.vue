@@ -89,10 +89,10 @@ article.board
                   | world_{{ boardId - 1 }}
 
     //- turmite list
-    ul.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.items-start.lg_items-end.gap-px
+    ul.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed")
+        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed", @ownerResolved="val => onOwnerFound(val, i)")
   
   //- activity
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
@@ -176,8 +176,8 @@ export default {
       return [boardId, boardId + 1, boardId + 2, boardId + 3]
     },
     simulateSelectorOptions () {
-      const values = ['all', ...this.tokenIds]
-      return values.map((value, i) => ({
+      const options = ['all', ...this.tokenIds.filter((_, i) => this.owners[i])]
+      return options.map((value, i) => ({
         label: !i ? 'all' : turmiteName(value),
         value
       }))
@@ -215,6 +215,9 @@ export default {
         this.imgIsLoading = false
       }
     },
+    onOwnerFound (owner, index) {
+      this.owners[index] = owner
+    },
     onTurmiteMoved () {
       this.getBoardImage()
       // update activity list (and p5 board via key!)
@@ -246,7 +249,6 @@ export default {
       ro.observe(this.$refs.boardImg)
     },
     onBoardRender (myp5) {
-      console.log('RENDER', this.boardKey)
       this.myp5 = myp5
       this.scaleBoard()
       this.controlsVisible = true

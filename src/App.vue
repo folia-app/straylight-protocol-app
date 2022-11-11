@@ -11,10 +11,15 @@
         
         //- laptop left
         .flex.pointer-events-auto
-          //- folia logo link
-          a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
-            .w-22.h-22.sm_w-20.sm_h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
-              svg-fleuron(style="height:1.3em")
+          //- (folia logo link)
+          template(v-if="isIndex")
+            a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
+              .w-22.h-22.sm_w-20.sm_h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
+                svg-fleuron(style="height:1.3em")
+          //- (back btn)
+          template(v-else)
+            router-link.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded-lg.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
+              arrow-left-icon.w-8.h-8.text-current
 
           .h-22.sm_h-20.flex-1.flex.items-center.pb-1b
             //- div <b>Straylight Protocol</b>
@@ -141,9 +146,10 @@ import SvgX from '@/components/SVG-X.vue'
 import Observer from '@/components/Observer.vue'
 import Addr from '@/components/Addr.vue'
 import SvgChevronDown from '@/components/SvgChevronDown.vue'
+import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 export default {
   name: 'App',
-  components: { ConnectDisconnectBtn, SvgLogo, SvgFleuron, SvgX, Observer, Addr, SvgChevronDown },
+  components: { ConnectDisconnectBtn, SvgLogo, SvgFleuron, SvgX, Observer, Addr, SvgChevronDown, ArrowLeftIcon },
   metaInfo: {
     titleTemplate: (ttl) => {
       return ttl ? `${ttl} :: s̷̰̃t̴̫̊r̶͔̽ả̷̜y̴̼͂l̸̙͛į̸͆g̴̘̎h̷̜̀ṭ̸͂ ̸̰̊p̵̞̅ȑ̴̙ơ̸͍t̶̗̑o̶͂͜ć̵͍ȏ̸͕l̷̗͗` : 's̷̰̃t̴̫̊r̶͔̽ả̷̜y̴̼͂l̸̙͛į̸͆g̴̘̎h̷̜̀ṭ̸͂ ̸̰̊p̵̞̅ȑ̴̙ơ̸͍t̶̗̑o̶͂͜ć̵͍ȏ̸͕l̷̗͗ by Paul Seidler'
@@ -159,6 +165,9 @@ export default {
     isWrongNetwork () {
       const id = this.$store.state.networkId
       return id && (id !== Number(this.$store.state.appDefaultNetworkId))
+    },
+    isIndex () {
+      return !this.$route.name || this.$route.name?.startsWith('network-index')
     }
   },
   methods: {

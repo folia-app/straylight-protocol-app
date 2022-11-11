@@ -1,7 +1,7 @@
 <template lang="pug">
-li.turmite-detail.flex.flex-col
+li.turmite-detail.flex.flex-col.relative
 
-  .rounded-lg.relative(:class="{'bg-accent2 text-accent1 border-none': isOwner}")
+  .rounded-lg(:class="{'bg-accent2 text-accent1 border-none': isOwner}")
     //- (background)
     .absolute.overlay.bg-accent2.opacity-10.rounded-lg(v-if="!isOwner")
     
@@ -78,7 +78,7 @@ import ModalMoveTurmite from '@/components/ModalMoveTurmite.vue'
 import colors from '@/colors'
 
 const props = defineProps(['tokenId', 'tokenIndex', 'networkName'])
-const emit = defineEmits(['moveFormOpened', 'reprogrammed'])
+const emit = defineEmits(['moveFormOpened', 'reprogrammed', 'ownerResolved'])
 
 const owner = ref()
 const isOwner = computed(() => store.getters.isConnectedAddr(owner.value))
@@ -100,8 +100,9 @@ const getOwner = async () => {
     if (owner.value) getAttr()
   } catch (e) {
     console.error(e)
-    owner.value = '??'
+    owner.value = null
   }
+  emit('ownerResolved', owner.value)
 }
 
 const attributes = ref()
