@@ -3,10 +3,7 @@ article.index
   header.mt-72.lg_mt-60.px-6.lg_pl-20.relative.z-10
 
     nav.flex.text-md.justify-center.sm_justify-start.items-center
-      
-      
-      
-      
+
       router-link.h-9.border.border-accent2.rounded-full.px-8.flex.items-center.justify-center.pb-1.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{ name: 'network-index', params: $route.params }") worlds
       
       .w-2.border-t

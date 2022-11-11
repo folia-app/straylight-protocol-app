@@ -1,14 +1,21 @@
 <template lang="pug">
 section.minted-results.flex.flex-col.w-full
   template(v-if="boardCount === undefined")
-    .fixed.z-50.overlay.flex.items-center.justify-center.text-md.text-accent3.text-center.pointer-events-none
-      .pointer-events-auto
-        div(v-if="status", v-html="status")
-        .animate-pulse(v-else) loading...
+    p.mt-6.px-6.lg_px-22.text-sm.text-accent3 
+      //- (status)
+      div(v-if="status", v-html="status")
+      //- (loading)
+      .animate-pulse(v-else) loading...
 
+  template(v-else-if="boardCount === 0")
+    p.mt-6.px-6.lg_px-22.text-sm.text-accent3
+      | no worlds found on #[b {{ $route.params.networkName }}] network<br>
+      | #[router-link.border-b.border-dashed.mouse_hover_border-solid(:to="{ name: 'mint', query: { network: $route.params.networkName }}") mint one]&nbsp;!
+  
   template(v-else)
     .flex-1.w-full.boards-grid
-      template(v-for="n in 128")
+      //- repeat for demo...
+      template(v-for="n in 1")
 
         //- mints...
         //- template(v-for="(mint, i) in mintsFiltered")

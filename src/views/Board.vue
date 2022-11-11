@@ -217,7 +217,8 @@ export default {
     },
     onTurmiteMoved () {
       this.getBoardImage()
-      // update activity list (+p5 board)
+      // update activity list (and p5 board via key!)
+      this.stepCount = 0
       this.activityFetch++
     },
     onTurmiteReprogrammed () {

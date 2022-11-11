@@ -16,11 +16,11 @@ modal(@close="close")
       <SelectorRules v-model="selection" class="-mr-10" @activeOptionChanged="val => { activeOption = val }" />
     
     .mt-16.w-full.grid.grid-cols-2.gap-3
-      button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(@click.prevent="close") CANCEL
+      button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(@click.prevent="close") {{ hasReprogrammed ? 'CLOSE' : 'CANCEL' }}
       button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(type="submit", :disabled="!selection") REPROGRAM
   
   template(v-if="status")
-    div.text-center.text-xs.lowercase.pt-2.font-bold.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }") {{ status.msg }}
+    div.mt-6.text-center.text-xs.lowercase.pt-2.font-bold.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }") {{ status.msg }}
 </template>
 
 <script setup>
@@ -38,6 +38,8 @@ modal(@close="close")
   const selection = ref()
   const activeOption = ref()
   const status = ref()
+
+  const hasReprogrammed = ref(false)
 
   const previewOption = computed(() => {
     return activeOption.value || selection.value
@@ -57,6 +59,7 @@ modal(@close="close")
       
       // success
       emit('reprogrammed')
+      hasReprogrammed.value = true
       status.value = { type: 'success', msg: 'your turmite was reprogrammed!' }
     } catch (e) {
       console.error(e)

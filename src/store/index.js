@@ -565,8 +565,19 @@ export default createStore({
     async getBoardCount ({ state, dispatch }, { network }) {
       try {
         const nftContract = await dispatch('getNFTContract', { network })
-        const count = await nftContract.boardcounter() // starts at 0
-        return count.add(1).toNumber()
+        let count = await nftContract.boardcounter() // starts at 0
+        count = count.toNumber()
+
+        if (count === 0) {
+          // check if any mints because counter is 0 after 1 mint ¯\_(ツ)_/¯ 
+          const mints = await dispatch('getMints', { network })
+          if (mints.length) {
+            return Math.ceil(mints.length / 4)
+          } else {
+            return 0
+          }
+        }
+        return count++ 
       } catch (e) {
         console.error(e)
         throw e
@@ -593,7 +604,7 @@ export default createStore({
           const nftContract = await dispatch('getNFTContract', { network })
 
           // get...
-          events = await nftContract.queryFilter('turmiteMint', fromBlock)
+          events = await nftContract.queryFilter('TurmiteMint', fromBlock)
           console.log({ mintEvents: events })
 
           // format
@@ -662,8 +673,8 @@ export default createStore({
           const nftContract = await dispatch('getNFTContract', { network })
           
           // get events...
-          const events = await nftContract.queryFilter('turmiteMove', fromBlock)
-          // console.log({ moveEvents: events })
+          const events = await nftContract.queryFilter('TurmiteMove', fromBlock)
+          console.log({ moveEvents: events })
 
           // format
           moves = events.reverse().map(event => ({
@@ -735,6 +746,7 @@ export default createStore({
         const { provider } = await dispatch('getProvider', { network })
         const balance = await provider.getBalance(state.address)
 
+        // !! insuff balance
         if (balance.lt(price)) {
           throw new Error(`Insufficient funds in your wallet`)
         }
@@ -743,7 +755,7 @@ export default createStore({
         const contractSigner = contract.connect(signer)
 
         // confirm...
-        const tx = await contractSigner.publicMint(rule, moves.toString(), { value: price.toString() })
+        const tx = await contractSigner.publicMint(state.address, rule, moves.toString(), { value: price.toString() })
         console.log('my new mint tx:', tx)
         return tx
       } catch (e) {
@@ -796,7 +808,8 @@ export default createStore({
           const nftContract = await dispatch('getNFTContract', { network })
           
           // get events...
-          events = await nftContract.queryFilter('turmiteReprogramm', fromBlock)
+          events = await nftContract.queryFilter('TurmiteReprogramm', fromBlock)
+          console.log({ reprogramEvents: events })
 
           // format
           events = events.reverse().map(event => {
