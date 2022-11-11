@@ -16,7 +16,7 @@ modal(@close="close")
       button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent4(type="submit") MOVE
 
   template(v-if="status")
-    div.mt-6.text-center.text-xs.lowercase.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }") {{ status.msg }}
+    div.mt-6.text-center.text-xs.lowercase.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }", v-html="status.msg")
 </template>
 
 <script setup>
@@ -44,7 +44,11 @@ modal(@close="close")
       const tx = await store.dispatch('turmiteMove', { tokenId: props.tokenId, moves: moveQty.value, network: { name: route.params.networkName } })
 
       // wait for confirmation...
-      status.value = { msg: 'Waiting for confirmation...', tx }
+      status.value = { msg: `
+        waiting for <a href="${store.getters.etherscanLink({ hash: tx.hash, networkName: route.params.networkName })}" target="_blank" rel="noopener noreferrer" class="border-b">tx</a> confirmation...
+        `,
+        tx
+      }
       await tx.wait()
 
       // success

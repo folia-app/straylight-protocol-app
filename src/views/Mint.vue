@@ -217,13 +217,13 @@ export default {
         tx = await this.$store.dispatch('mint', { rule, moves, network: { name: this.networkName }})
 
         // wait for confirmation...
-        this.status = { msg: 'Waiting for confirmation...', tx }
+        this.status = { msg: 'waiting for confirmation...', tx }
         const receipt = await tx.wait()
 
         console.log({ receipt })
 
         // success
-        this.status = { type: 'success', msg: 'Minted! ~ View on your Profile →' }
+        this.status = { type: 'success', msg: 'MINTED! ~ view on your PROFILE →' }
       } catch (e) {
         console.error(e)
         //

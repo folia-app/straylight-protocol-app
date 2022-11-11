@@ -61,7 +61,7 @@ li.turmite-detail.flex.flex-col.relative
           turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", v-bind="$attrs", @reprogramClick="reprogramModalVisible = true")
   
   //- (reprogramm modal)
-  modal-reprogram-turmite(v-if="reprogramModalVisible", @close="reprogramModalVisible = false", :tokenId="props.tokenId", @reporgrammed="onTurmiteReprogrammed")
+  modal-reprogram-turmite(v-if="reprogramModalVisible", @close="reprogramModalVisible = false", :tokenId="props.tokenId", @reprogrammed="onTurmiteReprogrammed")
 
   //- (move modal)
   modal-move-turmite(v-if="moveModalVisible", @close="moveModalVisible = false", :tokenId="props.tokenId", @moved="onTurmiteMoved")
@@ -96,6 +96,7 @@ const toggleMoveForm = () => {
 
 const getOwner = async () => {
   try {
+    console.log('get owner', props.tokenId)
     owner.value = await store.dispatch('getNFTOwnerByTokenId', { tokenId: props.tokenId, network: { name: props.networkName }})  
     if (owner.value) getAttr()
   } catch (e) {
@@ -125,6 +126,7 @@ const ruleset = computed(() => {
 
 const onTurmiteReprogrammed = () => {
   getAttr()
+  debugger
   emit('reprogrammed')
 }
 

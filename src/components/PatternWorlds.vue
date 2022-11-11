@@ -1,3 +1,4 @@
+<!-- TODO: filter out reprograms... -->
 <template lang="pug">
 section.pattern-worlds.pb-64.lg_pb-36
   template(v-if="status || worlds === undefined")

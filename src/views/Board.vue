@@ -262,6 +262,7 @@ export default {
       }
     },
     async resetBoard () {
+      this.myp5.myMethods.pressStop()
       this.myp5.myMethods.restart()
       this.stepCount = this.myp5.myMethods.getStepCount()
       this.playing = false
