@@ -80,10 +80,10 @@
 
               ul.mt-em
                 li players mint NFT-#[span.info-tag turmites]
-                li there are 4 turmites per #[span.info-tag world]
-                li turmites can dig in ~60,000 #[span.info-tag #[router-link(to="/patterns") patterns #[span(style="font-size:0.8em") &rarr;]]]
-                li players #[span.info-tag move()] their turmites with just gas
-                li the contract #[span.info-tag renders] a new world
+                li there are 4 turmites per #[router-link.info-tag(to="/") world#[span(style="font-size:0.75em") &rarr;]]
+                li turmites dig in ~60,000 #[router-link.info-tag(to="/patterns") patterns#[span(style="font-size:0.75em") &rarr;]]
+                li players #[span.info-tag move()] turmites instantly with just gas
+                li the contract #[span.info-tag renders] the world anew
 
               //- p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 

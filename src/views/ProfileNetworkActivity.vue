@@ -5,7 +5,7 @@
     .px-6.lg_px-22.animate-pulse.text-sm.text-accent3 loading...
 
   template(v-else-if="activity && !activity.length")
-    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b activity] found
+    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b activity] found on #[b {{ $route.params.networkName }}] network
 
   //- (activity)
   template(v-else)
@@ -15,14 +15,15 @@
 <script setup>
 import { ref, computed } from 'vue'
 import store from '@/store'
+import { useRoute } from 'vue-router';
 import ActivityList from '@/components/ActivityList.vue'
 
 const props = defineProps(['tokenIds'])
+const route = useRoute()
 
 const loaded = ref(0)
 
 const moves = ref([])
-
 const mints = ref([])
 
 const activity = computed(() => {
@@ -33,7 +34,7 @@ const activity = computed(() => {
 
 const getMoves = async ({ cached = false }) => {
   try {
-    moves.value = await store.dispatch('getMoves', { cached, filter: ['tokenId', props.tokenIds] })
+    moves.value = await store.dispatch('getMoves', { cached, filter: ['tokenId', props.tokenIds], network: { name: route.params.networkName } })
     loaded.value++
   } catch (e) {
     console.error(e)
@@ -42,7 +43,7 @@ const getMoves = async ({ cached = false }) => {
 
 const getMints = async ({ cached = false }) => {
   try {
-    mints.value = await store.dispatch('getMints', { cached, filter: ['tokenId', props.tokenIds] })  
+    mints.value = await store.dispatch('getMints', { cached, filter: ['tokenId', props.tokenIds], network: { name: route.params.networkName } })  
     loaded.value++
   } catch (e) {
     console.error(e)

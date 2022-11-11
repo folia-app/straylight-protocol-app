@@ -1,7 +1,7 @@
 <template lang="pug">
 section.profile-worlds  
   template(v-if="!props.boards.length")
-    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b turmites] found on this network
+    p.text-smm.px-6.lg_pl-22.text-accent3 no #[b turmites] found on #[b {{ $route.params.networkName }}] network
   
   template(v-else)
     ul.boards-grid
@@ -20,6 +20,8 @@ section.profile-worlds
 import { ref, computed } from 'vue'
 import BoardThumb from '@/components/BoardThumb.vue'
 import { turmiteName } from '@/utils.js'
+import { useRoute } from 'vue-router';
 
 const props = defineProps(['boards'])
+const route = useRoute()
 </script>
