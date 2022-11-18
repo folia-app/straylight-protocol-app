@@ -56,12 +56,12 @@ const tokenIds = ref()
 const boards = computed(() => {
   let boards
   if (tokenIds.value) {
-    boards = tokenIds.value.map(id => Math.floor(id / 4))
+    boards = tokenIds.value.map(id => Math.floor(id / 4) + 1)
     boards = [...new Set(boards)]
     boards.sort().reverse()
     boards = boards.map(board => ({
       id: board,
-      tokens: tokenIds.value.filter(id => Math.floor(id / 4) === board)
+      tokens: tokenIds.value.filter(id => Math.floor(id / 4) === board - 1)
     }))
   }
   return boards

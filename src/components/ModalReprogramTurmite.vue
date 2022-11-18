@@ -49,6 +49,7 @@ modal(@close="close")
   
   const submit = async () => {
     try {
+      // TODO - check wallet is on correct network!!!
       status.value = { msg: 'Confirm transaction in your wallet...' }
       
       const tx = await store.dispatch('reprogramTurmite', { tokenId: props.tokenId, rule: selection.value.rule, network: { name: route.params.networkName } })

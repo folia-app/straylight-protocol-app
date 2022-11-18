@@ -565,19 +565,21 @@ export default createStore({
     async getBoardCount ({ state, dispatch }, { network }) {
       try {
         const nftContract = await dispatch('getNFTContract', { network })
-        let count = await nftContract.boardcounter() // starts at 0
+        let count = await nftContract.boardcounter()
         count = count.toNumber()
+        // console.log('count', count)
+        // debugger
 
-        if (count === 0) {
-          // check if any mints because counter is 0 after 1 mint ¯\_(ツ)_/¯ 
-          const mints = await dispatch('getMints', { network })
-          if (mints.length) {
-            return Math.ceil(mints.length / 4)
-          } else {
-            return 0
-          }
-        }
-        return count++ 
+        // if (count === 0) {
+        //   // check if any mints because counter is 0 after 1 mint ¯\_(ツ)_/¯ 
+        //   const mints = await dispatch('getMints', { network })
+        //   if (mints.length) {
+        //     return Math.ceil(mints.length / 4)
+        //   } else {
+        //     return 0
+        //   }
+        // }
+        return count
       } catch (e) {
         console.error(e)
         throw e
@@ -605,7 +607,7 @@ export default createStore({
 
           // get...
           events = await nftContract.queryFilter('TurmiteMint', fromBlock)
-          console.log({ mintEvents: events })
+          // console.log({ mintEvents: events })
 
           // format
           events = events.reverse().map(event => ({
@@ -617,6 +619,7 @@ export default createStore({
             getBlock: event.getBlock,
             getReceipt: event.getTransactionReceipt,
           }))
+          // console.log({ mints: events })
 
           // SAVE
           commit('SAVE_NETWORK_MINT_EVENTS', { networkName: network.name, events })
@@ -674,14 +677,15 @@ export default createStore({
           
           // get events...
           const events = await nftContract.queryFilter('TurmiteMove', fromBlock)
-          console.log({ moveEvents: events })
+          // console.log({ moveEvents: events })
 
           // format
           moves = events.reverse().map(event => ({
             type: 'move',
             blockNumber: event.blockNumber,
             boardId: event.args[1].toString(),
-            tokenId: event.args[0].toString().toLowerCase(),
+            tokenId: event.args[0].toString(),
+            moves: event.args[2].toString(),
             getReceipt: event.getTransactionReceipt,
             getBlock: event.getBlock,
           }))
@@ -809,7 +813,7 @@ export default createStore({
           
           // get events...
           events = await nftContract.queryFilter('TurmiteReprogramm', fromBlock)
-          console.log({ reprogramEvents: events })
+          // console.log({ reprogramEvents: events })
 
           // format
           events = events.reverse().map(event => {
@@ -826,6 +830,7 @@ export default createStore({
               getReceipt: event.getTransactionReceipt,
             }
           })
+          // console.log({ reprograms: events })
 
           // save for caching
           commit('SAVE_NETWORK_REPROGRAM_EVENTS', { networkName: network.name, events })

@@ -101,7 +101,7 @@ article.board
   footer.pt-24.pb-64.lg_pb-36
     nav.flex.text-md.items-center
       .flex-1.flex.justify-center.lg_-mr-28
-        template(v-if="boardId + 1 < boardCount")
+        template(v-if="boardId + 1 <= boardCount")
           router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-7.pl-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
             .absolute.top-0.left-2.h-full.flex.items-center &larr;
             | world_{{ boardId + 1 }}
@@ -111,7 +111,7 @@ article.board
           | all worlds
 
       .flex-1.flex.justify-center.lg_-ml-28
-        template(v-if="boardId - 1 >= 0")
+        template(v-if="boardId - 1 > 0")
           router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-12.pl-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
             .absolute.top-0.right-2.h-full.flex.items-center &rarr;
             | world_{{ boardId - 1 }}
@@ -172,7 +172,7 @@ export default {
       return Number(this.$route.params.board)
     },
     tokenIds () {
-      const boardId = Number(this.boardId) * 4
+      const boardId = Number(this.boardId - 1) * 4
       return [boardId, boardId + 1, boardId + 2, boardId + 3]
     },
     simulateSelectorOptions () {

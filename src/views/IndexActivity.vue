@@ -6,7 +6,13 @@
 
   //- (activity)
   template(v-else)
-    activity-list.mt-8.mb-6.pb-24(:activity="activity", :includeWorld="true")
+    template(v-if="activity.length === 0")
+      p.mt-14.px-6.lg_px-22.text-sm.text-accent3
+        | no activity found on #[b {{ $route.params.networkName }}] network<br>
+        | #[router-link.border-b.border-dashed.mouse_hover_border-solid(:to="{ name: 'mint', query: { network: $route.params.networkName }}") mint]&nbsp;!
+    
+    template(v-else)
+      activity-list.mt-8.mb-6.pb-24(:activity="activity", :includeWorld="true")
 </template>
 
 <script setup>
