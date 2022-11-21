@@ -18,7 +18,7 @@
                 svg-fleuron(style="height:1.3em")
           //- (back btn)
           template(v-else)
-            router-link.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
+            router-link.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="$route.params.networkName ? { name: 'network-index', params: $route.params } : `/`")
               arrow-left-icon.w-8.h-8.text-current
 
           .h-22.sm_h-20.flex-1.flex.items-center.pb-1b
@@ -36,7 +36,7 @@
                 | info
 
               //- mint link
-              router-link.h-8.flex.items-center.justify-center.flex-1.lg_w-auto.lg_px-12.lg_-ml-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1.rounded-full(to="/mint")
+              router-link.h-8.flex.items-center.justify-center.flex-1.lg_w-auto.lg_px-12.lg_-ml-4.mouse_hover_bg-accent2.mouse_hover_text-black.pb-1.rounded-full(:to="{name: 'mint', query: { network: $route.params.networkName || $route.query.network } }")
                 div mint
 
               //- (connect btn)
