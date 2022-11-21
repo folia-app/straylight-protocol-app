@@ -16,15 +16,15 @@ observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide
     
     //- (move)
     template(v-if="props.event.type === 'move'")
-      | #[router-link.link.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent3(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] {{ props.event.moves }} steps
+      | #[router-link.link.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="profileRt") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent3(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] {{ props.event.moves }} steps
     
     //- (mint)
     template(v-else-if="props.event.type === 'mint'")
-      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent2(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}]
+      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="profileRt") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent2(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}]
     
     //- (reprogram)
     template(v-else-if="props.event.type === 'reprogram'")
-      | #[router-link.link.mouse_hover_bg-accent4.mouse_hover_text-accent1.mouse_hover_border-accent4(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] reprogrammed #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🧠] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] to #[router-link.link.mouse_hover_bg-accent4.mouse_hover_text-accent1.mouse_hover_border-accent4.lowercase(:to="{name: 'pattern', params: { pattern: props.event.rule }}") {{ ruleName }}]
+      | #[router-link.link.mouse_hover_bg-accent4.mouse_hover_text-accent1.mouse_hover_border-accent4(v-if="from", :to="profileRt") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] reprogrammed #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🧠] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] to #[router-link.link.mouse_hover_bg-accent4.mouse_hover_text-accent1.mouse_hover_border-accent4.lowercase(:to="{name: 'pattern', params: { pattern: props.event.rule }}") {{ ruleName }}]
 
     //- span.ml-2(v-if="props.includeWorld && props.event.boardId")
       | in #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") world_{{ event.boardId }}]
@@ -38,10 +38,13 @@ import Observer from '@/components/Observer.vue'
 import Addr from '@/components/Addr.vue'
 import { turmiteName } from '@/utils'
 import rules from '../../contracts/rulesSelected.js'
+import { useRoute } from 'vue-router'
 
 const props = defineProps(['event', 'includeWorld'])
+const route = useRoute()
 
 const from = ref()
+const profileRt = computed(() => from.value && {name: 'profile-network__worlds', params: { address: from.value, networkName: route.params.networkName }})
 
 // time
 const timestamp = ref()
