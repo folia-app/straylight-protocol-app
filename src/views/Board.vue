@@ -88,16 +88,10 @@ article.board
                         .grid.grid-cols-2(style="width:13px;height:13px;", :class="{'border': !isColorMode}")
                           div(v-for="(color, i) in colors", :style="{background: isColorMode ? color : ''}", :class="{'bg-accent3': !isColorMode && ([1,2]).includes(i) }")
 
-                    //- settings
-                    //- .h-8.flex.items-center.ml-1.-mr-1
-                      button.p-1.rounded-full.flex.items-center
-                        cog-icon(class="h-6 w-6")
-
-
         //- (next board link)
         .hidden.md_flex.w-20.relative
           .w-full.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group.flex
-            template(v-if="boardImgSrc && boardId - 1 >= 0")
+            template(v-if="boardImgSrc && boardId - 1 > 0")
               router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
                 .sr-only prev world
                 //- label
@@ -145,7 +139,6 @@ import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 import SvgChevronDown from '@/components/SvgChevronDown.vue'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { CheckCircleIcon } from '@heroicons/vue/24/solid'
-import { Cog8ToothIcon as CogIcon } from '@heroicons/vue/24/solid'
 import {
   Listbox,
   ListboxButton,
@@ -157,7 +150,7 @@ import colors from '@/colors'
 
 export default {
   name: 'Board',
-  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon, CogIcon },
+  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon },
   data () {
     return {
       mint: undefined,
@@ -182,7 +175,6 @@ export default {
       stepCount: 0,
       stepCountInputVisible: false,
       stepCountInputValue: 0,
-      // 
       isColorMode: false
     }
   },
@@ -250,10 +242,16 @@ export default {
       if (!this.$refs.boardImg) {
         return
       }
-      // const imgW = this.$refs.boardImg.offsetWidth
-      const { width } = getImgSizeInfo(this.$refs.boardImg)
-      const boardW = this.$refs.boardAnimator.$el.offsetWidth
+      
       requestAnimationFrame(() => {
+        const { width } = getImgSizeInfo(this.$refs.boardImg)
+        
+        if (width === 0) {
+          // retry after tick if not ready yet
+          return this.scaleBoard()
+        }
+        
+        const boardW = this.$refs.boardAnimator.$el.offsetWidth
         this.boardScale = width / boardW  
         this.controlsMaxW = width + 'px'
       })
@@ -348,6 +346,7 @@ export default {
   created () {
     this.getBoardImage()
       .then(() => this.listenToImgResize())
+    
     this.$store.dispatch('getBoardCount', { network: { name: this.$route.params.networkName }})
       .then(count => { this.boardCount = count })
 

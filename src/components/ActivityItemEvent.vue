@@ -16,10 +16,11 @@ observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide
     
     //- (move)
     template(v-if="props.event.type === 'move'")
-      | #[router-link.link.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] {{ props.event.moves }} steps
+      | #[router-link.link.mouse_hover_bg-accent3.mouse_hover_text-accent1.mouse_hover_border-accent3(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] moved #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") 🐜] #[span.absolute.overlay.bg-accent3(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] {{ props.event.moves }} steps
+    
     //- (mint)
     template(v-else-if="props.event.type === 'mint'")
-      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent4(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}]
+      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="'/' + from") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent2(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}]
     
     //- (reprogram)
     template(v-else-if="props.event.type === 'reprogram'")
