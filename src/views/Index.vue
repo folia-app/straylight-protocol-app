@@ -14,7 +14,7 @@ article.index
 
       network-switcher(:initNetworkName="$route.params.networkName", @change="onNetworkChange")
 
-  section.mt-8
+  section.mt-9
     router-view(v-slot="{ Component }")
       keep-alive
         component(:is="Component")

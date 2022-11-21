@@ -3,7 +3,8 @@
   observer(v-if="loaded < 2", @visible="onVisible")
   //- (loading)
   template(v-if="loaded < 1")
-    .h-72.animate-pulse.text-smm.p-3.leading-none.border.rounded-lg.text-accent3.flex.items-center.justify-center
+    .h-72.animate-pulse.text-smm.p-3.leading-none.rounded-lg.text-accent3.flex.items-center.justify-center.router-link-exact-active
+      .absolute.overlay.rounded-lg.bg-accent3.opacity-20
       | loading activity...
 
   //- (activity)
