@@ -60,7 +60,7 @@ article.board
                   .flex.items-center
                     //- (step count / btn)
                     .max-w-full.w-24.border-b.h-8.flex.items-center.justify-end(v-show="!stepCountInputVisible")
-                      button.p-1.-m-1.rounded-full.mouse_hover_text-accent4ff(@click="openStepCountInput", aria-label="Edit Step Count")
+                      button.w-full.text-right.p-1.-m-1.rounded-full.mouse_hover_text-accent4ff(@click="openStepCountInput", aria-label="Edit Step Count")
                         | {{stepCount}}
                     
                     //- (edit step form)

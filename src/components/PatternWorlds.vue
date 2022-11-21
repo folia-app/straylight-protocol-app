@@ -76,7 +76,7 @@ const getWorldsWithPattern = async () => {
     events.sort((a, b) => b.blockNumber - a.blockNumber)
 
     // map as boardIds
-    worlds.value = events.map(event => (Number(event.boardId) + 1).toString())
+    worlds.value = events.map(event => event.boardId.toString())
 
     if (!worlds.value.length) {
       status.value = `no worlds with <b>${ruleNickname.value}</b> pattern found on <b>${props.networkName}</b> network`

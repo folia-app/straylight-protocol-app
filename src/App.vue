@@ -13,12 +13,12 @@
         .flex.pointer-events-auto
           //- (folia logo link)
           template(v-if="isIndex")
-            a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded-lg(href="https://folia.app", target="_blank", title="folia.app ↗")
+            a.block.borderff.opacity-30.mouse_hover_opacity-100.mouse_hover_bg-current.rounded(href="https://folia.app", target="_blank", title="folia.app ↗")
               .w-22.h-22.sm_w-20.sm_h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
                 svg-fleuron(style="height:1.3em")
           //- (back btn)
           template(v-else)
-            router-link.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded-lg.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
+            router-link.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded.mouse_hover_bg-accent2.mouse_hover_text-accent1(to="/")
               arrow-left-icon.w-8.h-8.text-current
 
           .h-22.sm_h-20.flex-1.flex.items-center.pb-1b

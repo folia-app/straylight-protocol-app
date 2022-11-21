@@ -818,7 +818,7 @@ export default createStore({
           // format
           events = events.reverse().map(event => {
             const tokenId = event.args[0].toString()
-            const boardId = Math.floor(tokenId / 4).toString()
+            const boardId = (Math.floor(tokenId / 4) + 1).toString()
             
             return {
               type: 'reprogram',
