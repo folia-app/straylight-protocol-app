@@ -12,7 +12,7 @@ article.board
         //- (prev board link)
         .hidden.md_flex.w-20.relative.z-10
           .w-full.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.group.flex
-            template(v-if="boardImgSrc && boardId + 1 < boardCount")
+            template(v-if="boardImgSrc && (boardId + 1) <= boardCount")
               router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
                 .sr-only next world
                 //- label
