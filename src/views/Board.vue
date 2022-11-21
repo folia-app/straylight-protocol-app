@@ -53,18 +53,19 @@ article.board
                         listbox-options(class="absolute z-30 mt-2 min-w-12 rounded-lg bg-accent3 text-black py-1 shadow focus_outline-none")
                           //- options...
                           listbox-option(v-for="(option, index) in simulateSelectorOptions", v-slot="{ active, selected }", :key="option.value" :value="option")
-                            li.pl-3.pr-6.py-1.flex.items-end.leading-none(:class="{'bg-gray-900/60 text-accent3': selected, 'bg-gray-900/90 text-accent3': active}")
+                            li.pl-3.pr-6.py-1.flex.items-end.leading-none.cursor-pointer(:class="{'bg-gray-900/60 text-accent3': selected, 'bg-gray-900/90 text-accent3': active}")
                               .mr-3.mb-2px(:style="{width:'0.9rem', height:'0.9rem', background: colors[index - 1]}")
                               | {{ option.label }}
               
                   .flex.items-center
+
                     //- (step count / btn)
                     .max-w-full.w-24.border-b.h-8.flex.items-center.justify-end(v-show="!stepCountInputVisible")
                       button.w-full.text-right.p-1.-m-1.rounded-full.mouse_hover_text-accent4ff(@click="openStepCountInput", aria-label="Edit Step Count")
                         | {{stepCount}}
                     
                     //- (edit step form)
-                    form.flex.items-center.-mr-1(v-if="stepCountInputVisible", @submit.prevent="previewStepCountInput", v-click-outside="() => { stepCountInputVisible = false }")
+                    form.flex.items-center(v-if="stepCountInputVisible", @submit.prevent="previewStepCountInput", v-click-outside="() => { stepCountInputVisible = false }")
                       label.sr-only(for="stepCountInput") Preview Step
                       //- step input
                       input.border-b.leading-none.h-8.py-0.max-w-full.w-24.text-right.focus_outline-none.focus-visible_ring-0.focus-visible_outline-none(id="stepCountInput", size="10", v-model="stepCountInputValue", v-autofocus, type="number")
@@ -74,9 +75,24 @@ article.board
                           check-circle-icon(class="h-7 w-7")
                     
                     //- (reset btn)
-                    .h-8.flex.items-center.ml-1.-mr-1(v-show="stepCount")
+                    .h-8.flex.items-center.ml-1(v-show="stepCount")
                       button.p-1.rounded-full.flex.items-center(@click="resetBoard")
                         arrow-path-icon(class="h-7 w-7")
+                    
+                    //- colors toggle
+                    .flex.items-center.group.ml-5
+                      //- .mouse_group-hover_opacity-100.opacity-0.mr-3.transition.duration-150 {{ isColorMode ? 'color' : 'bw' }}
+                      .sr-only theme: {{ isColorMode ? 'colors' : 'black and white' }}
+                      
+                      button.p-2.-m-2.cursor-pointer(@click="toggleColorMode", aria-label="toggle board theme", title="toggle color mode")
+                        .grid.grid-cols-2(style="width:13px;height:13px;", :class="{'border': !isColorMode}")
+                          div(v-for="(color, i) in colors", :style="{background: isColorMode ? color : ''}", :class="{'bg-accent3': !isColorMode && ([1,2]).includes(i) }")
+
+                    //- settings
+                    //- .h-8.flex.items-center.ml-1.-mr-1
+                      button.p-1.rounded-full.flex.items-center
+                        cog-icon(class="h-6 w-6")
+
 
         //- (next board link)
         .hidden.md_flex.w-20.relative
@@ -129,6 +145,7 @@ import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/vue/24/solid'
 import SvgChevronDown from '@/components/SvgChevronDown.vue'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { CheckCircleIcon } from '@heroicons/vue/24/solid'
+import { Cog8ToothIcon as CogIcon } from '@heroicons/vue/24/solid'
 import {
   Listbox,
   ListboxButton,
@@ -140,7 +157,7 @@ import colors from '@/colors'
 
 export default {
   name: 'Board',
-  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon },
+  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon, CogIcon },
   data () {
     return {
       mint: undefined,
@@ -164,7 +181,9 @@ export default {
       // 
       stepCount: 0,
       stepCountInputVisible: false,
-      stepCountInputValue: 0
+      stepCountInputValue: 0,
+      // 
+      isColorMode: false
     }
   },
   computed: {
@@ -282,6 +301,13 @@ export default {
       this.myp5.myMethods.simulateSteps({ turmiteId: this.simulateSelection.value, steps: this.stepCountInputValue })
       this.stepCount = this.myp5.myMethods.getStepCount()
       this.stepCountInputVisible = false
+    },
+
+    // color mode
+    toggleColorMode () {
+      this.isColorMode = !this.isColorMode
+      const value = this.isColorMode ? 1000000 : 0
+      this.myp5.myMethods.setColorTail(value)
     }
   },
   watch: {

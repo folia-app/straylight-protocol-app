@@ -17,6 +17,7 @@ var sketch = function ({
     let boardNew
     let drawcounter = 0;
     let stepCount = 0;
+    let _colorTail = colorTail
     
     // can remove "co" i believe:
     let co = 1 // 0.78;
@@ -62,7 +63,7 @@ var sketch = function ({
         for (var t = 0; t < this.boardCache.length; t++){
           if (this.boardCache[t][2] == 255) {            
             // highlight path or just white?
-            const fillColor = colorTail ? this.boardCache[t][3] : 'white'
+            const fillColor = _colorTail ? this.boardCache[t][3] : 'white'
             p5.fill(fillColor)
             
             p5.noStroke()
@@ -256,9 +257,9 @@ var sketch = function ({
       }
       
       // color tail has finite length?
-      if (typeof colorTail === 'number') {
+      if (typeof _colorTail === 'number') {
         drawcounter = drawcounter + 1;
-        if (drawcounter % colorTail === 0){
+        if (drawcounter % _colorTail === 0){
           boardNew.reDrawCanvas()
           drawcounter = 0;
         }
@@ -356,6 +357,10 @@ var sketch = function ({
         for (var b = 0; b < initalizedTurmites.length; b++) {
           initalizedTurmites[b].drawTurmite();
         }
+      },
+
+      setColorTail: function (range = 0) {
+        _colorTail = range
       }
     }
   });
