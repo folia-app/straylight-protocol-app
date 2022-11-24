@@ -721,6 +721,29 @@ export default createStore({
       }
     },
 
+    async getMaxTurmites ({ getters, dispatch }, { cached = true, network }) {
+      try {
+        const networkData = getters.network({ networkName: network.name })
+        const saved = networkData?.maxTurmites
+        if (saved && cached) {
+          return saved
+        }
+
+        const nftContract = await dispatch('getNFTContract', { network })
+        const max = (await nftContract.maxnumbturmites()).toNumber()
+
+        if (networkData) {
+          // save to networks object
+          networkData.maxTurmites = max
+        }
+
+        return max
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
     // async listenForMints ({ state, dispatch }) {
     //   try {
     //     if (!controllerContract) await dispatch('init')
@@ -771,13 +794,13 @@ export default createStore({
       }
     },
 
-    async turmiteMove ({ state, dispatch }, { tokenId, moves, network }) {
+    async moveTurmite ({ state, dispatch }, { tokenId, moves, network }) {
       try {
         const nftContract = await dispatch('getNFTContract', { network })
 
         const contractSigner = nftContract.connect(signer)
 
-        const tx = await contractSigner.moveTurmite(tokenId, moves)
+        const tx = await contractSigner.moveTurmite([tokenId, moves])
 
         return tx
       } catch (e) {

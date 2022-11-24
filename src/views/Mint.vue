@@ -40,7 +40,7 @@ article.pb-64
 
           //- mint count
           .absolute.bottom-0.right-0.text-xs.pb-px.pr-2(:class="{'animate-pulse': !networkMintCount }")
-            | {{ networkMintCount !== undefined ? networkMintCount : '...' }}/1024 minted
+            | {{ networkMintCount !== undefined ? networkMintCount : '...' }}/{{ networkMaxTurmites !== undefined ? networkMaxTurmites : '...' }} minted
         
         //- step: connect
         li.relative.-mt-px.border.rounded-lg.relative.mouse_hover_opacity-100.transition.duration-150(:style="{zIndex:4}", :class="{'mb-5': (isConnected && isWrongNetwork) || switchError }")
@@ -176,6 +176,7 @@ export default {
       networkName: undefined,
       networkMintCount: undefined,
       networkMintPrice: undefined,
+      networkMaxTurmites: undefined,
       switchError: false,
       selection: undefined,
       premove: 1000,
@@ -224,6 +225,7 @@ export default {
 
         // success
         this.status = { type: 'success', msg: 'MINTED! ~ view on your PROFILE →' }
+        this.getMintCount()
       } catch (e) {
         console.error(e)
         //
@@ -270,9 +272,20 @@ export default {
       }
     },
 
+    async getMaxTurmites () {
+      try {
+        this.networkMaxTurmites = undefined
+        this.networkMaxTurmites = await this.$store.dispatch('getMaxTurmites', { network: { name: this.networkName }})
+      } catch (e) {
+        console.error(e)
+        this.networkMaxTurmites = '?!'
+      }
+    },
+
     onNetworkChange () {
       this.getMintPrice()
       this.getMintCount()
+      this.getMaxTurmites()
     },
 
     setInitialNetwork () {

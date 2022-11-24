@@ -29,7 +29,7 @@ const move = async () => {
     status.value = { msg: 'Confirm transaction in your wallet...' }
     
     console.log(props.tokenId, moveQty.value)
-    const tx = await store.dispatch('turmiteMove', { tokenId: props.tokenId, moves: moveQty.value, network: { name: props.networkName } })
+    const tx = await store.dispatch('moveTurmite', { tokenId: props.tokenId, moves: moveQty.value, network: { name: props.networkName } })
 
     // wait for confirmation...
     status.value = { msg: 'Waiting for confirmation...', tx }

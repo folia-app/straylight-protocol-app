@@ -6,412 +6,440 @@ export default {
     // }
     // goerli
     5: {
-      "address": "0xEEd6D1426c153965FDc3434bA1A5acDfc615e42B",
+      "address": "0x05e0eE35679D1C3fD59831c3b29c3D606e33dbcB",
     },
     // optimism goerli
     420: {
-      "address": "0x2A89833a10763aa0C9cA08175F7a6F6e14AD2dCF",
+      "address": "0x37929ea9bdE43dD9E3b8015196B4b11C6aDfA055",
     }
   },
   "abi": [
     {
-      "type": "constructor",
       "inputs": [
         {
-          "type": "address[]",
+          "internalType": "address[]",
           "name": "payees",
-          "internalType": "address[]"
+          "type": "address[]"
         },
         {
-          "type": "uint256[]",
+          "internalType": "uint256[]",
           "name": "shares_",
-          "internalType": "uint256[]"
+          "type": "uint256[]"
         },
         {
-          "type": "uint256",
+          "internalType": "uint256",
           "name": "newMintPrice",
-          "internalType": "uint256"
+          "type": "uint256"
         }
-      ]
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     },
     {
-      "type": "function",
-      "stateMutability": "nonpayable",
-      "outputs": [],
-      "name": "adminMint",
+      "anonymous": false,
       "inputs": [
         {
-          "type": "address",
+          "indexed": true,
+          "internalType": "contract IERC20",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "ERC20PaymentReleased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "Mint",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "shares",
+          "type": "uint256"
+        }
+      ],
+      "name": "PayeeAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "PaymentReceived",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "PaymentReleased",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "mintTo",
-          "internalType": "address"
+          "type": "address"
         },
         {
-          "type": "bytes12",
+          "internalType": "bytes12",
           "name": "rule",
-          "internalType": "bytes12"
+          "type": "bytes12"
         },
         {
-          "type": "uint256",
+          "internalType": "uint256",
           "name": "moves",
-          "internalType": "uint256"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
-      "outputs": [
-        {
-          "type": "address",
-          "name": "",
-          "internalType": "contract interfaceStraylight"
+          "type": "uint256"
         }
       ],
+      "name": "adminMint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "istraylight",
-      "inputs": []
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
       "outputs": [
         {
-          "type": "uint256",
+          "internalType": "contract interfaceStraylight",
           "name": "",
-          "internalType": "uint256"
+          "type": "address"
         }
       ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "mintPrice",
-      "inputs": []
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
       "outputs": [
         {
-          "type": "address",
+          "internalType": "uint256",
           "name": "",
-          "internalType": "address"
+          "type": "uint256"
         }
       ],
-      "name": "owner",
-      "inputs": []
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "view",
+      "inputs": [],
+      "name": "owner",
       "outputs": [
         {
-          "type": "address",
+          "internalType": "address",
           "name": "",
-          "internalType": "address"
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
         }
       ],
       "name": "payee",
-      "inputs": [
+      "outputs": [
         {
-          "type": "uint256",
-          "name": "index",
-          "internalType": "uint256"
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
-      ]
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "payable",
-      "outputs": [],
-      "name": "publicMint",
       "inputs": [
         {
-          "type": "address",
+          "internalType": "address",
           "name": "mintTo",
-          "internalType": "address"
+          "type": "address"
         },
         {
-          "type": "bytes12",
+          "internalType": "bytes12",
           "name": "rule",
-          "internalType": "bytes12"
+          "type": "bytes12"
         },
         {
-          "type": "uint256",
+          "internalType": "uint256",
           "name": "moves",
-          "internalType": "uint256"
+          "type": "uint256"
         }
-      ]
+      ],
+      "name": "publicMint",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "nonpayable",
-      "outputs": [],
-      "name": "release",
       "inputs": [
         {
-          "type": "address",
+          "internalType": "address payable",
           "name": "account",
-          "internalType": "address payable"
+          "type": "address"
         }
-      ]
+      ],
+      "name": "release",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "nonpayable",
-      "outputs": [],
-      "name": "release",
       "inputs": [
         {
-          "type": "address",
+          "internalType": "contract IERC20",
           "name": "token",
-          "internalType": "contract IERC20"
+          "type": "address"
         },
         {
-          "type": "address",
+          "internalType": "address",
           "name": "account",
-          "internalType": "address"
+          "type": "address"
         }
-      ]
+      ],
+      "name": "release",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "view",
-      "outputs": [
+      "inputs": [
         {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
+          "internalType": "contract IERC20",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
         }
       ],
       "name": "released",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "token",
-          "internalType": "contract IERC20"
-        },
-        {
-          "type": "address",
-          "name": "account",
-          "internalType": "address"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
       "outputs": [
         {
-          "type": "uint256",
+          "internalType": "uint256",
           "name": "",
-          "internalType": "uint256"
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
         }
       ],
       "name": "released",
-      "inputs": [
+      "outputs": [
         {
-          "type": "address",
-          "name": "account",
-          "internalType": "address"
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
-      ]
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "nonpayable",
-      "outputs": [],
+      "inputs": [],
       "name": "renounceOwnership",
-      "inputs": []
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "nonpayable",
-      "outputs": [],
-      "name": "setStraylight",
       "inputs": [
         {
-          "type": "address",
+          "internalType": "address",
           "name": "_straylight",
-          "internalType": "address"
+          "type": "address"
         }
-      ]
+      ],
+      "name": "setStraylight",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "view",
-      "outputs": [
+      "inputs": [
         {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
         }
       ],
       "name": "shares",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "account",
-          "internalType": "address"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
       "outputs": [
         {
-          "type": "uint256",
+          "internalType": "uint256",
           "name": "",
-          "internalType": "uint256"
+          "type": "uint256"
         }
       ],
-      "name": "totalReleased",
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
-          "type": "address",
+          "internalType": "contract IERC20",
           "name": "token",
-          "internalType": "contract IERC20"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
-      "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
+          "type": "address"
         }
       ],
       "name": "totalReleased",
-      "inputs": []
-    },
-    {
-      "type": "function",
-      "stateMutability": "view",
       "outputs": [
         {
-          "type": "uint256",
+          "internalType": "uint256",
           "name": "",
-          "internalType": "uint256"
+          "type": "uint256"
         }
       ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalReleased",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "totalShares",
-      "inputs": []
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "function",
-      "stateMutability": "nonpayable",
-      "outputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
       "name": "transferOwnership",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "newOwner",
-          "internalType": "address"
-        }
-      ]
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "ERC20PaymentReleased",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "token",
-          "indexed": true
-        },
-        {
-          "type": "address",
-          "name": "to",
-          "indexed": false
-        },
-        {
-          "type": "uint256",
-          "name": "amount",
-          "indexed": false
-        }
-      ],
-      "anonymous": false
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "Mint",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "addr",
-          "indexed": false
-        }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "OwnershipTransferred",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "previousOwner",
-          "indexed": true
-        },
-        {
-          "type": "address",
-          "name": "newOwner",
-          "indexed": true
-        }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "PayeeAdded",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "account",
-          "indexed": false
-        },
-        {
-          "type": "uint256",
-          "name": "shares",
-          "indexed": false
-        }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "PaymentReceived",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "from",
-          "indexed": false
-        },
-        {
-          "type": "uint256",
-          "name": "amount",
-          "indexed": false
-        }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "PaymentReleased",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "to",
-          "indexed": false
-        },
-        {
-          "type": "uint256",
-          "name": "amount",
-          "indexed": false
-        }
-      ],
-      "anonymous": false
-    },
-    {
+      "stateMutability": "payable",
       "type": "receive"
     }
   ]

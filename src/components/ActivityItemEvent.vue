@@ -20,7 +20,7 @@ observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide
     
     //- (mint)
     template(v-else-if="props.event.type === 'mint'")
-      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="profileRt") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent2(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}]
+      | #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(v-if="from", :to="profileRt") #[addr(:address="from", :youOn="true")]]#[span.opacity-40.animate-pulse(v-else) 0x...] minted #[span.relative.inline-block.ml-1 #[span(style="position:relative; filter:grayscale(100%)") ✨] #[span.absolute.overlay.bg-accent2(style="mix-blend-mode:multiply")]] #[router-link.ml-1.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2(:to="{name: 'board', params: { board: props.event.boardId }}") {{ turmiteName(props.event.tokenId) }}] as #[router-link.link.mouse_hover_bg-accent2.mouse_hover_text-accent1.mouse_hover_border-accent2.lowercase(:to="{name: 'pattern', params: { pattern: props.event.rule }}") {{ ruleName }}]
     
     //- (reprogram)
     template(v-else-if="props.event.type === 'reprogram'")
