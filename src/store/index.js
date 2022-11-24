@@ -8,17 +8,12 @@ import Web3Modal from 'web3modal'
 // Wallet Connect - directly import .js file since import breaks `vite build`
 // see: https://github.com/vitejs/vite/issues/7257
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
+import networks from '../networks'
 
 let /*provider,*/ signer, initializing
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
-const networks = {
-  1: { name: 'ethereum', layer: 'ethereum', infura: `https://mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://etherscan.io' }, marketplace: { name: 'OpenSea', domain: 'https://opensea.io', assetPath: '/assets/ethereum'} },
-  5: { name: 'goerli', layer: 'ethereum', infura: `https://goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://goerli.etherscan.io' }, marketplace: { name: 'OpenSea', domain: 'https://testnets.opensea.io', assetPath: '/assets/goerli' } },
-  10: { name: 'optimism', layer: 'optimism', infura: `https://optimism-mainnet.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' }, marketplace: { name: 'Quixotic', domain: 'https://quixotic.io', assetPath: '/asset' } },
-  420: { name: 'optimism-goerli', layer: 'optimism', infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`, explorer: { name: 'Etherscan', domain: 'https://blockscout.com/optimism/goerli' }, marketplace: { name: 'Quixotic', domain: 'https://goerli.quixotic.io', assetPath: '/asset' } },
-}
 const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1)
 
 // setup web3 modal
@@ -338,7 +333,7 @@ export default createStore({
     },
 
     async switchNetwork ({ dispatch }, { chainId, name }) {
-      // set
+      // find chainId?
       chainId = chainId || Object.keys(networks).find(key => networks[key].name === name)
 
       // convert to hex
@@ -361,25 +356,33 @@ export default createStore({
         console.error(e)
         
         // try adding the chain first
-        // if (e?.code === 4902) {
-        //   console.log('trying to add chain...')
-        //   try {
-        //     // add...
-        //     await window.ethereum.request({
-        //       method: 'wallet_addEthereumChain',
-        //       params: [{ chainId }]
-        //     })
+        if (e?.code === 4902) {
+          console.log('trying to add chain...')
+          try {
+            const network = networks[parseInt(chainId)]
+            if (!network) {
+              throw new Error(`Network is not supported (chainId: ${chainId})`)
+            }
 
-        //     // try again
-        //     return dispatch('switchNetwork', { chainId })
+            const chainInfo = network.chainInfo
+            chainInfo.chainId = ethers.utils.hexValue(chainInfo.chainId)
+            
+            // add...
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [chainInfo]
+            })
 
-        //   } catch (e) {
-        //     // adding failed
-        //     console.error('could not add chain', e)
-        //   }
-        // }
+            // try switching again
+            return dispatch('switchNetwork', { chainId })
 
-        // alert('Could not switch networks. You may need to add it to your wallet.')
+          } catch (e) {
+            // adding failed
+            console.error('could not add chain', e)
+            throw e
+          }
+        }
+
         throw e
       }
     },
