@@ -25,10 +25,7 @@ const web3Modal = new Web3Modal({
     walletconnect: {
       package: WalletConnectProvider, // required
       options: {
-        infuraProjectID, // required
-        rpc: {
-          420: networks[420].infura,
-        }
+        infuraId: infuraProjectID, // required
       },
     }
   },

@@ -242,9 +242,7 @@ export default {
         
         if (this.$route.query.network) {
           // if route loaded a network, update it so network-change refresh doesn't try to load previous network
-          const rt = JSON.parse(JSON.stringify(this.$route))
-          rt.query.network = this.networkName
-          this.$router.replace(rt)  
+          this.replaceRouteNetworkQuery()
         }
 
         await this.$store.dispatch('switchNetwork', { name: this.networkName })
@@ -282,10 +280,17 @@ export default {
       }
     },
 
-    onNetworkChange () {
+    onNetworkNameChange () {
       this.getMintPrice()
       this.getMintCount()
       this.getMaxTurmites()
+      this.replaceRouteNetworkQuery()
+    },
+
+    replaceRouteNetworkQuery () {
+      const rt = JSON.parse(JSON.stringify(this.$route))
+      rt.query.network = this.networkName
+      this.$router.replace(rt)
     },
 
     setInitialNetwork () {
@@ -321,7 +326,7 @@ export default {
     },
     networkName () {
       this.switchError = false
-      this.onNetworkChange()
+      this.onNetworkNameChange()
     }
   }
 }
