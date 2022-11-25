@@ -30,6 +30,6 @@ store.dispatch('getProvider', {})
     }
   })
   .catch(e => {
-    console.error('error loading provider for redirect')
+    console.error('error loading provider for redirect', e)
   })
 </script>

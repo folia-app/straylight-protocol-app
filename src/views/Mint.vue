@@ -338,6 +338,14 @@ export default {
     networkName () {
       this.switchError = false
       this.onNetworkNameChange()
+    },
+    selection (selection) {
+      if (selection) {
+        // save to rt so reloads doesn't load a random
+        const rt = JSON.parse(JSON.stringify(this.$route))
+        rt.query.rule = selection.rule
+        this.$router.replace(rt)
+      }
     }
   }
 }

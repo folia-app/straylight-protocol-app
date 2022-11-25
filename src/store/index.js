@@ -14,7 +14,7 @@ let /*provider,*/ signer, initializing, walletProvider
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
-const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1)
+const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID) ?? 1
 
 // setup web3 modal
 let web3Modal
@@ -159,7 +159,10 @@ export default createStore({
     },
     SIGN_OUT (state) {
       state.address = undefined
-      // state.givenNetworkId = null
+      state.givenNetworkId = null
+      
+      walletProvider = undefined
+      signer = undefined
       console.log('wallet disconnected')
     },
     SET_GIVEN_NETWORK_ID (state, chainId) {
@@ -299,9 +302,6 @@ export default createStore({
       // }
 
       commit('SIGN_OUT')
-      walletProvider = undefined
-      signer = undefined
-      // givenProvider = null
       // reset provider
       // dispatch('setupContracts')
     },
@@ -390,40 +390,38 @@ export default createStore({
       }
     },
 
-    async getProvider ({ commit }, { network }) {
+    async getProvider ({ state, commit }, { network }) {
       let provider = walletProvider
-      let givenChainId
       let targetChainId = network?.id
-        || Object.keys(networks).find(key => networks[key]['name'] === network?.name)
+        ?? Object.keys(networks).find(key => networks[key]['name'] === network?.name)
+          ?? appDefaultNetworkId
 
-      // try browser/wallet provider first (if not connected already)
+      // get provider from browser/wallet provider if needed
       if (!provider && window.ethereum) {
-        // "given provider"
         provider = new ethers.providers.Web3Provider(window.ethereum)
 
-        // check if on supported network
-        try {
-          const { chainId } = await provider.getNetwork()
-          givenChainId = chainId
-          
-          commit('SET_GIVEN_NETWORK_ID', givenChainId)
-
-          // given provider is not on the target network
-          if (targetChainId && chainId !== Number(targetChainId)) {
-            provider = undefined
+        // lookup chain id if not connected to browser wallet
+        // because we don't know if they switched network...
+        if (!state.address) {
+          try {
+            const { chainId } = await provider.getNetwork()
+            commit('SET_GIVEN_NETWORK_ID', chainId)
+          } catch (e) {
+            console.error("couldn't lookup window's chain id")
+            commit('SET_GIVEN_NETWORK_ID', null)
           }
-        } catch (e) {
-          console.error('error getting given provider network', e)
         }
       }
 
-      // fallback to infura
-      if (!provider) {
-        targetChainId = targetChainId || appDefaultNetworkId
+      // use infura if no provider, or given-provider chain is not on target chain
+      if (!provider || (targetChainId && state.givenNetworkId !== Number(targetChainId))) {
+        // if not use infura on targetChain
         provider = new ethers.getDefaultProvider(networks[targetChainId].infura)
       }
 
-      return { provider, chainId: targetChainId || givenChainId }
+      // console.log({ givenChainId: state.givenNetworkId, targetChainId })
+
+      return { provider, chainId: targetChainId /*|| givenChainId*/ }
     },
 
     async getNFTContract ({ dispatch }, { network }) {
@@ -576,7 +574,6 @@ export default createStore({
         let count = await nftContract.boardcounter()
         count = count.toNumber()
         // console.log('count', count)
-        // debugger
 
         // if (count === 0) {
         //   // check if any mints because counter is 0 after 1 mint ¯\_(ツ)_/¯ 

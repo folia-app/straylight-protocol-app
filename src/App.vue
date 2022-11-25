@@ -55,7 +55,7 @@
                   .absolute.top-0.right-0.pt-2
                     ul.bg-accent2.bg-accent2.rounded-lg.pt-1.pb-2
                       li
-                        router-link.block.px-4.py-1.rounded-full(:to="`/${$store.state.address}`") my profile
+                        router-link.block.px-4.py-1.rounded-full(:to="myProfileRt") my profile
                       li
                         button.block.px-4.py-1.rounded-full(@click.stop="disconnectWallet") sign-out
 
@@ -168,6 +168,14 @@ export default {
     },
     isIndex () {
       return !this.$route.name || this.$route.name?.startsWith('network-index')
+    },
+    myProfileRt () {
+      const networkName = this.$route.params.networkName
+      const address = this.$store.state.address
+      return address ? 
+        networkName ? {name: 'profile-network__worlds', params: { address, networkName }}
+          : { name: 'profile', params: { address }}
+            : null
     }
   },
   methods: {

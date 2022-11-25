@@ -27,7 +27,7 @@ article.profile
     
     section.flex-1.flex.w-full
       template(v-if="!address")
-        .fixed.bottom-0.left-0.p-6.animate-pulse.text-sm.text-accent3 resolving...
+        .fixed.bottom-0.left-0.p-6.text-sm.text-accent3(:class="{'animate-pulse': status.includes('...') }") {{ status }}
       
       template(v-else)
         router-view(:address="address", :key="$route.path")
@@ -45,6 +45,7 @@ const route = useRoute()
 const router = useRouter()
 
 const address = ref()
+const status = ref('loading...')
 
 // Addr.vue will lookup ens
 const ens = computed(() => store.state.addresses[address.value?.toLowerCase()]?.ens)
@@ -63,15 +64,17 @@ const resolveAddress = async () => {
       return
     }
 
-    // resolve non-address
+    // resolve ENS?
     if (input.endsWith('.eth')) {
+      status.value = 'resolving ENS...'
       address.value = await store.dispatch('resolveENS', input)
-    } else {
-      throw new Error(`${input} is neither a valid address or ENS name`)
+      return
     }
-
+    
+    throw new Error('invalid profile address >:(')
   } catch (e) {
     console.error(e)
+    status.value = e.message
   }
 }
 
