@@ -296,9 +296,7 @@ export default {
     },
 
     replaceRouteNetworkQuery () {
-      const rt = JSON.parse(JSON.stringify(this.$route))
-      rt.query.network = this.networkName
-      this.$router.replace(rt)
+      this.$router.replace({ query: { ...this.$route.query, network: this.networkName } })
     },
 
     setInitialNetwork () {
@@ -340,11 +338,9 @@ export default {
       this.onNetworkNameChange()
     },
     selection (selection) {
-      if (selection) {
+      if (selection?.rule) {
         // save to rt so reloads doesn't load a random
-        const rt = JSON.parse(JSON.stringify(this.$route))
-        rt.query.rule = selection.rule
-        this.$router.replace(rt)
+        this.$router.replace({ query: {...this.$route.query, rule: selection.rule }})
       }
     }
   }
