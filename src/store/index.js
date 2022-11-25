@@ -333,16 +333,18 @@ export default createStore({
       })
     },
 
-    async switchNetwork ({ dispatch }, { chainId, name }) {
+    async switchNetwork ({ dispatch }, { chainId, name }) { 
+      // dont attempt to switch if browser doesn't have MetaMask
+      // or! wallet is connect via WalletConnect (since at least Rainbow doesn't let you switch there)
+      if (!window.ethereum || walletProvider?.provider?.wc) {
+        throw new Error('No provider to change network')
+      }
+
       // find chainId?
       chainId = chainId || Object.keys(networks).find(key => networks[key].name === name)
 
       // convert to hex
       chainId = ethers.utils.hexValue(Number(chainId))
-
-      // if (!window.ethereum) {
-      //   throw new Error('No provider to change network')
-      // }
 
       try {
         // switch...

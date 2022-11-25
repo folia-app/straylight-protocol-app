@@ -54,24 +54,27 @@ article.pb-64
                 connect-disconnect-btn.text-md.h-8(connectLbl="connect", :networkName="networkName")
 
           //- !! wrong network
-          template(v-if="isConnected && isWrongNetwork")
+          template(v-if="switchError || (isConnected && isWrongNetwork)")
             .min-h-40.flex.relative.text-smm.font-boldff.text-accent1(:class="{'bg-accent2': !switchError, 'bg-accent3': switchError}")
                 //- msg
                 .flex-1.flex.items-center.justify-center.break-all.px-6
                   div(v-if="!switchError")
                     | your wallet is #[b not connected] to the #[b selected network] – #[span.uppercase.font-bold {{ networkName }}]
+                  div(v-else-if="typeof switchError === 'string'")
+                    span(v-html="switchError")
                   div(v-else)
                     | couldn't switch to #[span.uppercase {{ networkName }}] - you may need to add it to your wallet first.
                 
                 //- (cta)
-                .relative.w-32.sm_w-48.justify-center.bg-black-a08.rounded-lg.font-bold
-                  template(v-if="!switchError")
-                    button.absolute.overlay.flex.items-center.justify-center.rounded-lg(@click.prevent="switchNetwork")
-                      | Switch
-                      <arrow-path-icon class="ml-3 h-6 w-6 transform scale-110 origin-center"></arrow-path-icon>
-                  template(v-else)
-                    a.absolute.overlay.flex.items-center.justify-center.rounded-lg(href="https://chainlist.org", target="_blank", rel="noopener noreferrer")
-                      | Add #[span.ml-2(style="font-size:0.75em") ↗]
+                template(v-if="(isConnected && isWrongNetwork) || switchError === true")
+                  .relative.w-32.sm_w-48.justify-center.bg-black-a08.rounded-lg.font-bold
+                    template(v-if="!switchError")
+                      button.absolute.overlay.flex.items-center.justify-center.rounded-lg(@click.prevent="switchNetwork")
+                        | Switch
+                        <arrow-path-icon class="ml-3 h-6 w-6 transform scale-110 origin-center"></arrow-path-icon>
+                    template(v-else)
+                      a.absolute.overlay.flex.items-center.justify-center.rounded-lg(href="https://chainlist.org", target="_blank", rel="noopener noreferrer")
+                        | Add #[span.ml-2(style="font-size:0.75em") ↗]
 
         //- step: select turmite
         li.relative.-mt-px.bg-accent1.relative(style="z-index:3")
@@ -247,6 +250,11 @@ export default {
 
         await this.$store.dispatch('switchNetwork', { name: this.networkName })
       } catch (e) {
+        if (e.message === 'No provider to change network') {
+          await this.$store.dispatch('disconnect')
+          this.switchError = "couldn't switch. try <b>reconnecting your wallet</b> to the desired network^"
+          return
+        }
         this.switchError = true
       }
     },
@@ -319,9 +327,12 @@ export default {
 
   watch: {
     isConnected (connected) {
+      this.switchError = false
       if (!connected) {
         this.status = null
-        this.switchError = false
+      } else {
+        // in case switching network in WC via disconnect->reconnect
+        this.onNetworkNameChange()
       }
     },
     networkName () {
