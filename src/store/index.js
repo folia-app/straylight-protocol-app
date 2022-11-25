@@ -10,7 +10,7 @@ import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
 import networks from '../networks'
 
-let /*provider,*/ signer, initializing
+let /*provider,*/ signer, initializing, walletProvider
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
@@ -259,19 +259,19 @@ export default createStore({
     async connect ({ state, commit, dispatch }) {
       try {
         // connect and update provider, signer
-        const walletProvider = await web3Modal.connect()
-        const provider = new ethers.providers.Web3Provider(walletProvider)
-        signer = provider.getSigner()
+        const web3ModalProvider = await web3Modal.connect()
+        walletProvider = new ethers.providers.Web3Provider(web3ModalProvider)
+        signer = walletProvider.getSigner()
 
         // set user address
         const address = await signer.getAddress()
         commit('SIGN_IN', { address })
 
         // set given network id
-        const { chainId } = await provider.getNetwork()
+        const { chainId } = await walletProvider.getNetwork()
         commit('SET_GIVEN_NETWORK_ID', chainId)
 
-        dispatch('listenToWalletProvider', walletProvider)
+        dispatch('listenToWalletProvider', web3ModalProvider)
         
         return { address, chainId }
       } catch (e) {
@@ -296,7 +296,8 @@ export default createStore({
       // }
 
       commit('SIGN_OUT')
-      signer = null
+      walletProvider = undefined
+      signer = undefined
       // givenProvider = null
       // reset provider
       // dispatch('setupContracts')
@@ -385,15 +386,17 @@ export default createStore({
     },
 
     async getProvider ({ commit }, { network }) {
-      let provider, givenChainId
+      let provider = walletProvider
+      let givenChainId
       let targetChainId = network?.id
         || Object.keys(networks).find(key => networks[key]['name'] === network?.name)
 
-      // try browser/wallet provider first
-      if (window.ethereum) {
+      // try browser/wallet provider first (if not connected already)
+      if (!provider && window.ethereum) {
+        // "given provider"
         provider = new ethers.providers.Web3Provider(window.ethereum)
 
-        // check on supported network
+        // check if on supported network
         try {
           const { chainId } = await provider.getNetwork()
           givenChainId = chainId
@@ -762,11 +765,15 @@ export default createStore({
 
     async mint ({ state, dispatch }, { rule, moves = 0, network }) {
       try {
+        console.log({ network })
         // wait for init?
         const contract = await dispatch('getControllerContract', { network })
 
         // connect wallet?
-        if (!state.address || !signer) await dispatch('connect')
+        if (!state.address || !signer) {
+          console.log(state.address, signer)
+          await dispatch('connect')
+        }
 
         // check balance
         const price = await dispatch('getMintPrice', { network })
