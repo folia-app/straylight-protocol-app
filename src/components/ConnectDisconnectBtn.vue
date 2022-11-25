@@ -29,12 +29,13 @@ export default {
   name: 'ConnectDisconnectBtn',
   props: {
     connectLbl: { type: String, default: 'Connect' },
+    networkName: { type: String, default: undefined },
   },
   components: { Addr, SvgX },
   methods: {
     async connectWallet () {
       try {
-        await this.$store.dispatch('connect')
+        await this.$store.dispatch('connect', this.networkName)
       } catch (e) {
         console.error(e)
         if (e !== 'Modal closed by user') {

@@ -14,9 +14,9 @@
       ul.bg-accent4.rounded-lg.pb-3.whitespace-nowrap.shadow
         .text-xxs.pl-3.pb-1b networks:
         li
-          button.block.pl-6.pr-6.rounded-full.opacity-40(disabled, @click.prevent="setNetwork('ethereum')") ethereum
+          button.block.pl-6.pr-6.rounded-full.opacity-40(@click.prevent="setNetwork('ethereum')") ethereum
         li
-          button.block.pl-6.pr-6.rounded-full.opacity-40(disabled, @click.prevent="setNetwork('optimism')") optimism
+          button.block.pl-6.pr-6.rounded-full.opacity-40(@click.prevent="setNetwork('optimism')") optimism
         li(v-show="!testnetsVisible")
           button.block.pl-6.pr-6.rounded-full(@click.prevent="testnetsVisible = true")
             span.opacity-40.mouse_hover_opacity-100 testnets

@@ -17,20 +17,31 @@ const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID || 1)
 
 // setup web3 modal
-// let web3Modal = {}
-const web3Modal = new Web3Modal({
-  // network: deployNetwork.name, // optional - NOTE, doesn't seem to work with "polygon" as name...
-  cacheProvider: true, // optional
-  providerOptions: { // required
-    walletconnect: {
-      package: WalletConnectProvider, // required
-      options: {
-        infuraId: infuraProjectID, // required
-      },
-    }
-  },
-  theme: 'dark'
-})
+let web3Modal
+function setWeb3Modal (networkName) {
+  networkName = networkName === 'ethereum' ? 'mainnet' 
+    : networkName === 'optimism-goerli' ? undefined // not in their list :/
+      : networkName
+
+  web3Modal = new Web3Modal({
+    network: networkName, // optional - NOTE, doesn't seem to work with "polygon" as name...
+    cacheProvider: true, // optional
+    providerOptions: { // required
+      walletconnect: {
+        package: WalletConnectProvider, // required
+        options: {
+          infuraId: infuraProjectID, // required
+          rpc: {
+            10: networks[10].infura
+            // 420: networks[420].infura
+          }
+        },
+      }
+    },
+    theme: 'dark'
+  })
+}
+setWeb3Modal()
 
 export default createStore({
   // modules: { profiles },
@@ -229,18 +240,6 @@ export default createStore({
             await dispatch('connect')
           }
 
-          // await dispatch('setProvider', networkName)
-
-
-
-          // fallback provider
-          // if (!provider) {
-          //   await dispatch('setupFallbackProvider')
-          // }
-
-          // await dispatch('setupContracts')
-
-
           initializing = false
         } catch (e) {
           console.error('@init', e)
@@ -256,8 +255,12 @@ export default createStore({
     },
 
     /* connect wallet */
-    async connect ({ state, commit, dispatch }) {
+    async connect ({ state, commit, dispatch }, networkName) {
       try {
+        if (networkName) {
+          setWeb3Modal(networkName)
+        }
+
         // connect and update provider, signer
         const web3ModalProvider = await web3Modal.connect()
         walletProvider = new ethers.providers.Web3Provider(web3ModalProvider)
