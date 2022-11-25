@@ -5,13 +5,13 @@ export default {
     //   "address": "0x820226867468D5825f9D38e3Dd969A6a38e673E7"
     // }
     5: {
-      "address": "0x23e9afBAf676669054861618c1288a7062d543a9",
-      "blockNumber": 7965288
+      "address": "0x3B0ADB70b528175A5CCD501933402E01b9bA1c2E",
+      "blockNumber": 8017907
     },
     // optimism goerli
     420: {
-      "address": "0x49330865F65F5a1FeFDF827b73d7dDB5Ab1C5420",
-      "blockNumber": 2879886
+      "address": "0xbCe13e1A6235dFa44B5424236a4177AE7b07f2c9",
+      "blockNumber": 2936262
     }
   },
   "abi": [

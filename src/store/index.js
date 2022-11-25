@@ -768,13 +768,11 @@ export default createStore({
 
     async mint ({ state, dispatch }, { rule, moves = 0, network }) {
       try {
-        console.log({ network })
         // wait for init?
         const contract = await dispatch('getControllerContract', { network })
 
         // connect wallet?
         if (!state.address || !signer) {
-          console.log(state.address, signer)
           await dispatch('connect')
         }
 
