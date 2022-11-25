@@ -14,7 +14,7 @@ let /*provider,*/ signer, initializing, walletProvider
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
-const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID) ?? 1
+const appDefaultNetworkId = Number(import.meta.env.VITE_APP_FALLBACK_NETWORK_ID ?? 1)
 
 // setup web3 modal
 let web3Modal
