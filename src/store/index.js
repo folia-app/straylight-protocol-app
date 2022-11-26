@@ -436,129 +436,6 @@ export default createStore({
       return contract
     },
 
-    // async setProvider ({ dispatch }, desiredNetworkName) {
-    //   let givenChainId
-
-    //   // find desired network
-
-    //   const desiredNetwork = Object.values(networks).find(net => net.name === desiredNetworkName)
-
-    //   // look for browser provider if not set
-    //   if (!provider && window.ethereum) {
-    //     // metamask/browser
-    //     provider = new ethers.providers.Web3Provider(window.ethereum)
-    //   }
-
-    //   // get chainId of this provider
-    //   try {
-    //     const { chainId } = await provider.getNetwork()
-    //     givenChainId = chainId
-    //   } catch (e) {
-    //     console.error('error getting given provider chain id', e)
-    //   }
-
-    //   // store even if not provided
-    //   commit('SET_GIVEN_NETWORK_ID', givenChainId)
-
-    //   // check if supported network
-    //   if (!provider || !Object.keys(networks).includes(givenChainId)) {
-    //     console.warn(`Provider/Wallet network not supported (${givenChainId}). Loading from infura default network: ${appDefaultNetworkId}...`)
-        
-    //     chainId = appDefaultNetworkId
-    //     provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
-    //   } else {
-    //     // given provider is supported :)
-    //     chainId = givenChainId
-    //   }
-
-    //   }
-    // },
-
-    // async setupFallbackProvider ({ dispatch }) {
-    //   try {
-    //     if (window.ethereum) {
-    //       // metamask/browser
-    //       provider = new ethers.providers.Web3Provider(window.ethereum)
-    //     } else {
-    //       // infura fallback
-    //       console.log(appDefaultNetworkId)
-    //       provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
-    //     }
-
-    //     await dispatch('setupContracts', { provider })
-
-    //     return true
-    //   } catch (e) {
-    //     console.error(e)
-    //   }
-    // },
-
-    // getNetworkId ({ commit }, provider) {
-    //   return provider.getNetwork()
-    //     .then(network => commit('SET_NETWORK_ID', network.chainId))
-    //     .catch(console.error)
-    // },
-
-    // async getNetwork ({ commit }, provider) {
-    //   try {
-    //     const { chainId } = await provider.getNetwork()
-    //     // set network
-    //     commit('SET_NETWORK_ID', chainId)
-    //     // set contracts
-    //     commit('SET_CONTRACTS', { chainId, provider })
-
-    //     return chainId
-    //   } catch (e) {
-    //     console.error(e)
-    //     throw e
-    //   }
-    // },
-
-    // async setupContracts ({ commit }) {
-    //   let chainId, givenChainId
-
-    //   if (!provider && window.ethereum) {
-    //     // metamask/browser
-    //     provider = new ethers.providers.Web3Provider(window.ethereum)
-    //   }
-
-    //   try {
-    //     const { chainId } = await provider.getNetwork()
-    //     givenChainId = chainId
-    //   } catch (e) {
-    //     console.error('error getting given provider chain id', e)
-    //   }
-
-    //   // store even if not provided
-    //   commit('SET_GIVEN_NETWORK_ID', givenChainId)
-
-    //   // check if supported network
-    //   if (!provider || !Object.keys(networks).includes(givenChainId)) {
-    //     console.warn(`Provider/Wallet network not supported (${givenChainId}). Loading from infura default network: ${appDefaultNetworkId}...`)
-        
-    //     chainId = appDefaultNetworkId
-    //     provider = new ethers.getDefaultProvider(networks[appDefaultNetworkId].infura)
-    //   } else {
-    //     // given provider is supported :)
-    //     chainId = givenChainId
-    //   }
-
-    //   // set contracts
-    //   commit('SET_CONTRACTS', { chainId, provider })      
-
-    //   return true
-    // },
-
-    // async getNFTContract ({ dispatch }) {
-    //   try {
-    //     if (!nftContract) await dispatch('init')
-    //     return nftContract
-    //   } catch (e) {
-    //     console.error(e)
-    //     throw e
-    //   }
-    // },
-
     async getDeployBlock ({ state, dispatch }, { network }) {
       let deployBlock = 0
       if (network) {
@@ -785,8 +662,30 @@ export default createStore({
       }
     },
 
+    async isWalletCorrectNetwork ({ getters, dispatch }, { network }) {
+      try {
+        if (!signer || !walletProvider) {
+          await dispatch('connect')
+        }
+  
+        const { chainId } = await walletProvider.getNetwork()
+        const turmiteChainId = getters.chainId({ networkName: network.name})
+        
+        if (chainId?.toString() !== turmiteChainId?.toString()) {
+          throw new Error(`WALLET IS WRONG NETWORK`)
+        }
+        
+        return true
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    },
+
     async moveTurmite ({ state, dispatch }, { tokenId, moves, network }) {
       try {
+        await dispatch('isWalletCorrectNetwork', { network })
+
         const nftContract = await dispatch('getNFTContract', { network })
 
         const contractSigner = nftContract.connect(signer)
@@ -801,8 +700,9 @@ export default createStore({
     },
 
     async reprogramTurmite ({ state, dispatch }, { tokenId, rule, network }) {
-      console.log(arguments[1])
       try {
+        await dispatch('isWalletCorrectNetwork', { network })
+
         const nftContract = await dispatch('getNFTContract', { network })
         
         const contractSigner = nftContract.connect(signer)
@@ -867,221 +767,6 @@ export default createStore({
         throw e
       }
     },
-
-    // async getPaused ({ state, dispatch }) {
-    //   try {
-    //     if (!controllerContract) await dispatch('init')
-    //     return controllerContract.paused()
-    //   } catch (e) {
-    //     console.error(e)
-    //     throw e
-    //   }
-    // },
-
-    /* buy artwork */
-    // async buy ({ state, dispatch, rootGetters }, workId) {
-    //   try {
-    //     const work = await dispatch('getWork', { id: workId, flush: true })
-    //     // !! unavailable
-    //     if (!work.exists) throw new Error(`!! Work ${workId} doesn't exist`)
-    //     if (Number(work.printed) >= Number(work.editions)) throw new Error(`!! Work ${workId} is sold out`)
-    //     if (work.paused) throw new Error(`!! Work ${workId} is locked. Please wait for release or try again shortly.`)
-
-    //     // TODO insuff balance
-
-    //     // wallet connected ?
-    //     if (!state.address || !signer) await dispatch('connect')
-
-    //     // !! insufficient balance
-    //     const balance = await rootGetters.userBalance()
-    //     if (bn.from(balance).lt(work.price)) throw new Error(`!! Insufficient funds in your wallet\n${state.address}`)
-
-    //     // sign...
-    //     const contractSigner = controllerContract.connect(signer)
-    //     // tx
-    //     return contractSigner.buy(state.address, workId, { value: work.price })
-
-    //     // refresh work data for app
-    //     // dispatch('getWork', { id: workId, flush: true })
-    //   } catch (e) {
-    //     console.error('@buy:', e)
-    //     // track
-    //     exception({ description: `@buy: ${e.message}`, fatal: false })
-    //     // TODO - more elegant UX error ?
-    //     if (e.message?.includes('!! ')) {
-    //       alert(e.message.replace('!! ', ''))
-    //     }
-    //   }
-    // },
-
-    /* buy by ID */
-    // async buyByID ({ state, dispatch, rootGetters }, { tokenId }) {
-    //   try {
-    //     const workId = Math.floor(tokenId / 1000000)
-    //     const workSpace = workId * 1000000
-    //     const editionId = tokenId - workSpace
-    //     const bn = mixed => new web3.utils.BN(mixed)
-
-    //     const work = await dispatch('getWork', { id: workId, flush: true })
-    //     // !! unavailable
-    //     if (!work.exists) throw new Error(`!! Work ${workId} doesn't exist`)
-    //     // !! paused
-    //     if (work.paused) throw new Error(`!! Work ${workId} is locked. Please wait for release or try again shortly.`)
-
-    //     // wallet connected ?
-    //     if (!state.address) {
-    //       await dispatch('connect')
-    //     }
-
-    //     // !! not enough ETH
-    //     const balance = await rootGetters.userBalance()
-    //     const insufficientFunds = bn(balance).lt(bn(work.price))
-    //     if (insufficientFunds) throw new Error(`!! Insufficient funds in your wallet\n${state.address}`)
-
-    //     // buy
-    //     await controllerContract.methods
-    //       .buyByID(state.address, workId, editionId)
-    //       .send({ from: state.address, value: work.price })
-    //     // refresh work data for app
-    //     dispatch('getWork', { id: workId, flush: true })
-    //   } catch (e) {
-    //     console.error('@buyByID:', e)
-    //     // track
-    //     exception({ description: `@buyByID: ${e.message}`, fatal: false })
-    //     // TODO - more elegant UX error ?
-    //     if (e.message?.includes('!! ')) {
-    //       alert(e.message.replace('!! ', ''))
-    //     }
-    //   }
-    // },
-
-    /* buy token by id */
-    // async buyByID ({ state, dispatch, rootGetters }, { tokenId }) {
-    //   try {
-    //     const workId = Math.floor(tokenId / 1000000) // 12
-    //     const workSpace = workId * 1000000 // 12000000
-    //     const editionId = tokenId - workSpace // 1
-
-    //     // get work...
-    //     const work = await dispatch('getWork', { id: workId, flush: true })
-
-    //     // !! unavailable
-    //     if (!work.exists) throw new Error(`!! Work ${workId} doesn't exist`)
-    //     // !! paused
-    //     if (work.paused) throw new Error(`!! Work ${workId} is locked. Please wait for release or try again shortly.`)
-
-    //     // wallet connected ?
-    //     if (!state.address || !signer) await dispatch('connect')
-
-    //     // !! not enough ETH
-    //     const balance = await rootGetters.userBalance()
-    //     if (bn.from(balance).lt(work.price)) throw new Error(`!! Insufficient funds in your wallet\n${state.address}`)
-
-    //     // sign...
-    //     const contractSigner = controllerContract.connect(signer)
-    //     // tx
-    //     return contractSigner.buyByID(state.address, workId, editionId, { value: work.price })
-
-    //     // refresh work data for app
-    //     // dispatch('getWork', { id: workId, flush: true })
-    //   } catch (e) {
-    //     console.error('@buyByID:', e)
-    //     // track
-    //     exception({ description: `@buyByID: ${e.message}`, fatal: false })
-    //     // TODO - more elegant UX error ?
-    //     if (e.message?.includes('!! ')) {
-    //       alert(e.message.replace('!! ', ''))
-    //     }
-    //   }
-    // },
-
-    /* read artwork */
-    // async getWork ({ state, commit }, { id, flush }) {
-    //   let work = state.works.find(work => work.id === id)
-    //   if (!flush && work) return work
-
-    //   if (!controllerContract) {
-    //     console.warn('controller not set yet')
-    //     return
-    //   }
-    //   // get new data
-    //   if (id && !isNaN(id)) {
-    //     try {
-    //       work = await controllerContract.methods.works(id).call()
-    //       work = { id, ...work } // add id
-    //       commit('SAVE_WORK', work)
-    //     } catch (e) {
-    //       console.error('@getWork', e)
-    //     }
-    //   }
-    //   return work
-    // },
-
-    /* read work from chain */
-    // async getWork ({ state, commit, dispatch }, { id, flush }) {
-    //   try {
-    //     // saved?
-    //     let work = state.works.find(work => work.id === id)
-    //     if (!flush && work) return work
-
-    //     // !! invalid id
-    //     if (!id || isNaN(id)) {
-    //       throw new Error(`invalid work id: ${id}`)
-    //     }
-
-    //     if (!controllerContract) {
-    //       await dispatch('init')
-    //     }
-
-    //     // fetch...
-    //     work = await controllerContract.works(id)
-    //     work = { id, ...work } // add id
-    //     // save
-    //     commit('SAVE_WORK', work)
-    //     return work
-    //   } catch (e) {
-    //     console.warn('@getWork', e)
-    //     return null
-    //   }
-    // },
-
-    /* get metadata of work (if released) */
-    // async getMetadata ({ state, commit }, { token, work, isViewer = false }) {
-    //   try {
-    //     token = token || Number(work) * 1000000
-    //     work = work || Math.floor(Number(token) / 1000000)
-
-    //     // !! is not a number
-    //     if (isNaN(token)) throw new Error(`Token ID is not a number: ${token}`)
-
-    //     // return saved ?
-    //     const saved = state.metadatas.find(metadata => metadata._token === token)
-    //     const now = new Date().getTime()
-    //     const release = saved && saved.release && new Date(saved.release).getTime()
-    //     const hasSinceReleased = release && release > 0 && now >= release
-    //     if (saved && !hasSinceReleased) {
-    //       return saved
-    //     }
-    //     // fetch new
-    //     // query parameters
-    //     let params = []
-    //     if (state.networkId) params.push(`network=${state.networkId}`)
-    //     if (isViewer) params.push('viewer=1')
-    //     params = params.length ? '?' + params.join('&') : ''
-    //     const url = `/.netlify/functions/metadata/${token}${params}`
-    //     // go!
-    //     let metadata = await fetch(url).then(resp => resp.json())
-    //     // process
-    //     if (metadata && metadata.name) {
-    //       metadata = { _work: work, _token: token, ...metadata }
-    //       commit('SAVE_METADATA', metadata)
-    //       return metadata
-    //     }
-    //     return null
-    //   } catch (e) {
-    //     console.error(e)
-    //   }
-    // },
 
     /* read owner by token id from chain */
     async getNFTOwnerByTokenId ({ state, commit, dispatch }, { tokenId, network }) {
