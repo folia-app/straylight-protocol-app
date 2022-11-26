@@ -24,7 +24,7 @@ article.board
           img.md_absolute.overlay.object-center.object-contain(v-if="boardImgSrc", ref="boardImg", :src="boardImgSrc", :class="{'opacity-0': !boardImgSrc, 'animate-pulse': !boardScale}")
           
           //- p5 board (scales based on <img> .object-contain size)
-          .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:key="activityFetch", :class="{'opacity-0': boardScale === undefined || imgIsLoading}")
+          .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:key="activityFetch", :class="{'opacity-0': !boardScale || imgIsLoading}")
             //- 
             board-animates.origin-center.border.border-gray-700(ref="boardAnimator", :tokenIds="tokenIds", :boardId="boardId", :networkName="$route.params.networkName", @rendered="onBoardRender", :previewButton="$refs.previewBtn", :style="{ transform: boardScale ? `scale(${boardScale})` : 'none' }", :boardKey="boardKey")
 
@@ -244,14 +244,14 @@ export default {
     },
     scaleBoard () {
       if (!this.$refs.boardImg) {
-        return
+        return // console.warn('img not loaded yet')
       }
       
       requestAnimationFrame(() => {
         const { width } = getImgSizeInfo(this.$refs.boardImg)
         
         if (width === 0) {
-          // retry after tick if not ready yet
+          // retry after tick if img not ready yet
           return this.scaleBoard()
         }
         
@@ -263,7 +263,7 @@ export default {
     listenToImgResize () {
       const ro = new ResizeObserver(entries => {
         // resize board if initialized
-        if (this.boardScale) {
+        if (this.myp5) {
           this.scaleBoard()
         }
       });

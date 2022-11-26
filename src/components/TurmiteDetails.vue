@@ -96,7 +96,7 @@ const toggleMoveForm = () => {
 
 const getOwner = async () => {
   try {
-    console.log('get owner', props.tokenId)
+    // console.log('get owner', props.tokenId)
     owner.value = await store.dispatch('getNFTOwnerByTokenId', { tokenId: props.tokenId, network: { name: props.networkName }})  
     if (owner.value) getAttr()
   } catch (e) {
