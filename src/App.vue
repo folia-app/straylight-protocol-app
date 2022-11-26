@@ -88,7 +88,7 @@
               //- p.mt-em dig further, in the #[a.font-bold.border-b.border-current.border-dashed.hover_border-solid wiki]
 
             footer.mt-em.w-full.grid.grid-cols-2.gap-1.px-3.pb-3
-              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(href="https://discord.gg/fdQmZGgXdc", target="_blank", rel="noopener noreferrer")
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="discordLink", target="_blank", rel="noopener noreferrer")
                 | discord #[span.ml-1(style="font-size:0.75em") ↗]
               
               a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.docsLink()", target="_blank", rel="noopener noreferrer")
@@ -158,7 +158,8 @@ export default {
   data () {
     return {
       infoVisible: false,
-      userMenuVisible: false
+      userMenuVisible: false,
+      discordLink: import.meta.env.VITE_APP_DISCORD_LINK
     }
   },
   computed: {

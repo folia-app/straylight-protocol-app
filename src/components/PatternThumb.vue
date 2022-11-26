@@ -11,7 +11,7 @@ router-link.pattern-thumb.block.aspect-square.border.border-gray-700.relative.te
     .h-9.px-3.flex.items-center.leading-none.rounded-full.pb-1.mouse_group-hover_bg-accent1 {{ props.rule.nickname }}
 
   //- (img)
-  img.absolute.overlay.object-cover.object-center.transition.duration-150(v-if="load", :src="$store.getters.docsLink(`/straylightdocs/_images/turmites/${props.rule.nickname}_0.png`)", @load="loaded = true", :class="{'opacity-0': !loaded}", @error="error = true")
+  img.absolute.overlay.object-cover.object-center.transition.duration-150(v-if="load", :src="$store.getters.docsLink(`/_images/turmites/${props.rule.nickname}_0.png`)", @load="loaded = true", :class="{'opacity-0': !loaded}", @error="error = true")
 
   //- 
   .absolute.bottom-0.right-0.px-5.py-2.hidden.mouse_group-hover_block

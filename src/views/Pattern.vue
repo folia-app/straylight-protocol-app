@@ -27,7 +27,7 @@ article.pattern-view
       .aspect-square.flex.items-center.justify-center.relative
         .animate-pulse.text-sm.text-accent2 loading...
         template(v-if="rule.nickname")
-          img.absolute.overlay.object-contain.object-center(:src="$store.getters.docsLink(`/straylightdocs/_images/turmites/${rule.nickname}_0.png`)")
+          img.absolute.overlay.object-contain.object-center(:src="$store.getters.docsLink(`/_images/turmites/${rule.nickname}_0.png`)")
   
   //- footer
   section.mt-56

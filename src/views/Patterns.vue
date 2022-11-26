@@ -5,7 +5,7 @@ article.patterns-view.pb-64.lg_pb-36
       | patterns
 
     .text-smm.mt-4.opacity-80ff.text-accent4
-      div turmites can move in #[b ~60,000] patterns&mdash;or "#[a.border-b.border-dashed.mouse_hover_border-solid(:href="$store.getters.docsLink('/straylightdocs/Environment.html#rulesets')", target="_blank") rulesets]"<br>here is a selected list of #[b {{ rules.length }}] by the artist
+      div turmites can move in #[b ~60,000] patterns&mdash;or "#[a.border-b.border-dashed.mouse_hover_border-solid(:href="$store.getters.docsLink('/Environment.html#rulesets')", target="_blank") rulesets]"<br>here is a selected list of #[b {{ rules.length }}] by the artist
   
   ul.boards-grid.mt-20
     li(v-for="rule in rules")

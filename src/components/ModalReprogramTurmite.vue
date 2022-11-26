@@ -9,7 +9,7 @@ modal(@close="close")
       .w-full(style="max-width:300px")
         .aspect-square.border.border-gray-700.relative
           .absolute.overlay.flex.items-center.justify-center.animate-pulse.text-sm.text-accent3 loading...
-          img.absolute.overlay.object-contain.object-center(:src="$store.getters.docsLink(`/straylightdocs/_images/turmites/${previewOption.nickname}_0.png`)", :key="previewOption.nickname")
+          img.absolute.overlay.object-contain.object-center(:src="$store.getters.docsLink(`/_images/turmites/${previewOption.nickname}_0.png`)", :key="previewOption.nickname")
     
     .mt-4.w-full.flex.justify-center.items-center
       label.block.mr-4.text-smm.mt-2px.sr-only pattern:
