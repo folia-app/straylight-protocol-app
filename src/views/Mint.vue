@@ -250,6 +250,7 @@ export default {
 
         await this.$store.dispatch('switchNetwork', { name: this.networkName })
       } catch (e) {
+        console.error(e)
         if (e.message === 'No provider to change network') {
           await this.$store.dispatch('disconnect')
           this.switchError = "couldn't switch. try <b>reconnecting your wallet</b> to the desired network^"
