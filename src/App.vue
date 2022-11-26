@@ -17,6 +17,10 @@
               .w-22.h-22.sm_w-20.sm_h-20.flex.items-center.justify-center.text-accent2.mouse_hover_text-black.pb-2.pr-1
                 svg-fleuron(style="height:1.3em")
           //- (back btn)
+          template(v-else-if="lastRt.name")
+            button.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded.mouse_hover_bg-accent2.mouse_hover_text-accent1(@click="$router.go(-1)")
+              arrow-left-icon.w-8.h-8.text-current
+          //- (back link)
           template(v-else)
             router-link.w-22.h-22.sm_w-20.sm_h-20.flex.w-full.items-center.justify-center.rounded.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="$route.params.networkName ? { name: 'network-index', params: $route.params } : `/`")
               arrow-left-icon.w-8.h-8.text-current
@@ -159,7 +163,8 @@ export default {
     return {
       infoVisible: false,
       userMenuVisible: false,
-      discordLink: import.meta.env.VITE_APP_DISCORD_LINK
+      discordLink: import.meta.env.VITE_APP_DISCORD_LINK,
+      lastRt: this.$route
     }
   },
   computed: {
@@ -236,9 +241,10 @@ export default {
     return document.getElementById('loading')?.remove()
   },
   watch: {
-    '$route' () {
+    '$route' (newRt, oldRt) {
       this.userMenuVisible = false
       this.infoVisible = false
+      this.lastRt = oldRt
     }
   }
 }
