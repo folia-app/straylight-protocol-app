@@ -4,13 +4,13 @@
     //- div.h-8.text-accent2.flex.items-center.pb-1
       .pl-4.pr-3 🗼
     
-    button.h-8.rounded-full.bg-accent4.flex.items-center.border.border-accent4.block.pl-6.rounded-full.flex.items-center.pb-1(@click.prevent="menuVisible = true")
+    button.network-switcher__btn.h-8.rounded-full.bg-accent4.flex.items-center.border.border-accent4.block.pl-6.rounded-full.flex.items-center.pb-1(@click.prevent="menuVisible = !menuVisible")
       //- addr(:address="$store.state.address")
-      .whitespace-nowrap {{ networkName }}
-      svg-chevron-down.w-6.h-6.mx-3.mt-1(strokeWidth="1.25")
+      .whitespace-nowrap.pointer-events-none {{ networkName }}
+      svg-chevron-down.w-6.h-6.mx-3.mt-1.pointer-events-none(strokeWidth="1.25")
 
-  .relative(v-if="menuVisible", v-click-outside="() => { menuVisible = false }")
-    .absolute.top-0.left-0.pt-2
+  .relative(v-if="menuVisible", v-click-outside="onClickOutsideMenu")
+    .absolute.top-0.right-2.sm_right-auto.sm_left-0.pt-2
       ul.bg-accent4.rounded-lg.pb-3.whitespace-nowrap.shadow
         .text-xxs.pl-3.pb-1b networks:
         li
@@ -56,5 +56,13 @@ const setNetwork = (val) => {
   networkName.value = val
   menuVisible.value = false
   emit('change', val)
+}
+
+const onClickOutsideMenu = (e) => {
+  // ignore touches on the button
+  if (e.target.classList.value.includes('network-switcher__btn')) {
+    return
+  }
+  menuVisible.value = false
 }
 </script>

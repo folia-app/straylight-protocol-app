@@ -7,7 +7,7 @@ article.board
     header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
       h1.text-md.sm_text-base.group #[router-link.opacity-40.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
 
-    .flex-1.relative.px-8.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col
+    .flex-1.relative.px-6.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col
       .sm_flex-1.flex.w-full
         //- (prev board link)
         .hidden.md_flex.w-20.relative.z-10
@@ -21,7 +21,7 @@ article.board
         
         .flex-1.relative.flex
           //- contract image (loader + sizer)
-          img.sm_absolute.overlay.object-center.object-contain(v-if="boardImgSrc", ref="boardImg", :src="boardImgSrc", :class="{'opacity-0': !boardImgSrc, 'animate-pulse': !boardScale}")
+          img.md_absolute.overlay.object-center.object-contain(v-if="boardImgSrc", ref="boardImg", :src="boardImgSrc", :class="{'opacity-0': !boardImgSrc, 'animate-pulse': !boardScale}")
           
           //- p5 board (scales based on <img> .object-contain size)
           .absolute.overlay.flex.justify-center.items-center.transition.duration-150(:key="activityFetch", :class="{'opacity-0': boardScale === undefined || imgIsLoading}")
@@ -84,9 +84,13 @@ article.board
                       //- .mouse_group-hover_opacity-100.opacity-0.mr-3.transition.duration-150 {{ isColorMode ? 'color' : 'bw' }}
                       .sr-only theme: {{ isColorMode ? 'colors' : 'black and white' }}
                       
-                      button.p-2.-m-2.cursor-pointer(@click="toggleColorMode", aria-label="toggle board theme", title="toggle color mode")
-                        .grid.grid-cols-2(style="width:13px;height:13px;", :class="{'border': !isColorMode}")
-                          div(v-for="(color, i) in colors", :style="{background: isColorMode ? color : ''}", :class="{'bg-accent3': !isColorMode && ([1,2]).includes(i) }")
+                      button.p-2.-m-2.cursor-pointer.group(@click="toggleColorMode", aria-label="toggle board theme", title="toggle color mode")
+                        .grid.grid-cols-2(style="width:13px;height:13px;", :class="{'border mouse_group-hover_border-none': !isColorMode}")
+                          div(:class="{'bg-accent1 mouse_group-hover_bg-legend-red': !isColorMode, 'bg-legend-red': isColorMode}")
+                          div(:class="{'bg-accent3 mouse_group-hover_bg-legend-blue': !isColorMode, 'bg-legend-blue': isColorMode}")
+                          div(:class="{'bg-accent3 mouse_group-hover_bg-legend-green': !isColorMode, 'bg-legend-green': isColorMode}")
+                          div(:class="{'bg-accent1 mouse_group-hover_bg-legend-orange': !isColorMode, 'bg-legend-orange': isColorMode}")
+                          //- div(v-for="(color, i) in colors", :style="{background: isColorMode ? color : ''}", :class="{'bg-accent3': !isColorMode && ([1,2]).includes(i) }")
 
         //- (next board link)
         .hidden.md_flex.w-20.relative

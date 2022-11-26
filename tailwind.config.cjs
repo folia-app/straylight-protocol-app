@@ -141,7 +141,14 @@ module.exports = {
       'red-duller': '#ce1212', // soldout
       green: {
         400: '#30cb5f'
-      }
+      },
+
+      legend: {
+        red: 'red',
+        blue: '#0081ff',
+        green: '#03de00',
+        orange: '#fa8700',
+      },
     },
     fontFamily: {
       sans: [
