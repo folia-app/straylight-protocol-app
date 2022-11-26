@@ -5,7 +5,10 @@ article.board
 
     //- title row
     header.mt-40.sm_mt-24.lg_mt-0.h-16.lg_h-20.flex.w-full.items-center.justify-center
-      h1.text-md.sm_text-base.group #[router-link.opacity-40.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
+      h1.text-md.sm_text-base.flex.items-center.leading-none
+        span.group
+          | #[router-link.opacity-40.uppercase.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
+        | #[contract-listener.ml-4(type="dot", @refreshClick="refreshBoard")]
 
     .flex-1.relative.px-6.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col
       .sm_flex-1.flex.w-full
@@ -17,7 +20,7 @@ article.board
                 .sr-only next world
                 //- label
                 .absolute.top-0.h-full.left-full.pl-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
-                  | world_{{ boardId + 1 }}
+                  | world_{{ boardId + 1 }} 
         
         .flex-1.relative.flex
           //- contract image (loader + sizer)
@@ -151,10 +154,11 @@ import {
 } from '@headlessui/vue'
 import { turmiteName } from '@/utils.js'
 import colors from '@/colors'
+import ContractListener from '../components/ContractListener.vue'
 
 export default {
   name: 'Board',
-  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon },
+  components: { Addr, TurmiteDetails, BoardActivity, BoardAnimates, PlayCircleIcon, PauseCircleIcon, SvgChevronDown, Listbox, ListboxButton, ListboxOptions, ListboxOption, ArrowPathIcon, CheckCircleIcon, ContractListener },
   data () {
     return {
       mint: undefined,
@@ -310,6 +314,14 @@ export default {
       this.isColorMode = !this.isColorMode
       const value = this.isColorMode ? 1000000 : 0
       this.myp5.myMethods.setColorTail(value)
+    },
+
+    refreshBoard () {
+      this.boardKey++
+      this.activityFetch++
+      this.getBoardImage()
+      this.boardScale = 0
+      this.myp5 = undefined
     }
   },
   watch: {

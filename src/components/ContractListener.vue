@@ -1,23 +1,44 @@
 <template lang="pug">
-template(v-if="isListening")
-  .p-3.text-smm.leading-none
-    .py-1.px-5.bg-accent1.rounded-full.text-accent4(v-if="updateMsg") {{ updateMsg }}
-    .py-1.rounded-full.text-accent3.animate-pulse(v-show="!updateMsg") listening...
+div
+  template(v-if="props.type === 'dot'")
+    .flex.items-center.text-accent4
+      .mt-1.relative.group
+        .rounded-full.h-4.w-4(:class="{'animate-pulse bg-accent4': isListening, 'border border-current opacity-50': !isListening }")
+        .absolute.top-0.left-full.h-full.flex.items-center.opacity-0.mouse_group-hover_opacity-100.text-xxs.pl-2(v-if="isListening && !updateCount")
+          | listening...
+          
+      button.px-2.ml-1.flex.items-center(v-if="updateCount", @click="refreshClick")
+        | {{ updateCount }}
+        arrow-path-icon.ml-2.text-accent4(class="h-7 w-7")
+  template(v-if="props.type === 'text'")
+    .p-3.text-smm.leading-none(v-show="isListening")
+      .py-1.px-5.bg-accent1.rounded-full.text-accent4(v-if="updateMsg") {{ updateMsg }}
+      .py-1.rounded-full.text-accent3.animate-pulse(v-show="!updateMsg") listening...
 </template>
 
 <script setup>
   import store from '@/store'
   import { ref, onMounted, onUnmounted } from 'vue'
   import { useRoute } from 'vue-router'
+  import { ArrowPathIcon } from '@heroicons/vue/24/outline'
+
+  const props = defineProps({
+    type: { type: String, default: 'text' }
+  })
   
   const emit = defineEmits(['update'])
 
   let contract
   const route = useRoute()
   const isListening = ref(false)
+  const updateCount = ref(0)
   const updateMsg = ref()
   let updateMsgTmOut
   
+  function refreshClick () {
+    updateCount.value = 0
+    emit('refreshClick')
+  }
 
   async function getContract () {
     try {
@@ -39,6 +60,7 @@ template(v-if="isListening")
         const data = {tokenId: tokenId.toString(), rule, boardId: boardId.toString() }
         console.log('new mint!', data)
         flashUpdate('new turmite!')
+        updateCount.value = updateCount.value + 1
         emit('update', { type: 'mint', data })
       })
 
@@ -55,6 +77,7 @@ template(v-if="isListening")
         const data = {tokenId: tokenId.toString(), boardId: boardnumber.toString(), moves: moves.toString() }
         console.log('new move!', data)
         flashUpdate('turmite moved!')
+        updateCount.value = updateCount.value + 1
         emit('update', { type: 'move', data })
       })
 
