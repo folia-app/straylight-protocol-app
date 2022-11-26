@@ -1,9 +1,11 @@
 // joined from paul's starylight repo
 export default {
   "networks": {
-    // 69: {
-    //   "address": "0x820226867468D5825f9D38e3Dd969A6a38e673E7"
-    // }
+    // ethereum
+    1: {
+      "address": "0xD30A18CdaD9D27736Aac896bb4a779536F4Cc41d",
+      "blockNumber": 16054073,
+    },
     // optimism
     10: {
       "address": "0xf626853103A6B3D678a2016e05222DbA9879c10a",
