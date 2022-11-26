@@ -4,6 +4,10 @@ export default {
     // 69: {
     //   "address": "0x3cF2D51787Ca95E4b6917B3EDDDBd9f72A3D75Ca"
     // }
+    // optimism
+    10: {
+      "address": "0xb955c66FF031cEA247ff22bE1fDBeAE23977d9d7",
+    },
     // goerli
     5: {
       "address": "0x1De6276b73B5a5F41FdC7C239b0c9CECFEFF6B6c",

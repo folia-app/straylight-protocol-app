@@ -4,6 +4,12 @@ export default {
     // 69: {
     //   "address": "0x820226867468D5825f9D38e3Dd969A6a38e673E7"
     // }
+    // optimism
+    10: {
+      "address": "0xf626853103A6B3D678a2016e05222DbA9879c10a",
+      "blockNumber": 	42241542
+    },
+    // goerli
     5: {
       "address": "0x3B0ADB70b528175A5CCD501933402E01b9bA1c2E",
       "blockNumber": 8017907
