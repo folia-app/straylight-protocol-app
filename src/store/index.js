@@ -749,22 +749,6 @@ export default createStore({
       }
     },
 
-    // async listenForMints ({ state, dispatch }) {
-    //   try {
-    //     if (!controllerContract) await dispatch('init')
-    //     // TODO - cancel if sold out?
-    //     controllerContract.on('editionBought', (contractAddress, tokenId, newTokenId) => {
-    //       console.log('new mint!', { contractAddress, tokenId, newTokenId })
-    //       dispatch('getMintCount')
-    //       dispatch('getMints', {})
-    //     })
-    //     console.log('listening for mints...')
-    //   } catch (e) {
-    //     console.error(e)
-    //     throw e
-    //   }
-    // },
-
     async mint ({ state, dispatch }, { rule, moves = 0, network }) {
       try {
         // wait for init?
