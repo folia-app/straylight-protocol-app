@@ -19,7 +19,7 @@
           button.block.pl-6.pr-6.rounded-full(@click.prevent="setNetwork('optimism')") optimism
         li(v-show="!testnetsVisible")
           button.block.pl-6.pr-6.rounded-full(@click.prevent="testnetsVisible = true")
-            span.opacity-40.mouse_hover_opacity-100 testnets
+            span.opacity-40.mouse_hover_opacity-100.text-xs testnets
         li(v-show="testnetsVisible")
           button.block.pl-6.pr-6.rounded-full(@click.prevent="setNetwork('goerli')")
             span.text-xxs.mr-2.opacity-40 testnet

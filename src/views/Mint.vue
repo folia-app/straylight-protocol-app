@@ -110,6 +110,17 @@ article.pb-64
         //- (selection overlay)
         //- button.absolute.overlay.bg-black-a60(v-if="selection", @click="clearSelection")
 
+        //- (optimism insuff funds / bridge note)
+        template(v-if="networkName === 'optimism' && isInsuffFunds")
+          .my-8.border.border-accent3.text-accent3.rounded.relative
+            .absolute.overlay.bg-accent3.opacity-10
+            .relative.z-10.text-center.pb-7
+              h6.font-bold.my-5 INSUFFICIENT FUNDS on OPTIMISM
+              p.px-2.text-smm.leading-normal your WALLET does not have enough ETH on OPTIMISM network.<br>use a BRIDGE to move ETH from MAINNET to OPTIMISM
+              p.flex.justify-center.mt-4
+                a.px-2.py-2.-my-2.block(href="https://app.optimism.io/bridge/deposit", target="_blank", rel="noopener noreferrer")
+                  | #[span.border-b.border-dashed.mouse_hover_border-solid.font-bold BRIDGE] ↗️ 
+
         //- (mint step)
         li(:class="{'opacity-30 pointer-events-none': !isConnected || selection === undefined || isWrongNetwork}")
           //- mint-btn
@@ -186,6 +197,7 @@ export default {
       tx: null,
       status: null,
       myMint: null,
+      isInsuffFunds: undefined
     }
   },
 
@@ -212,6 +224,7 @@ export default {
       let tx
       try {
         this.myMint = null
+        this.isInsuffFunds = false
         this.status = { msg: 'Confirm transaction in your wallet...' }
 
         const rule = '0x' + this.selection.rule
@@ -231,6 +244,11 @@ export default {
         this.getMintCount()
       } catch (e) {
         console.error(e)
+        
+        if (e.message === 'Insufficient funds in your wallet') {
+          this.isInsuffFunds = true
+        }
+
         //
         let msg = 'Error: ' + (e.reason || e.message || e)
         msg += e.data?.message ? '<br>' + e.data.message : ''
@@ -294,6 +312,7 @@ export default {
       this.getMintCount()
       this.getMaxTurmites()
       this.replaceRouteNetworkQuery()
+      this.isInsuffFunds = false
     },
 
     replaceRouteNetworkQuery () {

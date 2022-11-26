@@ -126,7 +126,6 @@ const ruleset = computed(() => {
 
 const onTurmiteReprogrammed = () => {
   getAttr()
-  debugger
   emit('reprogrammed')
 }
 
