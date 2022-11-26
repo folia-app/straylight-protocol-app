@@ -20,7 +20,7 @@ modal(@close="close")
       button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(type="submit", :disabled="!selection") REPROGRAM
   
   template(v-if="status")
-    div.mt-6.text-center.text-xs.lowercase.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }", v-html="status.msg")
+    div.mt-6.text-center.text-xs.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }", v-html="status.msg")
 </template>
 
 <script setup>
@@ -50,7 +50,7 @@ modal(@close="close")
   const submit = async () => {
     try {
       // TODO - check wallet is on correct network!!!
-      status.value = { msg: 'Confirm transaction in your wallet...' }
+      status.value = { msg: 'confirm transaction in your wallet...' }
       
       const tx = await store.dispatch('reprogramTurmite', { tokenId: props.tokenId, rule: selection.value.rule, network: { name: route.params.networkName } })
       
@@ -68,8 +68,12 @@ modal(@close="close")
       status.value = { type: 'success', msg: 'your turmite was reprogrammed!' }
     } catch (e) {
       console.error(e)
+      if (e.message === 'WALLET IS WRONG NETWORK') {
+        status.value = { type: 'error', msg: `switch your wallet to <b>${route.params.networkName?.toUpperCase()}</b> network first`}
+        return
+      }
       // show error to user
-      status.value = { type: 'error', msg: 'Error - ' + (e.reason || e.message || e) }
+      status.value = { type: 'error', msg: 'ERROR - ' + (e.reason || e.message || e) }
     }
   }
 </script>

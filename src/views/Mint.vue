@@ -225,7 +225,7 @@ export default {
       try {
         this.myMint = null
         this.isInsuffFunds = false
-        this.status = { msg: 'Confirm transaction in your wallet...' }
+        this.status = { msg: 'confirm transaction in your wallet...' }
 
         const rule = '0x' + this.selection.rule
         const moves = this.premove

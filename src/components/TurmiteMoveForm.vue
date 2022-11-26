@@ -26,7 +26,7 @@ const previewClickCounter = ref(0)
 
 const move = async () => {
   try {
-    status.value = { msg: 'Confirm transaction in your wallet...' }
+    status.value = { msg: 'confirm transaction in your wallet...' }
     
     console.log(props.tokenId, moveQty.value)
     const tx = await store.dispatch('moveTurmite', { tokenId: props.tokenId, moves: moveQty.value, network: { name: props.networkName } })
