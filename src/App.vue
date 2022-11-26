@@ -244,7 +244,9 @@ export default {
     '$route' (newRt, oldRt) {
       this.userMenuVisible = false
       this.infoVisible = false
-      this.lastRt = oldRt
+      if (newRt.path !== oldRt.path) {
+        this.lastRt = oldRt
+      }
     }
   }
 }
