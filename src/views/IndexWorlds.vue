@@ -12,7 +12,5 @@ import store from '@/store'
 
 const route = useRoute()
 
-useMeta(store.getters.meta({
-  title: `worlds :: ${route.params.networkName.toUpperCase()}`
-}))
+useMeta(store.getters.meta({})) // use site default since root redirects here
 </script>
