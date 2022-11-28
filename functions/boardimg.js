@@ -16,8 +16,11 @@ export async function handler (event, context) {
 
     const provider = new ethers.getDefaultProvider(networks[chainId].infura)
     const contract = new ethers.Contract(deployAddress, Straylight.abi, provider)
-  
+    
+    const timeId = `get image (chain: ${chainId}, boardid: ${boardId})`
+    console.time(timeId)
     const boardImageData = await contract.renderBoard(boardId)
+    console.timeEnd(timeId)
     
     const base64 = boardImageData.split(',').pop()
   
