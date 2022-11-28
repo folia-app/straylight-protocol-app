@@ -24,12 +24,7 @@
 
   const route = useRoute()
 
-  useMeta({
-    title: `activity : ${route.params.networkName.toUpperCase()}`,
-    meta: [
-      { property: 'og:title', content: 'hello' }
-    ]
-  })
+  useMeta(store.getters.meta({ title: `activity :: ${route.params.networkName.toUpperCase()}` }))
 
   const loaded = ref(0)
 

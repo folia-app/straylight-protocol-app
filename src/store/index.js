@@ -133,34 +133,65 @@ export default createStore({
       const siteImg = 'https://images.prismic.io/folia-dev/ae2e97e5-86ec-4bdc-9e35-2f246ede5758_vlcsnap-2022-11-21-16h55m05s415.png?auto=compress,format'
       const siteVideo = 'https://prismic-io.s3.amazonaws.com/folia-dev/580b753f-04cd-4fb8-b3fa-b62ed7f4f5ad_straylight-1a-1080p30.mp4'
       
-      // custom
+      // meta description is logo-title if custom page title
+      const description = descrip ? descrip : !descrip && title ? undefined : siteDescrip
+      // 
       title = title ? `${title}` : siteTitle
-      descrip = descrip ? descrip : !descrip && title ? siteTitle : siteDescrip
       // use site video if no custom image, so doesn't override custom img
       video = img ? undefined : siteVideo
       // custom image
-      img = img || siteImg
+      const image = img || siteImg
       
       // add
-      meta.push({ property: 'og:title', content: title })
-      meta.push({ property: 'og:site_name', content: siteTitle })
-      meta.push({ property: 'og:type', content: 'website' })
-      meta.push({ name: 'description', content: descrip })
-      meta.push({ property: 'og:description', content: descrip })
-      meta.push({ property: 'twitter:description', content: descrip })
-      if (img) {
-        meta.push({ property: 'og:image', content: img })
-        meta.push({ property: 'twitter:image', content: img })
+      const data = {
+        htmlAttrs: {
+          lang: 'en',
+          amp: false,
+        },
+        title,
+        // description,
+        og: {
+          title,
+          // description,
+          site_name: siteTitle,
+        },
+        twitter: {
+          title,
+          // description,
+          card: 'summary_large_image',
+          domain: 'straylight.folia.app'
+        }
+      }
+      if (description) {
+        data.description = data.og.description = data.twitter.description = description
+      }
+      if (image) {
+        data.og.image = data.twitter.image = image
       }
       if (video) {
-        meta.push({ property: 'og:video', content: img })
+        data.og.video = data.twitter.video = video
       }
-      // twitter
-      meta.push({ property: 'twitter:card', content: 'summary_large_image' })
-      meta.push({ property: 'twitter:domain', content: 'straylight.folia.app' })
+
+      console.log(data)
       
-      console.log(meta)
-      return { title, meta } // format for vue-meta
+      // meta.push({ property: 'og:title', content: title })
+      // meta.push({ property: 'og:site_name', content: siteTitle })
+      // meta.push({ property: 'og:type', content: 'website' })
+      // meta.push({ name: 'description', content: descrip })
+      // meta.push({ property: 'og:description', content: descrip })
+      // meta.push({ property: 'twitter:description', content: descrip })
+      // if (img) {
+      //   meta.push({ property: 'og:image', content: img })
+      //   meta.push({ property: 'twitter:image', content: img })
+      // }
+      // if (video) {
+      //   meta.push({ property: 'og:video', content: img })
+      // }
+      // // twitter
+      // meta.push({ property: 'twitter:card', content: 'summary_large_image' })
+      // meta.push({ property: 'twitter:domain', content: 'straylight.folia.app' })
+      
+      return data
     },
     docsLink: state => (path) => {
       return `${import.meta.env.VITE_APP_DOCS_ORIGIN}/straylightdocs${path ?? ''}`
