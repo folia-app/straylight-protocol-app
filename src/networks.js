@@ -1,4 +1,4 @@
-const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
+const infuraProjectID = import.meta.env?.VITE_APP_INFURA_PROJECT_ID || process.env.VITE_APP_INFURA_PROJECT_ID
 
 export default {
   1: {

@@ -343,7 +343,7 @@ export default {
   metaInfo () {
     const title = `${this.$route.params.networkName.toUpperCase()}_world_${this.boardId}`
     const descrip = null
-    const img = `https://straylight.folia.app/boardimg/${this.$route.params.networkName}/${this.boardId}`
+    const img = `https://straylight.folia.app/boardimg/${this.$store.getters.chainId(this.$route.params)}/${this.boardId}`
     
     setTimeout(() => { window.prerenderReady = true }, 200)
 

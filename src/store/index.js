@@ -147,18 +147,19 @@ export default createStore({
       meta.push({ property: 'og:type', content: 'website' })
       meta.push({ name: 'description', content: descrip })
       meta.push({ property: 'og:description', content: descrip })
-      meta.push({ name: 'twitter:description', content: descrip })
+      meta.push({ property: 'twitter:description', content: descrip })
       if (img) {
         meta.push({ property: 'og:image', content: img })
-        meta.push({ name: 'twitter:image', content: img })
+        meta.push({ property: 'twitter:image', content: img })
       }
       if (video) {
         meta.push({ property: 'og:video', content: img })
       }
       // twitter
-      meta.push({ name: 'twitter:card', content: 'summary_large_image' })
-      meta.push({ name: 'twitter:domain', content: 'straylight.folia.app' })
+      meta.push({ property: 'twitter:card', content: 'summary_large_image' })
+      meta.push({ property: 'twitter:domain', content: 'straylight.folia.app' })
       
+      console.log(meta)
       return { title, meta } // format for vue-meta
     },
     docsLink: state => (path) => {
