@@ -341,23 +341,13 @@ export default {
     }
   },
   metaInfo () {
-    const title = `world_` + this.boardId
-    const descrip = this.sourceAsset ? `from ${this.sourceAsset.collectionName}` : ''
-    const networkId = this.$store.state.networkId || 1
-    const img = this.$store && this.mint ? `${window.location.origin}/api/${networkId}/get/${this.mint.contractAddress}/${this.mint.tokenId}`
-      : undefined
+    const title = `${this.$route.params.networkName.toUpperCase()}_world_${this.boardId}`
+    const descrip = null
+    const img = `https://straylight.folia.app/boardimg/${this.$route.params.networkName}/${this.boardId}`
+    
+    setTimeout(() => { window.prerenderReady = true }, 200)
 
-    if (this.mint && this.sourceAsset) {
-      setTimeout(() => {
-        // console.log('prerender ready', document.querySelector('meta[property="og:image"]'))
-        window.prerenderReady = true
-      }, 100)
-    }
-
-    return {
-      title,
-      meta: this.$store.getters.meta({ title, descrip, img })
-    }
+    return this.$store.getters.meta({ title, descrip, img })
   },
   created () {
     this.getBoardImage()

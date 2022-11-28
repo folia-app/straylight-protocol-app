@@ -40,6 +40,7 @@ import store from '@/store'
 import { utils } from 'ethers'
 import { useRoute, useRouter } from 'vue-router'
 import Addr from '@/components/Addr.vue'
+import { useMeta } from 'vue-meta'
 
 const route = useRoute()
 const router = useRouter()
@@ -79,6 +80,12 @@ const resolveAddress = async () => {
 }
 
 resolveAddress()
+
+const computedMeta = computed(() => store.getters.meta({
+  title: `${ens.value ?? store.getters.addrShort(route.params.address)}`,
+  descrip: 'player profile'
+}))
+useMeta(computedMeta)
 </script>
 
 <style lang="postcss">

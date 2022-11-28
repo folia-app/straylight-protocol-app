@@ -6,4 +6,13 @@ article.index-worlds
 
 <script setup>
 import MintedResults from '@/components/MintedResults.vue'
+import { useMeta } from 'vue-meta'
+import { useRoute } from 'vue-router'
+import store from '@/store'
+
+const route = useRoute()
+
+useMeta(store.getters.meta({
+  title: `worlds :: ${route.params.networkName.toUpperCase()}`
+}))
 </script>

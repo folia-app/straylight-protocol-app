@@ -125,31 +125,44 @@ export default createStore({
       
       return path
     },
-    meta: state => ({ title, descrip, img }) => {
+    meta: state => ({ title, descrip, img, video }) => {
       const meta = []
       // defaults
-      const siteTitle = 'Decomposer'
-      const siteDescrip = 'An interactive NFT collection by artist Oliver Laric, where collectors "decompose" NFTs from their own collection ~ presented by folia.app'
-      const siteImg = window.location.origin + '/promo/decomposer-diagram.png'
+      const siteTitle = 's̷̰̃t̴̫̊r̶͔̽ả̷̜y̴̼͂l̸̙͛į̸͆g̴̘̎h̷̜̀ṭ̸͂ ̸̰̊p̵̞̅ȑ̴̙ơ̸͍t̶̗̑o̶͂͜ć̵͍ȏ̸͕l̷̗͗'
+      const siteDescrip = 'by paul seidler (terra0) - an on-chain, NFT multiplayer game. presented by folia 𐡸"'
+      const siteImg = 'https://images.prismic.io/folia-dev/ae2e97e5-86ec-4bdc-9e35-2f246ede5758_vlcsnap-2022-11-21-16h55m05s415.png?auto=compress,format'
+      const siteVideo = 'https://prismic-io.s3.amazonaws.com/folia-dev/580b753f-04cd-4fb8-b3fa-b62ed7f4f5ad_straylight-1a-1080p30.mp4'
+      
       // custom
       title = title ? `${title}` : siteTitle
-      descrip = descrip || siteDescrip
+      descrip = descrip ? descrip : !descrip && title ? siteTitle : siteDescrip
+      // use site video if no custom image, so doesn't override custom img
+      video = img ? undefined : siteVideo
+      // custom image
       img = img || siteImg
+      
       // add
       meta.push({ property: 'og:title', content: title })
       meta.push({ property: 'og:site_name', content: siteTitle })
       meta.push({ property: 'og:type', content: 'website' })
       meta.push({ name: 'description', content: descrip })
       meta.push({ property: 'og:description', content: descrip })
-      meta.push({ property: 'og:image', content: img })
-      // twitter?
+      meta.push({ name: 'twitter:description', content: descrip })
+      if (img) {
+        meta.push({ property: 'og:image', content: img })
+        meta.push({ name: 'twitter:image', content: img })
+      }
+      if (video) {
+        meta.push({ property: 'og:video', content: img })
+      }
+      // twitter
       meta.push({ name: 'twitter:card', content: 'summary_large_image' })
-      meta.push({ name: 'twitter:domain', content: 'folia.app' })
-      // meta.push({ property: 'og:url', content: ##ADDCANNONICAL## })
-      return meta
+      meta.push({ name: 'twitter:domain', content: 'straylight.folia.app' })
+      
+      return { title, meta } // format for vue-meta
     },
     docsLink: state => (path) => {
-      return `${import.meta.env.VITE_APP_DOCS_ORIGIN}/straylightdocs/${path ?? ''}`
+      return `${import.meta.env.VITE_APP_DOCS_ORIGIN}/straylightdocs${path ?? ''}`
     }
   },
   mutations: {

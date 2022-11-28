@@ -17,4 +17,8 @@ article.patterns-view.pb-64.lg_pb-36
 <script setup>
 import rules from '../../contracts/rulesSelected.js'
 import PatternThumb from '@/components/PatternThumb.vue'
+import { useMeta } from 'vue-meta';
+import store from '@/store'
+
+useMeta(store.getters.meta({ title: 'patterns' }))
 </script>

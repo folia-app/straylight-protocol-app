@@ -363,6 +363,9 @@ export default {
         this.$router.replace({ query: {...this.$route.query, rule: selection.rule }})
       }
     }
+  },
+  metaInfo () {
+    return this.$store.getters.meta({ title: 'mint' })
   }
 }
 </script>

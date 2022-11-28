@@ -16,53 +16,61 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import store from '@/store'
-import ActivityList from '@/components/ActivityList.vue'
+  import { ref, computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import store from '@/store'
+  import ActivityList from '@/components/ActivityList.vue'
+  import { useMeta } from 'vue-meta'
 
-const route = useRoute()
+  const route = useRoute()
 
-const loaded = ref(0)
+  useMeta({
+    title: `activity : ${route.params.networkName.toUpperCase()}`,
+    meta: [
+      { property: 'og:title', content: 'hello' }
+    ]
+  })
 
-const moves = ref([])
-const mints = ref([])
-const reprograms = ref([])
+  const loaded = ref(0)
 
-const activity = computed(() => {
-  let activity = [...moves.value, ...mints.value, ...reprograms.value]
-  activity.sort((a, b) => b.blockNumber - a.blockNumber)
-  return activity
-})
+  const moves = ref([])
+  const mints = ref([])
+  const reprograms = ref([])
 
-const getMoves = async ({ cached = false }) => {
-  try {
-    moves.value = await store.dispatch('getMoves', { cached, network: { name: route.params.networkName }})
-    loaded.value++
-  } catch (e) {
-    console.error(e)
+  const activity = computed(() => {
+    let activity = [...moves.value, ...mints.value, ...reprograms.value]
+    activity.sort((a, b) => b.blockNumber - a.blockNumber)
+    return activity
+  })
+
+  const getMoves = async ({ cached = false }) => {
+    try {
+      moves.value = await store.dispatch('getMoves', { cached, network: { name: route.params.networkName }})
+      loaded.value++
+    } catch (e) {
+      console.error(e)
+    }
   }
-}
 
-const getMints = async ({ cached = false }) => {
-  try {
-    mints.value = await store.dispatch('getMints', { cached, network: { name: route.params.networkName }})  
-    loaded.value++
-  } catch (e) {
-    console.error(e)
+  const getMints = async ({ cached = false }) => {
+    try {
+      mints.value = await store.dispatch('getMints', { cached, network: { name: route.params.networkName }})  
+      loaded.value++
+    } catch (e) {
+      console.error(e)
+    }
   }
-}
 
-const getReprograms = async ({ cached = false }) => {
-  try {
-    reprograms.value = await store.dispatch('getReprograms', { cached, network: { name: route.params.networkName }})  
-    loaded.value++
-  } catch (e) {
-    console.error(e)
+  const getReprograms = async ({ cached = false }) => {
+    try {
+      reprograms.value = await store.dispatch('getReprograms', { cached, network: { name: route.params.networkName }})  
+      loaded.value++
+    } catch (e) {
+      console.error(e)
+    }
   }
-}
 
-getReprograms({ cached: true })
-getMints({ cached: true })
-getMoves({ cached: true })
+  getReprograms({ cached: true })
+  getMints({ cached: true })
+  getMoves({ cached: true })
 </script>

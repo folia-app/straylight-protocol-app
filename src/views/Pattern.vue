@@ -26,8 +26,8 @@ article.pattern-view
     figure.w-1x2.sm_flex-1.border.border-gray-700(style="max-width:360px")
       .aspect-square.flex.items-center.justify-center.relative
         .animate-pulse.text-sm.text-accent2 loading...
-        template(v-if="rule.nickname")
-          img.absolute.overlay.object-contain.object-center(:src="$store.getters.docsLink(`/_images/turmites/${rule.nickname}_0.png`)")
+        template(v-if="imgSrc")
+          img.absolute.overlay.object-contain.object-center(:src="imgSrc")
   
   //- footer
   section.mt-56
@@ -58,18 +58,23 @@ import PatternThumb from '@/components/PatternThumb.vue'
 import NetworkSwitcher from '@/components/NetworkSwitcher.vue'
 import NetworkResolver from '@/components/NetworkResolver.vue'
 import PatternWorlds from '@/components/PatternWorlds.vue'
+import { useMeta } from 'vue-meta'
+import store from '@/store'
 
 const route = useRoute()
 
-const rule = computed(() => {
-  const namedRule = rules.find(rule => rule.rule.toLowerCase() === route.params.pattern.toLowerCase())
-  const fallback = { rule: route.params.pattern }
-  return namedRule || fallback
-})
+const namedRule = rules.find(rule => rule.rule.toLowerCase() === route.params.pattern.toLowerCase())
+const rule = namedRule || { rule: route.params.pattern }
+const name = rule.nickname || '[unnamed]'
 
-const name = computed(() => rule.value?.nickname || '(untitled)')
+const imgSrc = rule.nickname ? store.getters.docsLink(`/_images/turmites/${rule.nickname}_0.png`) : undefined
 
 // network resolution
 const networkName = ref(route.query.network)
 
+useMeta(store.getters.meta({
+  title: `pattern_${(rule.nickname ?? route.params.pattern).toLowerCase()}`,
+  descrip: null,
+  img: imgSrc
+}))
 </script>
