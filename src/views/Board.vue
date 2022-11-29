@@ -343,7 +343,7 @@ export default {
   metaInfo () {
     const title = `${this.$route.params.networkName.toUpperCase()}_world_${this.boardId}`
     const descrip = null
-    const img = `https://straylight.folia.app/api/boardimg/${this.$store.getters.chainId(this.$route.params)}/${this.boardId}`
+    const img = `https://straylight.folia.app/.netlify/functions/boardimg/${this.$store.getters.chainId(this.$route.params)}/${this.boardId}.png`
     
     setTimeout(() => { window.prerenderReady = true }, 200)
 

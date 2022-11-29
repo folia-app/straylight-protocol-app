@@ -7,7 +7,12 @@ export async function handler (event, context) {
   try {
     const path = event.path.split('/')
     const chainId = path[path.length - 2]
-    const boardId = path[path.length - 1].split('.')[0]
+    // parse boardId from last part ("/1", "1.png", "/1_3333.png")
+    const boardId = path[path.length - 1].split('.')[0].split('_')[0]
+    
+    // size (default is social share size)
+    let size = event.queryStringParameters.width || 144 * 8
+    size = Number(size)
     
     const deployAddress = Straylight.networks[chainId]?.address
     
@@ -33,7 +38,9 @@ export async function handler (event, context) {
 
     // convert to png for og:image
     let image = await Jimp.read(Buffer.from(bmpString, 'base64'))
-    image = image.resize(144 * 8,144 * 8, Jimp.RESIZE_NEAREST_NEIGHBOR)
+    if (size !== 144) {
+      image = image.resize(size,size, Jimp.RESIZE_NEAREST_NEIGHBOR)
+    }
     const png = await image.getBufferAsync('image/png')
     console.timeEnd(timeId + '__PNG')
     
