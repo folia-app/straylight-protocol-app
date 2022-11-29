@@ -7,7 +7,7 @@ export async function handler (event, context) {
   try {
     const path = event.path.split('/')
     const chainId = path[path.length - 2]
-    const boardId = path[path.length - 1]
+    const boardId = path[path.length - 1].split('.')[0]
     
     const deployAddress = Straylight.networks[chainId]?.address
     
