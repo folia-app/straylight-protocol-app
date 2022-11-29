@@ -1,6 +1,7 @@
 import Straylight from '../contracts/Straylight'
 import networks from '../src/networks'
 import ethers from 'ethers'
+import Jimp from 'jimp'
 
 export async function handler (event, context) {
   try {
@@ -21,16 +22,29 @@ export async function handler (event, context) {
     console.time(timeId)
     const boardImageData = await contract.renderBoard(boardId)
     console.timeEnd(timeId)
-    
+
+    console.time(timeId + '__PNG')
     const base64 = boardImageData.split(',').pop()
+    const svgString = Buffer.from(base64, 'base64').toString('binary')
+    
+    // extract bmp string
+    const reg = /(?:\(['"]?)(.*?)(?:['"]?\))/
+    const bmpString = reg.exec(svgString)[1].split(',').pop()
+
+    // convert to png for og:image
+    let image = await Jimp.read(Buffer.from(bmpString, 'base64'))
+    image = image.resize(144 * 8,144 * 8, Jimp.RESIZE_NEAREST_NEIGHBOR)
+    const png = await image.getBufferAsync('image/png')
+    console.timeEnd(timeId + '__PNG')
+    
   
     return {
       statusCode: 200,
-      body: base64,
       isBase64Encoded: true,
+      body: png.toString('base64'),
       headers: {
-        'Content-Type': 'image/svg+xml',
-      },
+        'Content-Type': 'image/png'
+      }
     }
   } catch (e) {
     console.error(e)
