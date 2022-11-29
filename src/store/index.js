@@ -95,7 +95,7 @@ export default createStore({
     isConnectedAddr: (state) => (addr) => addr && addr.toLowerCase() === state.address,
     chainId: () => ({ networkName }) => {
       // get chainId from networkName (of supported networks)
-      return Object.keys(networks).find(key => networks[key].name === networkName.toLowerCase())
+      return Object.keys(networks).find(key => networks[key].name === networkName?.toLowerCase())
     },
     network: (state, getters) => ({ networkName }) => {
       const chainId = getters.chainId({ networkName }) || appDefaultNetworkId
@@ -171,25 +171,6 @@ export default createStore({
       if (video) {
         data.og.video = data.twitter.video = video
       }
-
-      console.log(data)
-      
-      // meta.push({ property: 'og:title', content: title })
-      // meta.push({ property: 'og:site_name', content: siteTitle })
-      // meta.push({ property: 'og:type', content: 'website' })
-      // meta.push({ name: 'description', content: descrip })
-      // meta.push({ property: 'og:description', content: descrip })
-      // meta.push({ property: 'twitter:description', content: descrip })
-      // if (img) {
-      //   meta.push({ property: 'og:image', content: img })
-      //   meta.push({ property: 'twitter:image', content: img })
-      // }
-      // if (video) {
-      //   meta.push({ property: 'og:video', content: img })
-      // }
-      // // twitter
-      // meta.push({ property: 'twitter:card', content: 'summary_large_image' })
-      // meta.push({ property: 'twitter:domain', content: 'straylight.folia.app' })
       
       return data
     },

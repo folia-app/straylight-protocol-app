@@ -16,7 +16,7 @@ article.board
         .hidden.md_flex.w-20.relative.z-10
           .w-full.transform.-translate-x-10.mouse_hover_-translate-x-px.transition.duration-100.group.flex
             template(v-if="boardImgSrc && (boardId + 1) <= boardCount")
-              router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId + 1 }}")
+              router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { ...$route.params, board: boardId + 1 }}")
                 .sr-only next world
                 //- label
                 .absolute.top-0.h-full.left-full.pl-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
@@ -99,7 +99,7 @@ article.board
         .hidden.md_flex.w-20.relative
           .w-full.transform.translate-x-10.mouse_hover_translate-x-px.transition.duration-100.group.flex
             template(v-if="boardImgSrc && boardId - 1 > 0")
-              router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { board: boardId - 1 }}")
+              router-link.w-full.block.border.border-gray-800(:to="{name: 'board', params: { ...$route.params, board: boardId - 1 }}")
                 .sr-only prev world
                 //- label
                 .absolute.top-0.h-full.right-full.pr-10.flex.items-center.text-md.whitespace-nowrap.opacity-0.group-hover_opacity-100.transition.duration-150
@@ -119,7 +119,7 @@ article.board
     nav.flex.text-md.items-center
       .flex-1.flex.justify-center.lg_-mr-28
         template(v-if="boardId + 1 <= boardCount")
-          router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-7.pl-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId + 1 }}")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-7.pl-12.flex.items-center.justify-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { ...$route.params, board: boardId + 1 }}")
             .absolute.top-0.left-2.h-full.flex.items-center &larr;
             | world_{{ boardId + 1 }}
 
@@ -129,7 +129,7 @@ article.board
 
       .flex-1.flex.justify-center.lg_-ml-28
         template(v-if="boardId - 1 > 0")
-          router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-12.pl-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { board: boardId - 1 }}")
+          router-link.max-w-full.h-8.pb-px.rounded-full.border.pr-12.pl-7.flex.items-center.relative.mouse_hover_bg-accent2.mouse_hover_text-accent1(:to="{name: 'board', params: { ...$route.params, board: boardId - 1 }}")
             .absolute.top-0.right-2.h-full.flex.items-center &rarr;
             | world_{{ boardId - 1 }}
           
@@ -341,7 +341,7 @@ export default {
     }
   },
   metaInfo () {
-    const title = `${this.$route.params.networkName.toUpperCase()}_world_${this.boardId}`
+    const title = `${this.$route.params.networkName?.toUpperCase()}_world_${this.boardId}`
     const descrip = null
     const img = `https://straylight.folia.app/.netlify/functions/boardimg/${this.$store.getters.chainId(this.$route.params)}/${this.boardId}.png`
     
