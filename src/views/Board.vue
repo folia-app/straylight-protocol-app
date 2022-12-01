@@ -8,7 +8,7 @@ article.board
       h1.text-md.sm_text-base.flex.items-center.leading-none
         span.group
           | #[router-link.opacity-40.uppercase.mouse_hover_opacity-100(:to="{name: 'network-index', params: { networkName: $route.params.networkName }}") {{$route.params.networkName}}_]#[span.group-hover_opacity-40 world_{{ boardId }}]
-        | #[contract-listener.ml-4(type="dot", @refreshClick="refreshBoard")]
+        | #[contract-listener.ml-4(type="dot", :boardId="boardId.toString()", @refreshClick="refreshBoard")]
 
     .flex-1.relative.px-6.pb-24.md_px-0.lg_pt-20.lg_pb-32.flex.flex-col
       .sm_flex-1.flex.w-full

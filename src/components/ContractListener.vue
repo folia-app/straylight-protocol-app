@@ -23,7 +23,8 @@ div
   import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 
   const props = defineProps({
-    type: { type: String, default: 'text' }
+    type: { type: String, default: 'text' },
+    boardId: { type: String, default: undefined }
   })
   
   const emit = defineEmits(['update'])
@@ -54,14 +55,25 @@ div
     updateMsgTmOut = setTimeout(() => { updateMsg.value = null }, 10000)
   }
 
+  function onEvent ({ type, msg, data }) {
+    // return if filtering for particular board
+    if (props.boardId && props.boardId !== data.boardId) return
+
+    console.log(msg, data)
+    flashUpdate(msg)
+    updateCount.value = updateCount.value + 1
+    emit('update', { type, data })
+  }
+
   async function listenForMints () {
     try {
       contract.on('TurmiteMint', (tokenId, rule, boardId) => {
         const data = {tokenId: tokenId.toString(), rule, boardId: boardId.toString() }
-        console.log('new mint!', data)
-        flashUpdate('new turmite!')
-        updateCount.value = updateCount.value + 1
-        emit('update', { type: 'mint', data })
+        // console.log('new mint!', data)
+        // flashUpdate('new turmite!')
+        // updateCount.value = updateCount.value + 1
+        // emit('update', { type: 'mint', data })
+        onEvent({ type: 'mint', msg: 'new turmite!', data })
       })
 
       console.log('listening for mints...')
@@ -75,10 +87,11 @@ div
     try {
       contract.on('TurmiteMove', (tokenId, boardnumber, moves) => {
         const data = {tokenId: tokenId.toString(), boardId: boardnumber.toString(), moves: moves.toString() }
-        console.log('new move!', data)
-        flashUpdate('turmite moved!')
-        updateCount.value = updateCount.value + 1
-        emit('update', { type: 'move', data })
+        // console.log('new move!', data)
+        // flashUpdate('turmite moved!')
+        // updateCount.value = updateCount.value + 1
+        // emit('update', { type: 'move', data })
+        onEvent({ type: 'move', msg: 'turmite moved!', data })
       })
 
       console.log('listening for moves...')
