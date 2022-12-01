@@ -9,7 +9,7 @@
 
   //- (activity)
   template(v-else)
-    activity-list.mb-6(:activity="activity", :includeWorld="true")
+    activity-list.mb-6(:activity="activity", :fromHidden="true",)
 </template>
 
 <script setup>
