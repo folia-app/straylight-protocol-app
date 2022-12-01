@@ -12,7 +12,9 @@ article.profile
         h1.text-6xl.leading-none.lg_order-1.text-accent3
           addr(:address="address")
         
-        .w-full.mt-2.opacity-40.text-xs.lg_order-2 {{ address }}
+        .w-full.mt-2.text-xs.lg_order-2
+          a.opacity-40.mouse_hover_opacity-100.mouse_hover_text-accent4(:href="$store.getters.etherscanLink({ address })", target="_blank", rel="noopener noreferrer")
+            | {{ address }}
 
         nav.text-xs.-ml-3.lg_ml-8.pb-px.-mb-2.lg_order-1
           //- OS link

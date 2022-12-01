@@ -105,12 +105,12 @@ export default createStore({
       const chainId = getters.chainId({ networkName })
       return NFTContractDeploy.networks[chainId]?.address
     },
-    etherscanLink: (state, getters) => ({ hash, networkName }) => {
+    etherscanLink: (state, getters) => ({ hash, networkName, address }) => {
       const network = getters.network({ networkName })
       const contractAddr = getters.contractAddr({ networkName })
       let path = network?.explorer.domain
       path += hash ? `/tx/${hash}`
-        : `/address/${contractAddr}`
+        : `/address/${address ?? contractAddr}`
       return path
     },
     marketplaceLink: (state, getters) => ({ token, account, networkName }) => {
