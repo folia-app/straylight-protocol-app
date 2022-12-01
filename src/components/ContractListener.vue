@@ -69,10 +69,6 @@ div
     try {
       contract.on('TurmiteMint', (tokenId, rule, boardId) => {
         const data = {tokenId: tokenId.toString(), rule, boardId: boardId.toString() }
-        // console.log('new mint!', data)
-        // flashUpdate('new turmite!')
-        // updateCount.value = updateCount.value + 1
-        // emit('update', { type: 'mint', data })
         onEvent({ type: 'mint', msg: 'new turmite!', data })
       })
 
@@ -87,10 +83,6 @@ div
     try {
       contract.on('TurmiteMove', (tokenId, boardnumber, moves) => {
         const data = {tokenId: tokenId.toString(), boardId: boardnumber.toString(), moves: moves.toString() }
-        // console.log('new move!', data)
-        // flashUpdate('turmite moved!')
-        // updateCount.value = updateCount.value + 1
-        // emit('update', { type: 'move', data })
         onEvent({ type: 'move', msg: 'turmite moved!', data })
       })
 

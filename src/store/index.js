@@ -518,15 +518,20 @@ export default createStore({
           // console.log({ mintEvents: events })
 
           // format
-          events = events.reverse().map(event => ({
-            type: 'mint',
-            blockNumber: event.blockNumber,
-            boardId: event.args[2].toString(),
-            tokenId: event.args[0].toString(),
-            rule: event.args[1].toString().toLowerCase().substr(2),
-            getBlock: event.getBlock,
-            getReceipt: event.getTransactionReceipt,
-          }))
+          events = events.reverse().map(event => {
+            const blockNumber = event.blockNumber
+            const tokenId = event.args[0].toString()
+            return {
+              id: `${blockNumber}-${tokenId}`,
+              type: 'mint',
+              blockNumber: event.blockNumber,
+              boardId: event.args[2].toString(),
+              tokenId,
+              rule: event.args[1].toString().toLowerCase().substr(2),
+              getBlock: event.getBlock,
+              getReceipt: event.getTransactionReceipt,
+            }
+          })
           // console.log({ mints: events })
 
           // SAVE
@@ -588,15 +593,22 @@ export default createStore({
           // console.log({ moveEvents: events })
 
           // format
-          moves = events.reverse().map(event => ({
-            type: 'move',
-            blockNumber: event.blockNumber,
-            boardId: event.args[1].toString(),
-            tokenId: event.args[0].toString(),
-            moves: event.args[2].toString(),
-            getReceipt: event.getTransactionReceipt,
-            getBlock: event.getBlock,
-          }))
+          moves = events.reverse().map(event => {
+            const blockNumber = event.blockNumber
+            const tokenId = event.args[0].toString()
+            const moves = event.args[2].toString()
+            
+            return {
+              id: `${blockNumber}-${tokenId}-${moves}`, // for component :key-ing
+              type: 'move',
+              blockNumber,
+              boardId: event.args[1].toString(),
+              tokenId,
+              moves: event.args[2].toString(),
+              getReceipt: event.getTransactionReceipt,
+              getBlock: event.getBlock,
+            }
+          })
           // console.log({ moves })
           
           // commit('SAVE_MOVES', moves)
@@ -757,15 +769,17 @@ export default createStore({
 
           // format
           events = events.reverse().map(event => {
+            const blockNumber = event.blockNumber
             const tokenId = event.args[0].toString()
-            const boardId = (Math.floor(tokenId / 4) + 1).toString()
+            const rule = event.args[1].toString().toLowerCase().substr(2)
             
             return {
+              id: `${blockNumber}-${tokenId}-${rule}`,
               type: 'reprogram',
               blockNumber: event.blockNumber,
               tokenId,
-              boardId,
-              rule: event.args[1].toString().toLowerCase().substr(2),
+              boardId: (Math.floor(tokenId / 4) + 1).toString(),
+              rule,
               getBlock: event.getBlock,
               getReceipt: event.getTransactionReceipt,
             }

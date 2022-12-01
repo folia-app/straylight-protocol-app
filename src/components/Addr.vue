@@ -36,6 +36,9 @@ export default {
   },
   methods: {
     resolveAddress () {
+      // save a lookup if "You"
+      if (this.isYou && this.youOn) return
+
       if (this.address) {
         if (this.address.endsWith('.eth')) {
           // get address of ens

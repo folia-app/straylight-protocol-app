@@ -109,7 +109,7 @@ article.board
     ul.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed", @ownerResolved="val => onOwnerFound(val, i)", @simulateRule="rule => onSimulateRule(tokenId, rule)", :simulatedRule="simulatedRules[tokenId]")
+        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed", @ownerResolved="val => onOwnerFound(val, i)", @simulateRule="rule => onSimulateRule(tokenId, rule)", :simulatedRule="simulatedRules[tokenId]", @removeSimulatedRule="onRemoveSimulatedRule")
   
   //- activity
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
@@ -315,6 +315,14 @@ export default {
       if (this.myp5) {
         this.myp5.myMethods.reprogramm({ id: tokenId, rule })
         this.simulatedRules[tokenId] = rule
+        this.simulatedRules = this.simulatedRules // reacts
+      }
+    },
+
+    onRemoveSimulatedRule ({ tokenId, rule }) {
+      if (this.myp5) {
+        this.myp5.myMethods.reprogramm({ id: tokenId, rule })
+        delete this.simulatedRules[tokenId]
         this.simulatedRules = this.simulatedRules // reacts
       }
     },

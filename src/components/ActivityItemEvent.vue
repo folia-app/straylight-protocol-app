@@ -6,7 +6,7 @@ observer.activity-item-event.flex.justify-between.items-end.w-full.tracking-wide
     .w-3.border-b.opacity-30.mb-1.mr-2
     .pr-2
       template(v-if="localTime") {{ localTime }}
-      span.animate-pulse(v-else) block {{ props.event.blockNumber }}
+      span.animate-pulseff(v-else) #[span.opacity-50 block] {{ props.event.blockNumber }}
   
     .flex-1.border-b.opacity-30.mb-1
   
@@ -61,11 +61,11 @@ const ruleName = computed(() => {
 })
 
 const getInfo = () => {
-  if (!timestamp.value) {
-    props.event.getBlock()
-      .then(block => timestamp.value = new Date(block.timestamp))
-      .catch(console.error)  
-  }
+  // if (!timestamp.value) {
+  //   props.event.getBlock()
+  //     .then(block => timestamp.value = new Date(block.timestamp))
+  //     .catch(console.error)  
+  // }
 
   if (!from.value) {
     props.event.getReceipt()

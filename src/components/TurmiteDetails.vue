@@ -19,7 +19,7 @@ li.turmite-detail.flex.flex-col.relative
       
       //- (owner, moves)
       template(v-if="owner")
-        .flex.flex-wrap.items-end
+        .flex.flex-wrap.items-end.justify-end
           .flex-1.text-smm
             //- owner
             .h-9.flex.items-center
@@ -39,8 +39,10 @@ li.turmite-detail.flex.flex-col.relative
                   span.font-bold(:class="{'line-through': props.simulatedRule }") {{ ruleset.nickname || '??' }}
                   span.ml-2.opacity-40(style="font-size:0.75em") &rarr;
               template(v-if="props.simulatedRule")
-                .inline-block.font-bold.bg-accent4.rounded-lg.px-2.ml-2.leading-tight.lowercase(title="simulated pattern")
+                .flex.font-bold.bg-accent4.rounded-lg.pl-2.ml-2.mr-4.leading-tight.lowercase.overflow-hidden(title="simulated pattern")
                   | {{ simulatedRuleName ?? props.simulatedRule.substr(0, 6) + '...' }}
+                  button.flex.items-center.pl-3.pr-3(class="mouse_hover_bg-black/10", @click.prevent="removeSimulatedRule")
+                    svg-x.h-2.w-2.mt-1(strokeWidth="1.5")
 
           //- (owner actions)
           template(v-if="isOwner")
@@ -79,8 +81,9 @@ import rules from '../../contracts/rulesSelected.js'
 import ModalReprogramTurmite from '@/components/ModalReprogramTurmite.vue'
 import ModalMoveTurmite from '@/components/ModalMoveTurmite.vue'
 import colors from '@/colors'
+import SvgX from '@/components/SVG-X.vue'
 
-const props = defineProps(['tokenId', 'tokenIndex', 'networkName', 'simulatedRule'])
+const props = defineProps(['tokenId', 'tokenIndex', 'networkName', 'simulatedRule', 'removeSimulatedRule'])
 const emit = defineEmits(['moveFormOpened', 'reprogrammed', 'ownerResolved', 'simulateRule'])
 
 const owner = ref()
@@ -143,6 +146,10 @@ const onTurmiteMoved = () => {
 
 const onSimulateRule = (payload) => {
   emit('simulateRule', payload)
+}
+
+const removeSimulatedRule = () => {
+  emit('removeSimulatedRule', { tokenId: props.tokenId, rule: attributes.value[1].value })
 }
 
 getOwner()

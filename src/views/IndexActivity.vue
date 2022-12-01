@@ -13,6 +13,8 @@
     
     template(v-else)
       activity-list.mt-8.mb-6.pb-24(:activity="activity", :includeWorld="true")
+
+    contract-listener.fixed.bottom-0.right-0.z-30(@update="onContractEvent")
 </template>
 
 <script setup>
@@ -21,6 +23,7 @@
   import store from '@/store'
   import ActivityList from '@/components/ActivityList.vue'
   import { useMeta } from 'vue-meta'
+  import ContractListener from '../components/ContractListener.vue'
 
   const route = useRoute()
 
@@ -63,6 +66,12 @@
     } catch (e) {
       console.error(e)
     }
+  }
+
+  const onContractEvent = ({ type }) => {
+    return type === 'mint' ? getMints({ cached: false })
+      : type === 'move' ? getMoves({ cached: false })
+        : null
   }
 
   getReprograms({ cached: true })
