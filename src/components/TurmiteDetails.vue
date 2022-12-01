@@ -36,8 +36,11 @@ li.turmite-detail.flex.flex-col.relative
               .inline-block.opacity-50(style="min-width:3.5em") pattern
               template(v-if="ruleset")
                 router-link.inline-block.lowercase(:to="{name: 'pattern', params: { pattern: ruleset.rule }, query: { network: $route.params.networkName }}")
-                  span.font-bold {{ ruleset.nickname || '??' }}
+                  span.font-bold(:class="{'line-through': props.simulatedRule }") {{ ruleset.nickname || '??' }}
                   span.ml-2.opacity-40(style="font-size:0.75em") &rarr;
+              template(v-if="props.simulatedRule")
+                .inline-block.font-bold.bg-accent4.rounded-lg.px-2.ml-2.leading-tight.lowercase(title="simulated pattern")
+                  | {{ simulatedRuleName ?? props.simulatedRule.substr(0, 6) + '...' }}
 
           //- (owner actions)
           template(v-if="isOwner")
@@ -61,14 +64,14 @@ li.turmite-detail.flex.flex-col.relative
           turmite-move-form(:tokenId="props.tokenId", :networkName="props.networkName", v-bind="$attrs", @reprogramClick="reprogramModalVisible = true")
   
   //- (reprogramm modal)
-  modal-reprogram-turmite(v-if="reprogramModalVisible", @close="reprogramModalVisible = false", :tokenId="props.tokenId", @reprogrammed="onTurmiteReprogrammed")
+  modal-reprogram-turmite(v-if="reprogramModalVisible", @close="reprogramModalVisible = false", :tokenId="props.tokenId", @reprogrammed="onTurmiteReprogrammed", @simulateRule="onSimulateRule")
 
   //- (move modal)
   modal-move-turmite(v-if="moveModalVisible", @close="moveModalVisible = false", :tokenId="props.tokenId", @moved="onTurmiteMoved")
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import store from '@/store'
 import Addr from '@/components/Addr.vue'
 import TurmiteMoveForm from '@/components/TurmiteMoveForm.vue'
@@ -77,8 +80,8 @@ import ModalReprogramTurmite from '@/components/ModalReprogramTurmite.vue'
 import ModalMoveTurmite from '@/components/ModalMoveTurmite.vue'
 import colors from '@/colors'
 
-const props = defineProps(['tokenId', 'tokenIndex', 'networkName'])
-const emit = defineEmits(['moveFormOpened', 'reprogrammed', 'ownerResolved'])
+const props = defineProps(['tokenId', 'tokenIndex', 'networkName', 'simulatedRule'])
+const emit = defineEmits(['moveFormOpened', 'reprogrammed', 'ownerResolved', 'simulateRule'])
 
 const owner = ref()
 const isOwner = computed(() => store.getters.isConnectedAddr(owner.value))
@@ -124,6 +127,11 @@ const ruleset = computed(() => {
   return attributes.value && (rules.find(row => row.rule === attributes.value[1].value))
 })
 
+const simulatedRuleName = computed(() => {
+  const namedRule = rules.find(row => row.rule === props.simulatedRule)
+  return namedRule?.nickname
+})
+
 const onTurmiteReprogrammed = () => {
   getAttr()
   emit('reprogrammed')
@@ -131,6 +139,10 @@ const onTurmiteReprogrammed = () => {
 
 const onTurmiteMoved = () => {
   emit('moved')
+}
+
+const onSimulateRule = (payload) => {
+  emit('simulateRule', payload)
 }
 
 getOwner()

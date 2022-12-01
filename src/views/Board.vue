@@ -109,7 +109,7 @@ article.board
     ul.w-full.pb-1.grid.grid-cols-2.lg_grid-cols-4.lg_items-end.gap-px
       //- turmites...
       template(v-for="(tokenId, i) in tokenIds")
-        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed", @ownerResolved="val => onOwnerFound(val, i)")
+        turmite-details(:tokenId="tokenId", :tokenIndex="i", @moved="onTurmiteMoved", :networkName="$route.params.networkName",  @reprogrammed="onTurmiteReprogrammed", @ownerResolved="val => onOwnerFound(val, i)", @simulateRule="rule => onSimulateRule(tokenId, rule)", :simulatedRule="simulatedRules[tokenId]")
   
   //- activity
   board-activity(ref="boardActivityComp", :boardId="boardId.toString()", :networkName="$route.params.networkName", :key="activityFetch", :cached="activityFetch === 0")
@@ -183,7 +183,8 @@ export default {
       stepCount: 0,
       stepCountInputVisible: false,
       stepCountInputValue: 0,
-      isColorMode: false
+      isColorMode: false,
+      simulatedRules: {}
     }
   },
   computed: {
@@ -291,6 +292,7 @@ export default {
       this.myp5.myMethods.restart()
       this.stepCount = this.myp5.myMethods.getStepCount()
       this.playing = false
+      this.simulatedRules = {}
     },
 
     // preview    
@@ -307,6 +309,14 @@ export default {
       this.myp5.myMethods.simulateSteps({ turmiteId: this.simulateSelection.value, steps: this.stepCountInputValue })
       this.stepCount = this.myp5.myMethods.getStepCount()
       this.stepCountInputVisible = false
+    },
+
+    onSimulateRule (tokenId, rule) {
+      if (this.myp5) {
+        this.myp5.myMethods.reprogramm({ id: tokenId, rule })
+        this.simulatedRules[tokenId] = rule
+        this.simulatedRules = this.simulatedRules // reacts
+      }
     },
 
     // color mode

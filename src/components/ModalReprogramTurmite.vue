@@ -15,9 +15,16 @@ modal(@close="close")
       label.block.mr-4.text-smm.mt-2px.sr-only pattern:
       <SelectorRules v-model="selection" class="-mr-10" @activeOptionChanged="val => { activeOption = val }" />
     
-    .mt-16.w-full.grid.grid-cols-2.gap-3
+    .mt-8.text-xxs.flex.justify-center
+      button.border-b.border-dashed.text-accent4.pb-1.mouse_hover_border-solid(@click.prevent="simulateSelection")
+        | preview in the simulator &rarr;
+      //- button.pl-10.pr-6.border.border-accent4.text-accent4.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(type="submit", :disabled="!selection") SIMULATE &rarr;
+
+    .mt-12.w-full.grid.grid-cols-2.gap-3
       button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(@click.prevent="close") {{ hasReprogrammed ? 'CLOSE' : 'CANCEL' }}
       button.bg-accent3.text-accent1.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2(type="submit", :disabled="!selection") REPROGRAM
+      //- div
+      //- button.mt-2.border.border-accent3.text-accent3.rounded-full.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.focus-visible_ring-accent2 PREVIEW
   
   template(v-if="status")
     div.mt-6.text-center.text-xs.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }", v-html="status.msg")
@@ -32,7 +39,7 @@ modal(@close="close")
   import store from '@/store'
 
   const props = defineProps(['tokenId'])
-  const emit = defineEmits(['close', 'reprogrammed'])
+  const emit = defineEmits(['close', 'reprogrammed', 'simulateRule'])
   const route = useRoute()
   
   const selection = ref()
@@ -44,6 +51,11 @@ modal(@close="close")
   const previewOption = computed(() => {
     return activeOption.value || selection.value
   })
+
+  const simulateSelection = () => {
+    emit('simulateRule', previewOption.value.rule)
+    emit('close')
+  }
 
   const close = () => emit('close')
   

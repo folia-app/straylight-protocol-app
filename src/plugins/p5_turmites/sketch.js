@@ -333,12 +333,22 @@ var sketch = function ({
         return stepCount
       },
 
-      reprogramm: function (value) {
-        console.log("reprogrammed!");
+      reprogramm: function ({ id, rule }) {
+        const prevChoosen = choosenTurmites
+        
+        if (id) {
+          myMethods.changeTurmiteSelection(id)
+        }
+        
         var tumitesToReprogramm = turmitesToMove[choosenTurmites];
         for (var u = 0; u < tumitesToReprogramm.length; u++) {
-          initalizedTurmites[tumitesToReprogramm[u]].rule = String(value);
+          initalizedTurmites[tumitesToReprogramm[u]].rule = String(rule);
         }
+
+        console.log(`reprogrammed ${choosenTurmites} to ${rule}`);
+
+        // restore if was changed
+        choosenTurmites = prevChoosen       
       },
 
       restart: function () {
