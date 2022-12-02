@@ -85,12 +85,13 @@ modal(@close="close")
       status.value = { type: 'success', msg: 'your turmite was reprogrammed!' }
     } catch (e) {
       console.error(e)
+      
       if (e.message === 'WALLET IS WRONG NETWORK' || e.reason === 'underlying network changed') {
         status.value = undefined
         isWrongNetwork.value = true
-        // status.value = { type: 'error', msg: `switch your wallet to <b>${route.params.networkName?.toUpperCase()}</b> network first`}
         return
       }
+      
       // show error to user
       status.value = { type: 'error', msg: 'ERROR - ' + (e.reason || e.message || e) }
     }

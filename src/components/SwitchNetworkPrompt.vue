@@ -1,5 +1,5 @@
 <template lang="pug">
-.switch-network-prompt.text-xs
+.switch-network-prompt.text-xs.leading-normal
   template(v-if="!error")
     p
       | oops!<br>your #[b.uppercase WALLET] is not connected to #[b.uppercase {{$route.params.networkName}}]&nbsp;network!
