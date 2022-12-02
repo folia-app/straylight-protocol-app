@@ -129,7 +129,7 @@ export default createStore({
       const meta = []
       // defaults
       const siteTitle = 's̷̰̃t̴̫̊r̶͔̽ả̷̜y̴̼͂l̸̙͛į̸͆g̴̘̎h̷̜̀ṭ̸͂ ̸̰̊p̵̞̅ȑ̴̙ơ̸͍t̶̗̑o̶͂͜ć̵͍ȏ̸͕l̷̗͗'
-      const siteDescrip = 'by paul seidler (terra0) - an on-chain, NFT multiplayer game. presented by folia 𐡸"'
+      const siteDescrip = 'by paul seidler (terra0) - an on-chain, NFT multiplayer game. presented by folia 𐡸'
       const siteImg = 'https://images.prismic.io/folia-dev/ae2e97e5-86ec-4bdc-9e35-2f246ede5758_vlcsnap-2022-11-21-16h55m05s415.png?auto=compress,format'
       const siteVideo = 'https://prismic-io.s3.amazonaws.com/folia-dev/580b753f-04cd-4fb8-b3fa-b62ed7f4f5ad_straylight-1a-1080p30.mp4'
       
