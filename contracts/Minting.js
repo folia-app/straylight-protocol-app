@@ -3,7 +3,7 @@ export default {
   "networks": {
     // ethereum
     1: {
-      "address": "0x481535185105C37ACa4654C62eDFCfCe0f28285B",
+      "address": "0xe0b14d9412f762b6a49e7d009b62daed70212788",
     },
     // optimism
     10: {
