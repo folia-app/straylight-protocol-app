@@ -193,7 +193,7 @@ export default {
       networkMaxTurmites: undefined,
       switchError: false,
       selection: undefined,
-      premove: 1000,
+      premove: 50,
       tx: null,
       status: null,
       myMint: null,
