@@ -124,16 +124,21 @@ article.pb-64
         //- (mint step)
         li(:class="{'opacity-30 pointer-events-none': !isConnected || selection === undefined || isWrongNetwork}")
           //- mint-btn
-          button.block.w-full.bg-accent1(type="submit", :disabled="!isConnected || isWrongNetwork")
+          button.block.w-full.bg-accent1(type="submit", :disabled="isSoldOut || !isConnected || isWrongNetwork", :class="{'opacity-40': isSoldOut}")
             .border.rounded-lg.relative(:class="{'mt-3px bg-accent2 text-accent1 border-none': isConnected, '-mt-px': !isConnected}")
               //-
-              .flex.h-40.w-full.items-center.justify-center.uppercase.tracking-wide.relative.font-bold
-                | Mint
+              .flex.h-40.w-full.items-center.justify-center.tracking-wide.relative.font-bold
+                | {{ isSoldOut ? `SOLD OUT on ${networkName.toUpperCase()}` : 'MINT' }}
               //- (icon)
               .absolute.w-18.md_w-40.flex-shrink-0.h-full.top-0.left-0.flex.items-center.justify-center(v-if="selection") ꩜
               //- price
               .absolute.h-full.pr-4.sm_pr-20.top-0.right-0.flex.items-center.justify-center.text-xs(v-if="selection")
                 | {{ networkMintPrice || '...' }} ETH
+          
+          //- 
+          template(v-if="isSoldOut && networkName === 'ethereum'")
+            .mt-2.h-20.animate-pulse.flex.items-center.justify-center.border.rounded-lg.text-accent4
+              div try minting on #[span.font-bold OPTIMISM] network &uarr;
 
           //- (status)
           template(v-if="status")
@@ -210,6 +215,9 @@ export default {
       const networks = this.$store.state.networks
       const targetNetworkId = Object.keys(networks).find(key => networks[key].name === this.networkName)
       return this.networkName && this.$store.state.givenNetworkId !== Number(targetNetworkId)
+    },
+    isSoldOut () {
+      return this.networkMintCount >= this.networkMaxTurmites
     }
   },
 
