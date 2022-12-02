@@ -106,7 +106,9 @@ const router = createRouter({
       return savedPosition
     } else {
       // don't scroll to top on user tab changes...
-      if (to.params.address && to.params.address === from.params.address) {
+      const isSameAddress = to.params.address && to.params.address === from.params.address
+      const isSameNetwork = to.query.network && to.query.network === from.query.network
+      if (isSameAddress || isSameNetwork) {
         return
       }
       // scroll to top
