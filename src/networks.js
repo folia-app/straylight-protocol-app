@@ -6,7 +6,8 @@ export default {
     layer: 'ethereum',
     infura: `https://mainnet.infura.io/v3/${infuraProjectID}`,
     explorer: { name: 'Etherscan', domain: 'https://etherscan.io' },
-    marketplace: { name: 'OpenSea', domain: 'https://opensea.io', assetPath: '/assets/ethereum'}
+    marketplace: { name: 'OpenSea', domain: 'https://opensea.io', assetPath: '/assets/ethereum'},
+    movesMax: 4000
   },
   5: {
     name: 'goerli',
@@ -29,7 +30,8 @@ export default {
         symbol: 'ETH',
         decimals: 18,
       },
-    }
+    },
+    movesMax: 4000
   },
   10: {
     name: 'optimism',
@@ -54,7 +56,8 @@ export default {
         decimals: 18,
       },
       blockExplorerUrls: ['https://optimistic.etherscan.io']
-    }
+    },
+    movesMax: 6000
   },
   420: {
     name: 'optimism-goerli',
@@ -78,6 +81,7 @@ export default {
         decimals: 18,
       }
       // blockExplorerUrls: []
-    }
+    },
+    movesMax: 6000
   }
 }

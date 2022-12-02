@@ -7,7 +7,7 @@ modal(@close="close")
   </DialogDescription>
 
   form.mt-12(@submit.prevent="move")
-    input.w-full.border-b.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.text-center.focus-visible_ring-0(v-model="moveQty", type="number", min="1", step="1", :max="$store.state.movesMax", v-autofocus)
+    input.w-full.border-b.h-9.pb-px.flex.justify-center.items-center.leading-none.font-bold.text-md.text-center.focus-visible_ring-0(v-model="moveQty", type="number", min="1", step="1", :max="$store.state.networks[$store.getters.chainId(route.params)].movesMax", v-autofocus)
 
     div.text-sm.mt-4.opacity-40.mx-auto HINT: use the simulator to preview steps
 
