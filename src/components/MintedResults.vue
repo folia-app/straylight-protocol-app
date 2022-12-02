@@ -60,7 +60,7 @@ export default {
           this.boardCount = val
         })
         .catch(e => {
-          this.status = "error<br>couldn't fetch worlds<br>☹️"
+          this.status = "error<br>couldn't fetch worlds ☹️<br>try refreshing"
         })
     },
     onContractEvent ({ type, data }) {
