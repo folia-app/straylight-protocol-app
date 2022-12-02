@@ -108,11 +108,11 @@ metainfo
                 | optimism contract #[span.ml-1(style="font-size:0.75em") ↗]
 
 
-              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.marketplaceLink({ networkName: 'ethereum' })", target="_blank", rel="noopener noreferrer")
+              a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.marketplaceLink({ networkName: 'ethereum', path: '/collection/straylight-protocol' })", target="_blank", rel="noopener noreferrer")
                 | opensea #[span.ml-1(style="font-size:0.75em") ↗]
 
               a.pb-px.text-md.border.rounded-full.flex.items-center.justify-center.mouse_hover_bg-accent1.mouse_hover_text-accent2(:href="$store.getters.marketplaceLink({ networkName: 'optimism' })", target="_blank", rel="noopener noreferrer")
-                | quixotic #[span.ml-1(style="font-size:0.75em") ↗]
+                | quix #[span.ml-1(style="font-size:0.75em") ↗]
 
 
             //- close btn

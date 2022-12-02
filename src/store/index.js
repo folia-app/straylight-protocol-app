@@ -113,17 +113,17 @@ export default createStore({
         : `/address/${address ?? contractAddr}`
       return path
     },
-    marketplaceLink: (state, getters) => ({ token, account, networkName }) => {
+    marketplaceLink: (state, getters) => ({ token, account, networkName, path }) => {
       const network = getters.network({ networkName })
       const contractAddr = getters.contractAddr({ networkName })
 
-      let path = network?.marketplace.domain
+      let url = network?.marketplace.domain
       
-      path += token !== undefined ? `${ network.marketplace.assetPath }/${contractAddr}/${token}`
+      url += token !== undefined ? `${ network.marketplace.assetPath }/${contractAddr}/${token}`
         : account ? `/${account}`
-          : `/collection/${contractAddr}` // default to collection? (404 on OpenSea...)
+          : path || `/collection/${contractAddr}`
       
-      return path
+      return url
     },
     meta: state => ({ title, descrip, img, video }) => {
       const meta = []
