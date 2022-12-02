@@ -10,7 +10,7 @@ import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min.js'
 import networks from '../networks'
 
-let /*provider,*/ signer, initializing, walletProvider
+let /*provider,*/ signer, initializing, walletProvider, web3ModalProvider
 
 const infuraProjectID = import.meta.env.VITE_APP_INFURA_PROJECT_ID
 
@@ -291,7 +291,7 @@ export default createStore({
         }
 
         // connect and update provider, signer
-        const web3ModalProvider = await web3Modal.connect()
+        web3ModalProvider = await web3Modal.connect()
         walletProvider = new ethers.providers.Web3Provider(web3ModalProvider)
         signer = walletProvider.getSigner()
 
@@ -333,11 +333,11 @@ export default createStore({
     },
     
     /* wallet events */
-    listenToWalletProvider ({ commit, dispatch }, walletProvider) {
-      if (!walletProvider?.on) return
+    listenToWalletProvider ({ commit, dispatch }) {
+      if (!web3ModalProvider?.on) return
 
       // account changed (or disconnected)
-      walletProvider.on('accountsChanged', accounts => {
+      web3ModalProvider.on('accountsChanged', accounts => {
         console.log('accountsChanged', accounts)
         if (!accounts.length) {
           return dispatch('disconnect')
@@ -346,14 +346,33 @@ export default createStore({
       })
 
       // changed network
-      walletProvider.on('chainChanged', chainId => {
+      web3ModalProvider.on('chainChanged', async chainId => {
         console.log('network changed', chainId)
         // reload page so data is correct...
-        window.location.reload()
+        // window.location.reload()
+
+        // try updating provider + signer
+        try {
+          const availableProvider = web3ModalProvider || window.ethereum
+          if (availableProvider) {
+            walletProvider = new ethers.providers.Web3Provider(availableProvider)
+            
+            const { chainId } = await walletProvider.getNetwork()
+            commit('SET_GIVEN_NETWORK_ID', chainId)
+    
+            // update signer if still signed in
+            if (signer) {
+              signer = walletProvider.getSigner()
+            }
+          } 
+        } catch (e) {
+          alert('An error occurred while switching networks. Refresh required.')
+          window.location.reload()
+        }
       })
 
       // random disconnection? (doesn't fire on account disconnect)
-      walletProvider.on('disconnect', error => {
+      web3ModalProvider.on('disconnect', error => {
         console.error('disconnected?', error)
         dispatch('disconnect')
       })
@@ -380,7 +399,14 @@ export default createStore({
         })  
 
         // reload app
-        window.location.reload()
+        // if (reload) {
+        //   window.location.reload()
+        //   return
+        // }
+
+        // provider + signer updates in networkChanged listener...
+        
+        return true
       } catch (e) {
         console.error(e)
         

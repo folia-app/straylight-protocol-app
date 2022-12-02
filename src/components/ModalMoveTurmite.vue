@@ -17,6 +17,9 @@ modal(@close="close")
 
   template(v-if="status")
     div.mt-6.text-center.text-xs.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }", v-html="status.msg")
+  
+  template(v-if="isWrongNetwork")
+    switch-network-prompt.mt-8(@switched="isWrongNetwork = false")
 </template>
 
 <script setup>
@@ -25,6 +28,7 @@ modal(@close="close")
   import { ref } from 'vue'
   import store from '@/store'
   import { useRoute } from 'vue-router'
+  import SwitchNetworkPrompt from '@/components/SwitchNetworkPrompt.vue'
 
   const route = useRoute()
 
@@ -33,6 +37,7 @@ modal(@close="close")
 
   const moveQty = ref(500)
   const status = ref()
+  const isWrongNetwork = ref(false)
 
   const hasMoved = ref(false)
 
@@ -57,10 +62,14 @@ modal(@close="close")
       status.value = { type: 'success', msg: 'your turmite moved!' }
     } catch (e) {
       console.error(e)
-      if (e.message === 'WALLET IS WRONG NETWORK') {
-        status.value = { type: 'error', msg: `switch your wallet to <b>${route.params.networkName?.toUpperCase()}</b> network first`}
+      
+      // ! wrong network?
+      if (e.message === 'WALLET IS WRONG NETWORK' || e.reason === 'underlying network changed') {
+        status.value = undefined
+        isWrongNetwork.value = true
         return
       }
+      
       // show error to user
       status.value = { type: 'error', msg: 'ERROR - ' + (e.reason || e.message || e) }
     }
