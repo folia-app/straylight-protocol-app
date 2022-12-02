@@ -442,11 +442,27 @@ export default createStore({
       }
     },
 
-    async getProvider ({ state, commit }, { network }) {
+    async getProvider ({ state, commit, dispatch }, { network }) {
       let provider = walletProvider
       let targetChainId = network?.id
         ?? Object.keys(networks).find(key => networks[key]['name'] === network?.name)
           ?? appDefaultNetworkId
+      
+      // prompt network switch if connected to MetaMask? (save infura calls)
+      if (walletProvider && !walletProvider.wc && window.ethereum && document.hasFocus()) {
+        provider = walletProvider
+
+        const { chainId } = await provider.getNetwork()
+        commit('SET_GIVEN_NETWORK_ID', chainId)
+
+        if (targetChainId && state.givenNetworkId !== Number(targetChainId)) {
+          try {
+            await dispatch('switchNetwork', { chainId: targetChainId })
+          } catch (e) {
+            console.error(e)
+          }
+        }
+      }
 
       // get provider from browser/wallet provider if needed
       if (!provider && window.ethereum) {
