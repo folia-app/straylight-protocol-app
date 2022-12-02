@@ -28,6 +28,9 @@ modal(@close="close")
   
   template(v-if="status")
     div.mt-6.text-center.text-xs.pt-2.text-accent3(:class="{'animate-pulse': status.msg.includes('...') }", v-html="status.msg")
+  
+  template(v-if="isWrongNetwork")
+    switch-network-prompt.mt-8(@switched="isWrongNetwork = false")
 </template>
 
 <script setup>
@@ -37,6 +40,7 @@ modal(@close="close")
   import SelectorRules from '@/components/SelectorRules.vue'
   import { useRoute } from 'vue-router'
   import store from '@/store'
+  import SwitchNetworkPrompt from '@/components/SwitchNetworkPrompt.vue'
 
   const props = defineProps(['tokenId'])
   const emit = defineEmits(['close', 'reprogrammed', 'simulateRule'])
@@ -45,6 +49,7 @@ modal(@close="close")
   const selection = ref()
   const activeOption = ref()
   const status = ref()
+  const isWrongNetwork = ref(false)
 
   const hasReprogrammed = ref(false)
 
@@ -80,8 +85,10 @@ modal(@close="close")
       status.value = { type: 'success', msg: 'your turmite was reprogrammed!' }
     } catch (e) {
       console.error(e)
-      if (e.message === 'WALLET IS WRONG NETWORK') {
-        status.value = { type: 'error', msg: `switch your wallet to <b>${route.params.networkName?.toUpperCase()}</b> network first`}
+      if (e.message === 'WALLET IS WRONG NETWORK' || e.reason === 'underlying network changed') {
+        status.value = undefined
+        isWrongNetwork.value = true
+        // status.value = { type: 'error', msg: `switch your wallet to <b>${route.params.networkName?.toUpperCase()}</b> network first`}
         return
       }
       // show error to user

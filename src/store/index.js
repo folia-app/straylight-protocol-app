@@ -349,7 +349,9 @@ export default createStore({
       walletProvider.on('chainChanged', chainId => {
         console.log('network changed', chainId)
         // reload page so data is correct...
-        window.location.reload()
+        // window.location.reload()
+        // walletProvider = new ethers.providers.Web3Provider(window.ethereum)
+        // signer = walletProvider.getSigner()
       })
 
       // random disconnection? (doesn't fire on account disconnect)
@@ -359,7 +361,7 @@ export default createStore({
       })
     },
 
-    async switchNetwork ({ dispatch }, { chainId, name }) { 
+    async switchNetwork ({ dispatch }, { chainId, name, reload = true }) { 
       // dont attempt to switch if browser doesn't have MetaMask
       // or! wallet is connect via WalletConnect (since at least Rainbow doesn't let you switch there)
       if (!window.ethereum || walletProvider?.provider?.wc) {
@@ -380,7 +382,16 @@ export default createStore({
         })  
 
         // reload app
-        window.location.reload()
+        if (reload) {
+          window.location.reload()
+          return
+        }
+
+        // update provider, signer
+        walletProvider = new ethers.providers.Web3Provider(window.ethereum)
+        signer = walletProvider.getSigner()
+        
+        return true
       } catch (e) {
         console.error(e)
         

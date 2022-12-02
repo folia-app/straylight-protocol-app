@@ -36,6 +36,7 @@ export default {
     async connectWallet () {
       try {
         await this.$store.dispatch('connect', this.networkName)
+        this.$emit('connected')
       } catch (e) {
         console.error(e)
         if (e !== 'Modal closed by user') {
