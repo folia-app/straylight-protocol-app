@@ -530,11 +530,11 @@ export default createStore({
       }
     },
 
-    async getMints ({ state, commit, dispatch }, { cached = false, filter, network }) {
+    async getMints ({ state, commit, dispatch }, { cached = false, filter, network, raw }) {
       try {
         let events = state.mintEvents[network.name] ?? []
 
-        if (!events.length || !cached) {
+        if (!events.length || !cached || raw) {
           // else, get fresh events
           const fromBlock = await dispatch('getDeployBlock', { network })
           const nftContract = await dispatch('getNFTContract', { network })
@@ -542,6 +542,10 @@ export default createStore({
           // get...
           events = await nftContract.queryFilter('TurmiteMint', fromBlock)
           // console.log({ mintEvents: events })
+          
+          if (raw) {
+            return events
+          }
 
           // format
           events = events.reverse().map(event => {
@@ -580,6 +584,25 @@ export default createStore({
       }
     },
 
+    async getAllBoardEventsRaw ({ dispatch }, { boardId, network }) {
+      try {
+        const params = { raw: true, filter: ['boardId', boardId], network}
+        let allEvents = await Promise.all([
+          dispatch('getMints', params),
+          dispatch('getMoves', params),
+          // dispatch('getReprograms', params)
+        ])
+        allEvents = allEvents.reduce((acc, curr) => acc.concat(curr), [])
+        // filter by boardId
+        allEvents = allEvents.filter(event => Math.floor(event.args.tokenId.toNumber() / 4) + 1 === Number(boardId))
+        allEvents.sort((a, b) => a.blockNumber - b.blockNumber) // asc
+        // console.log(allEvents)
+        return allEvents
+      } catch (e) {
+        console.error(e)
+      }
+    },
+
     // async findMint ({ dispatch }, { contract, tokenId }) {
     //   try {
     //     const events = await dispatch('getMintedEvents')
@@ -605,7 +628,7 @@ export default createStore({
       }
     },
 
-    async getMoves ({ state, commit, dispatch }, { cached = false, filter, network }) {
+    async getMoves ({ state, commit, dispatch }, { cached = false, filter, network, raw }) {
       try {
         let moves // = cached && state.moves ? state.moves : null
         
@@ -617,6 +640,8 @@ export default createStore({
           // get events...
           const events = await nftContract.queryFilter('TurmiteMove', fromBlock)
           // console.log({ moveEvents: events })
+
+          if (raw) return events
 
           // format
           moves = events.reverse().map(event => {
@@ -780,11 +805,11 @@ export default createStore({
       }
     },
 
-    async getReprograms ({ state, commit, dispatch }, { cached = false, filter, network }) {
+    async getReprograms ({ state, commit, dispatch }, { cached = false, filter, network, raw }) {
       try {
         let events = state.reprogrammedEvents[network.name] ?? []
         
-        if (!events.length || !cached) {
+        if (!events.length || !cached || raw) {
           // get latest events
           const fromBlock = await dispatch('getDeployBlock', { network })
           const nftContract = await dispatch('getNFTContract', { network })
@@ -792,6 +817,8 @@ export default createStore({
           // get events...
           events = await nftContract.queryFilter('TurmiteReprogramm', fromBlock)
           // console.log({ reprogramEvents: events })
+
+          if (raw) return events
 
           // format
           events = events.reverse().map(event => {

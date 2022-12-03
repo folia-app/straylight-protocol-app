@@ -18,6 +18,7 @@ var sketch = function ({
     let drawcounter = 0;
     let stepCount = 0;
     let _colorTail = colorTail
+    let replayAnim
     
     // can remove "co" i believe:
     let co = 1 // 0.78;
@@ -235,14 +236,7 @@ var sketch = function ({
       p5.noLoop()
     };
 
-    p5.draw = function draw() {
-      // draw loop...
-
-      // prevent extra step since draw() is always called on setup() and loop()
-      if (!p5.isLooping()) {
-        return
-      }
-
+    function stepAndDrawTurmites () {
       // step
       var tumitesToMOVE = turmitesToMove[choosenTurmites];
       for (var u = 0; u < tumitesToMOVE.length; u++) {
@@ -250,12 +244,12 @@ var sketch = function ({
       }
 
       boardNew.reDrawCache();
-      
+
       // draw turmite in new position
       for (var u = 0; u < tumitesToMOVE.length; u++) {
         initalizedTurmites[tumitesToMOVE[u]].drawTurmite();
       }
-      
+
       // color tail has finite length?
       if (typeof _colorTail === 'number') {
         drawcounter = drawcounter + 1;
@@ -266,6 +260,18 @@ var sketch = function ({
       }
 
       stepCount++
+      console.log(stepCount)
+    }
+
+    p5.draw = function draw() {
+      // draw loop...
+
+      // prevent extra step since draw() is always called on setup() and loop()
+      if (!p5.isLooping()) {
+        return
+      }
+
+      stepAndDrawTurmites()
     };
 
     // p5.windowResized = function windowResized() {
@@ -333,22 +339,12 @@ var sketch = function ({
         return stepCount
       },
 
-      reprogramm: function ({ id, rule }) {
-        const prevChoosen = choosenTurmites
-        
-        if (id) {
-          myMethods.changeTurmiteSelection(id)
-        }
-        
+      reprogramm: function (rule) {
         var tumitesToReprogramm = turmitesToMove[choosenTurmites];
         for (var u = 0; u < tumitesToReprogramm.length; u++) {
           initalizedTurmites[tumitesToReprogramm[u]].rule = String(rule);
         }
-
         console.log(`reprogrammed ${choosenTurmites} to ${rule}`);
-
-        // restore if was changed
-        choosenTurmites = prevChoosen       
       },
 
       restart: function () {
@@ -371,6 +367,94 @@ var sketch = function ({
 
       setColorTail: function (range = 0) {
         _colorTail = range
+      },
+
+      // replay from contract events (mints, moves, reprograms)
+      replay (events) {
+        stepCount = 0
+        // empty board
+        boardNew = new board(new Uint8Array(new Array(20736).fill(0)))
+            
+        // respawn turmites
+        const turmitesRespawnedData = [{
+            board: 0,
+            direction: 0,
+            posx: 36,
+            posy: 72,
+            rule: "ff0801ff0201ff0000000001",
+            state: 0,
+          },
+          {
+            board: 0,
+            direction: 0,
+            posx: 72,
+            posy: 36,
+            rule: "ff0800ff0201ff0800000001",
+            state: 0
+          },
+          {
+            board: 0,
+            direction: 0,
+            posx: 72,
+            posy: 108,
+            rule: "ff0201ff0801ff0201000200",
+            state : 0
+          },
+          {
+            board: 0,
+            direction: 0,
+            posx: 108,
+            posy: 72,
+            rule: "ff0201000801ff0000000000",
+            state : 0
+          }
+        ]
+
+        initalizedTurmites = []
+        for (var i = 0; i < turmitesData.length; i++) {
+          let turmiteRespawn = new turmiteobj(turmitesRespawnedData[i], boardNew, colors[i]);
+          initalizedTurmites.push(turmiteRespawn);
+        }
+
+        boardNew.reDrawCanvas();
+
+        // myMethods.pressStop();
+
+        // go!
+        while (events.length) {
+          console.log('length', events.length)
+          const event = events.shift()
+          const tokenId = event.args.tokenId.toNumber()
+          
+          myMethods.changeTurmiteSelection(tokenId)
+
+          if (event.event === 'TurmiteMint') {  
+            myMethods.reprogramm(event.args.rule.toString().substr(2)) // remove 0x
+          } else if (event.event === 'TurmiteMove') {
+            console.log('move', tokenId, event.args.moves.toNumber(), choosenTurmites)
+            
+            // if (!myp5.isLooping) {
+            //   myp5.noLoop()
+            // }
+            
+            let moves = event.args.moves.toNumber()
+
+            if (!myp5.isLooping) {
+              myp5.loop()
+            }
+            // stepAndDrawTurmites()
+            // console.log(stepCount, moves)
+            const max = stepCount + moves
+
+            while (stepCount < max) {
+              console.log('doNothing', stepCount, max)
+              // stepCount++
+              // console.log(stepCount, moves)
+            }
+            console.log('done')
+            myp5.noLoop()
+          }
+        }
       }
     }
   });

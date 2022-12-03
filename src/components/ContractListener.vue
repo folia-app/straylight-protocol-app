@@ -94,6 +94,8 @@ div
   }
 
   async function listen () {
+    if (import.meta.env.VITE_APP_LISTENERS_DISABLED) return
+    
     try {
       if (!contract) {
         await getContract()

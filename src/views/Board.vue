@@ -38,6 +38,12 @@ article.board
                 .w-full.flex.justify-between.items-center.pt-2(:style="{ maxWidth: controlsMaxW }")
                   .flex.items-center
                     //- simulate btn
+                    button.rounded-full.flex.items-center.pr-3.pl-1.-ml-1.justify-center(ref="replayBtn", @click="toggleBoardReplay", :class="{'animate-pulse': replaying}")
+                      .mr-2
+                        play-circle-icon.h-8(v-show="!replaying")
+                        pause-circle-icon.h-8(v-show="replaying")
+                      .h-8.flex.items-center {{ replaying ? 'replaying' : 'replay' }}
+                    //- simulate btn
                     button.rounded-full.flex.items-center.pr-3.pl-1.-ml-1.justify-center(ref="previewBtn", @click="toggleBoardSimulation", :class="{'animate-pulse': playing}")
                       .mr-2
                         play-circle-icon.h-8(v-show="!playing")
@@ -173,6 +179,7 @@ export default {
       boardScale:0,
       boardSvg: '',
       playing: false,
+      replaying: false,
       controlsMaxW: 'auto',
       controlsVisible: false,
       boardKey: 0,
@@ -313,9 +320,13 @@ export default {
 
     onSimulateRule (tokenId, rule) {
       if (this.myp5) {
-        this.myp5.myMethods.reprogramm({ id: tokenId, rule })
+        // temp select single turmite
+        this.myp5.myMethods.changeTurmiteSelection(tokenId)
+        this.myp5.myMethods.reprogramm(rule)
         this.simulatedRules[tokenId] = rule
         this.simulatedRules = this.simulatedRules // reacts
+        // restore board selection
+        this.myp5.myMethods.changeTurmiteSelection(this.simulateSelection)
       }
     },
 
@@ -332,6 +343,18 @@ export default {
       this.isColorMode = !this.isColorMode
       const value = this.isColorMode ? 1000000 : 0
       this.myp5.myMethods.setColorTail(value)
+    },
+
+    async toggleBoardReplay () {
+      if (this.myp5) {
+        // this.myp5.myMethods.togglePlayback()
+        // this.playing = this.myp5.isLooping()
+        console.log("getting events...")
+        const events = await this.$store.dispatch('getAllBoardEventsRaw', { boardId: this.boardId, network: { name: this.$route.params.networkName }})
+        console.log({events})
+        this.myp5.myMethods.replay(events)
+        // this.replaying = true
+      }
     },
 
     refreshBoard () {
