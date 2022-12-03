@@ -39,7 +39,7 @@ export default {
     infura: `https://optimism-mainnet.infura.io/v3/${infuraProjectID}`,
     explorer: {
       name: 'Etherscan',
-      domain: 'https://blockscout.com/optimism/goerli'
+      domain: 'https://optimistic.etherscan.io'
     },
     marketplace: {
       name: 'Quixotic',
