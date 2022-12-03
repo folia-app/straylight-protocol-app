@@ -120,7 +120,8 @@ metainfo
               svg-x.w-5.h-5(strokeWidth="1.15")
 
         //- scroll off area
-        observer#info-scroll-end.pointer-events-none(style="height:133vh", :threshold="0.66", @visible="closeInfoOverlay")
+        #info-scroll-end.pointer-events-none(style="height:calc(100vh - 1px)")
+        observer.pointer-events-none.h-screen(:threshold="0.01", @visible="closeInfoOverlay")
 
         //- background
         button.block.absolute.overlay.bg-black-a60ff.transition.duration-1000(:class="{'opacity-0 pointer-events-none': !infoVisible}", @click.stop="infoVisible = false", aria-label="Close Info")
