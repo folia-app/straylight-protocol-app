@@ -19,12 +19,12 @@ section.minted-results.flex.flex-col.w-full
 
         //- mints...
         //- template(v-for="(mint, i) in mintsFiltered")
-        template(v-for="n in boardCount")
+        template(v-for="id in boardIdsSorted", :key="id")
           //- board index starts at 1 lol
           //- reverse
-          board-thumb(:boardId="(boardCount - n) + 1", :network="{ name: $route.params.networkName }", :imgKey="boardsUpdated[(boardCount - n) + 1] ?? 0")
+          board-thumb(:boardId="id", :network="{ name: $route.params.networkName }", :imgKey="boardsUpdated[id] ?? 0")
             .hidden.mouse_group-hover_block.absolute.overlay.px-2.pt-1.text-xs.leading-tight(style="mix-blend-mode:difference")
-              h6 world_{{boardCount - n + 1}}
+              h6 world_{{id}}
 
     contract-listener.fixed.bottom-0.right-0.z-40(@update="onContractEvent")
 </template>
@@ -39,6 +39,7 @@ let contract
 export default {
   name: 'MintedResults',
   components: { SvgX, BoardThumb, Observer, ContractListener },
+  props: ['boardIdsUpdated', 'sort'],
   data () {
     return {
       status: null,
@@ -50,6 +51,17 @@ export default {
     filters () {
       return this.$route.query.collections?.split(',') || []
     },
+    boardIdsSorted () {
+      let boardIds = new Array(this.boardCount).fill(0).map((v, i) => (this.boardCount - i).toString())
+      if (this.sort === 'updated' && this.boardIdsUpdated?.length) {
+        // add updated boards to beginning, then de-dupe
+        boardIds = [...this.boardIdsUpdated, ...boardIds]
+        boardIds = [...new Set(boardIds)]
+      } else if (this.sort === 'oldest') {
+        boardIds.reverse()
+      }
+      return boardIds
+    }
   },
   methods: {
     getBoardCount () {
@@ -64,6 +76,8 @@ export default {
         })
     },
     onContractEvent ({ type, data }) {
+      this.$emit('contractEvent')
+      
       if (type === 'mint') {
         // see if new board count
         this.getBoardCount()
