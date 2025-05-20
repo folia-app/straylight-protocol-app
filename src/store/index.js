@@ -175,7 +175,7 @@ export default createStore({
       return data
     },
     docsLink: state => (path) => {
-      return `${import.meta.env.VITE_APP_DOCS_ORIGIN}/straylightdocs${path ?? ''}`
+      return `${import.meta.env.VITE_APP_DOCS_ORIGIN}/${path ?? ''}`
     }
   },
   mutations: {
