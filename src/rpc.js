@@ -168,6 +168,13 @@ export async function getAllLogs (address, abi, filterName, chainId = 1, fromBlo
 }
 
 /** Current holders via ERC721Enumerable — plain eth_call work every endpoint serves. */
+/** Not every ERC721 implements Enumerable; calling tokenByIndex on one that
+ *  does not throws, which is how this fallback managed to break a listing it
+ *  was written to rescue. shaDoAW is such a contract. */
+export const canEnumerate = (abi) =>
+  abi.some((x) => x.type === 'function' && x.name === 'tokenByIndex') &&
+  abi.some((x) => x.type === 'function' && x.name === 'totalSupply')
+
 export async function enumerateOwners (address, abi, chainId = 1, batch = 25) {
   // Through the pool, not a raw endpoint: two calls per token means a few
   // hundred for a full collection, and unthrottled that is an instant 429.
@@ -205,6 +212,9 @@ export async function getTransferEvents (address, abi, chainId = 1, fromBlock = 
     const { logs, via } = await getAllLogs(address, abi, 'Transfer', chainId, fromBlock)
     return { events: logs, via, mode: 'logs' }
   } catch (logError) {
+    // No enumeration available: re-throw rather than return an empty list that
+    // looks like "this collection has no tokens".
+    if (!canEnumerate(abi)) throw logError
     const holders = await enumerateOwners(address, abi, chainId)
     return {
       events: holders.map(({ tokenId, owner }) => ({
