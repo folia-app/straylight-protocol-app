@@ -16,11 +16,11 @@ export async function handler (event, context) {
     
     const deployAddress = Straylight.networks[chainId]?.address
     
-    if (!deployAddress || !networks[chainId]?.infura) {
+    if (!deployAddress || !networks[chainId]?.rpc) {
       throw new Error(`no contract on chain: ${chainId}`)
     }
 
-    const provider = new ethers.getDefaultProvider(networks[chainId].infura)
+    const provider = new ethers.getDefaultProvider(networks[chainId].rpc)
     const contract = new ethers.Contract(deployAddress, Straylight.abi, provider)
     
     const timeId = `get image (chain: ${chainId}, boardid: ${boardId})`
