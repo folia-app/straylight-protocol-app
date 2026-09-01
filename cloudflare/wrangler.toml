@@ -1,0 +1,24 @@
+name = "folia-cf-straylight"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "../dist"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "none"
+
+[define]
+# Jimp reads __dirname at module scope to locate its bundled fonts. Nothing on
+# this code path loads a font -- it decodes a bitmap, resizes it, and encodes a
+# PNG -- so a value only has to exist for the module to evaluate.
+__dirname = "'/'"
+__filename = "'/index.js'"
+
+# No [limits] block: the account is on Workers Free, where "CPU limits are not
+# supported". That turned out not to matter -- every board tested renders
+# byte-identically to the last good lambda deploy, board 7 included. A single
+# 1102 (exceeded resource limits) seen while testing did not reproduce and was
+# a cold start, not a ceiling. If busier boards ever do hit it, Workers Paid is
+# what raises the limit.
