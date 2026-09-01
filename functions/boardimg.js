@@ -1,6 +1,8 @@
 import Straylight from '../contracts/Straylight'
 import networks from '../src/networks'
-import ethers from 'ethers'
+// ethers v5 has no ESM default export; the named one is the canonical
+// import. This worked under the old bundler only via CommonJS interop.
+import { ethers } from 'ethers'
 import Jimp from 'jimp'
 
 export async function handler (event, context) {
