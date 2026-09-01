@@ -135,8 +135,33 @@ const override = () => {
   return raw ? String(raw).split(',').map((s) => s.trim()).filter(Boolean) : null
 }
 
-export const rpcsFor = (chainId = 1) =>
-  override() || RPCS_BY_CHAIN[chainId] || RPCS_BY_CHAIN[1]
+const listFor = (chainId) => RPCS_BY_CHAIN[chainId] || RPCS_BY_CHAIN[1]
+
+/**
+ * Tenderly is the scarce resource, so ordinary traffic is kept off it.
+ *
+ * Measured against the straylight mainnet contract: every endpoint here serves
+ * eth_call happily, but only the two Tenderly ones will serve a log query over
+ * the full ~9.8M block range since deploy -- drpc, mevblocker, publicnode and
+ * blastapi all refuse it. Spending Tenderly's rate limit on eth_call therefore
+ * costs the one thing that can answer the query that matters, and the symptom
+ * was a wall of 429s and a Worlds list stuck on "loading...".
+ *
+ * So the two orderings are deliberately different: ordinary reads try the
+ * plentiful endpoints first and fall back to Tenderly, while log scans go
+ * straight to the only endpoints that can serve them.
+ */
+const isTenderly = (u) => u.includes('tenderly')
+
+export const rpcsFor = (chainId = 1) => {
+  const o = override()
+  if (o) return o
+  const all = listFor(chainId)
+  return [...all.filter((u) => !isTenderly(u)), ...all.filter(isTenderly)]
+}
+
+/** Endpoints that will serve a whole-history log range, best first. */
+export const logRpcsFor = (chainId = 1) => override() || listFor(chainId)
 
 export const providersFor = (chainId = 1) =>
   rpcsFor(chainId).map((u) => new ethers.providers.JsonRpcProvider(u))
@@ -153,16 +178,47 @@ export async function anyOf (fn, chainId = 1) {
   throw last || new Error('no RPC endpoint answered')
 }
 
-/** Whole-range logs, from whichever endpoint will serve them. */
-export async function getAllLogs (address, abi, filterName, chainId = 1, fromBlock = 0) {
+/** A rate-limit response, as opposed to a refusal to serve the range. */
+const isRateLimit = (e) => {
+  const m = `${e && e.message} ${e && e.body} ${e && e.status}`.toLowerCase()
+  return m.includes('429') || m.includes('rate limit') || m.includes('too many requests')
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+/**
+ * Whole-range logs, from whichever endpoint will serve them.
+ *
+ * Two failures look alike here and must not be treated alike. An endpoint that
+ * caps ranges ("ranges over 10000 blocks are not supported") will never serve
+ * this query, so moving on is right. An endpoint answering 429 would serve it
+ * given a moment, and moving on is exactly wrong -- measured against the
+ * straylight mainnet contract, only the two Tenderly endpoints accept the full
+ * ~9.8M block range at all; the other four refuse it outright. So a 429 on
+ * Tenderly followed by "try the next one" means the query cannot succeed,
+ * which is what left the Worlds list on "loading..." indefinitely.
+ *
+ * Hence: back off and retry the same endpoint on 429, and only move to the
+ * next endpoint when this one has actually refused the work.
+ */
+export async function getAllLogs (address, abi, filterName, chainId = 1, fromBlock = 0, attempts = 4) {
   const errors = []
-  for (const url of rpcsFor(chainId)) {
+  for (const url of logRpcsFor(chainId)) {
     const p = new PooledProvider([url], { concurrency: 2 })
-    try {
-      const c = new ethers.Contract(address, abi, p)
-      const logs = await c.queryFilter(c.filters[filterName](), fromBlock)
-      return { logs, via: url, mode: 'wide' }
-    } catch (e) { errors.push(`${url}: ${e.message.slice(0, 60)}`) }
+    const c = new ethers.Contract(address, abi, p)
+    for (let i = 0; i < attempts; i++) {
+      try {
+        const logs = await c.queryFilter(c.filters[filterName](), fromBlock)
+        return { logs, via: url, mode: 'wide' }
+      } catch (e) {
+        if (isRateLimit(e) && i < attempts - 1) {
+          await sleep(600 * Math.pow(2, i) + Math.random() * 400)
+          continue
+        }
+        errors.push(`${url}: ${String(e && e.message).slice(0, 60)}`)
+        break
+      }
+    }
   }
   throw new Error('no endpoint served the full log range — ' + errors.slice(0, 2).join(' | '))
 }

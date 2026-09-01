@@ -4,7 +4,7 @@ import NFTContractDeploy from '../../contracts/Straylight.js'
 import ControllerDeploy from '../../contracts/Minting.js'
 // web3
 import { ethers } from 'ethers'
-import { readProvider, rpcsFor } from '../rpc'
+import { readProvider, rpcsFor, getAllLogs } from '../rpc'
 import Web3Modal from 'web3modal'
 // Wallet Connect - directly import .js file since import breaks `vite build`
 // see: https://github.com/vitejs/vite/issues/7257
@@ -42,6 +42,33 @@ function setWeb3Modal (networkName) {
   })
 }
 setWeb3Modal()
+
+/**
+ * A whole-history log scan, sent to one endpoint at a time.
+ *
+ * These three queries reach back to the deploy block -- about 9.8 million
+ * blocks -- while readProvider() round-robins across every endpoint in the
+ * pool, so each call had a five-in-six chance of landing on one that caps
+ * ranges at 10,000 blocks and rejects it outright. That is why the Worlds list
+ * sat on "loading..." forever: the throw happened inside the store action, and
+ * the list has no error state to fall into, only a pending one.
+ *
+ * getAllLogs pins a single endpoint per attempt and walks the list in order,
+ * so the ones that serve the whole range are tried first. Measured against the
+ * mainnet contract: both Tenderly endpoints return all 196 logs, while drpc,
+ * mevblocker, publicnode and blastapi each refuse the range.
+ */
+async function allLogs (filterName, network, fromBlock) {
+  const chainId = network?.id ?? 1
+  const { logs } = await getAllLogs(
+    NFTContractDeploy.networks[chainId].address,
+    NFTContractDeploy.abi,
+    filterName,
+    chainId,
+    fromBlock
+  )
+  return logs
+}
 
 export default createStore({
   // modules: { profiles },
@@ -540,7 +567,7 @@ export default createStore({
           const nftContract = await dispatch('getNFTContract', { network })
 
           // get...
-          events = await nftContract.queryFilter('TurmiteMint', fromBlock)
+          events = await allLogs('TurmiteMint', network, fromBlock)
           // console.log({ mintEvents: events })
 
           // format
@@ -615,7 +642,7 @@ export default createStore({
           const nftContract = await dispatch('getNFTContract', { network })
           
           // get events...
-          const events = await nftContract.queryFilter('TurmiteMove', fromBlock)
+          const events = await allLogs('TurmiteMove', network, fromBlock)
           // console.log({ moveEvents: events })
 
           // format
@@ -790,7 +817,7 @@ export default createStore({
           const nftContract = await dispatch('getNFTContract', { network })
           
           // get events...
-          events = await nftContract.queryFilter('TurmiteReprogramm', fromBlock)
+          events = await allLogs('TurmiteReprogramm', network, fromBlock)
           // console.log({ reprogramEvents: events })
 
           // format
