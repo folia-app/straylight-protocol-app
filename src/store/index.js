@@ -49,9 +49,14 @@ setWeb3Modal()
  * These three queries reach back to the deploy block -- about 9.8 million
  * blocks -- while readProvider() round-robins across every endpoint in the
  * pool, so each call had a five-in-six chance of landing on one that caps
- * ranges at 10,000 blocks and rejects it outright. That is why the Worlds list
- * sat on "loading..." forever: the throw happened inside the store action, and
- * the list has no error state to fall into, only a pending one.
+ * ranges at 10,000 blocks. A range rejection comes back as a json-rpc error,
+ * which the pool treats as a real answer and does not retry, so the query died
+ * outright rather than failing over. Two 400s per page load, reproducibly.
+ *
+ * It is not what makes the Worlds grid show "loading...": those tiles are
+ * lazy-loaded by an IntersectionObserver in BoardImage.vue and simply have not
+ * been scrolled into view. Scroll the page and all 32 render, before this
+ * change and after it. Noting that because it is easy to assume otherwise.
  *
  * getAllLogs pins a single endpoint per attempt and walks the list in order,
  * so the ones that serve the whole range are tried first. Measured against the
