@@ -1,0 +1,118 @@
+import { ethers } from 'ethers'
+
+/**
+ * Redundant, keyless RPC access, per chain.
+ *
+ * Every endpoint here is free, needs no account, and answers CORS preflights, so
+ * it works from a browser. Order is preference; each is a fallback for the one
+ * before it. Benchmarked across sixteen mainnet and five Optimism candidates.
+ *
+ * The reason this exists: one provider's eth_getLogs cap silently broke four
+ * things across these repos — a mint listener that rendered no artwork for two
+ * years, two token grids, and a metadata field that published "-" for 101
+ * tokens. Each failed into a plausible fallback rather than an error. A single
+ * provider is what made that possible.
+ */
+export const RPCS_BY_CHAIN = {
+  1: [
+    'https://gateway.tenderly.co/public/mainnet',
+    'https://mainnet.gateway.tenderly.co',
+    'https://eth.drpc.org',
+    'https://rpc.mevblocker.io',
+    'https://ethereum-rpc.publicnode.com',
+    'https://eth-mainnet.public.blastapi.io'
+  ],
+  10: [
+    'https://optimism.gateway.tenderly.co',
+    'https://optimism.drpc.org',
+    'https://optimism-rpc.publicnode.com',
+    'https://mainnet.optimism.io'
+  ],
+  // Goerli and Optimism Goerli are shut down. Kept so a chain id lookup does not
+  // return undefined; nothing should be reading them.
+  5: ['https://eth-goerli.public.blastapi.io'],
+  420: ['https://optimism-goerli.public.blastapi.io']
+}
+
+const override = () => {
+  const raw = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_APP_RPCS) || ''
+  return raw ? String(raw).split(',').map((s) => s.trim()).filter(Boolean) : null
+}
+
+export const rpcsFor = (chainId = 1) =>
+  override() || RPCS_BY_CHAIN[chainId] || RPCS_BY_CHAIN[1]
+
+export const providersFor = (chainId = 1) =>
+  rpcsFor(chainId).map((u) => new ethers.providers.JsonRpcProvider(u))
+
+/** A read provider for ordinary calls. */
+export const readProvider = (chainId = 1) => providersFor(chainId)[0]
+
+/** Run fn against each endpoint for the chain until one answers. */
+export async function anyOf (fn, chainId = 1) {
+  let last
+  for (const p of providersFor(chainId)) {
+    try { return await fn(p) } catch (e) { last = e }
+  }
+  throw last || new Error('no RPC endpoint answered')
+}
+
+/** Whole-range logs, from whichever endpoint will serve them. */
+export async function getAllLogs (address, abi, filterName, chainId = 1, fromBlock = 0) {
+  const errors = []
+  for (const p of providersFor(chainId)) {
+    try {
+      const c = new ethers.Contract(address, abi, p)
+      const logs = await c.queryFilter(c.filters[filterName](), fromBlock)
+      return { logs, via: p.connection.url, mode: 'wide' }
+    } catch (e) { errors.push(`${p.connection.url}: ${e.message.slice(0, 60)}`) }
+  }
+  throw new Error('no endpoint served the full log range — ' + errors.slice(0, 2).join(' | '))
+}
+
+/** Current holders via ERC721Enumerable — plain eth_call work every endpoint serves. */
+export async function enumerateOwners (address, abi, chainId = 1, batch = 25) {
+  return anyOf(async (p) => {
+    const c = new ethers.Contract(address, abi, p)
+    const total = (await c.totalSupply()).toNumber()
+    const ids = []
+    for (let i = 0; i < total; i += batch) {
+      ids.push(...(await Promise.all(
+        Array.from({ length: Math.min(batch, total - i) }, (_, k) => c.tokenByIndex(i + k))
+      )))
+    }
+    const out = []
+    for (let i = 0; i < ids.length; i += batch) {
+      const owners = await Promise.all(ids.slice(i, i + batch).map((id) => c.ownerOf(id)))
+      owners.forEach((owner, k) => out.push({ tokenId: ids[i + k], owner }))
+    }
+    return out
+  }, chainId)
+}
+
+/**
+ * Transfer events, or something a listing can treat as them.
+ *
+ * `mode` is 'logs' for real history, 'owners' for a synthesised set built from
+ * current holders. A listing reaches the same state either way, because the
+ * only thing it takes from a transfer is who holds the token now. Anything
+ * wanting previous owners, ordering or timestamps must check `mode` — the
+ * synthesised set has none of those and would otherwise read as "every token
+ * minted once to its current owner and never moved".
+ */
+export async function getTransferEvents (address, abi, chainId = 1, fromBlock = 0) {
+  try {
+    const { logs, via } = await getAllLogs(address, abi, 'Transfer', chainId, fromBlock)
+    return { events: logs, via, mode: 'logs' }
+  } catch (logError) {
+    const holders = await enumerateOwners(address, abi, chainId)
+    return {
+      events: holders.map(({ tokenId, owner }) => ({
+        args: [ethers.constants.AddressZero, owner, tokenId]
+      })),
+      via: 'enumeration',
+      mode: 'owners',
+      logError: logError.message
+    }
+  }
+}

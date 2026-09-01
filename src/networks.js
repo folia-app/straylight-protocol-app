@@ -1,10 +1,14 @@
-const infuraProjectID = import.meta.env?.VITE_APP_INFURA_PROJECT_ID || process.env.VITE_APP_INFURA_PROJECT_ID
+import { rpcsFor } from './rpc'
+
+// No API key. Each chain's url is the head of the redundant keyless pool in
+// ./rpc; code that needs failover should use that module directly rather than
+// this single value.
 
 export default {
   1: {
     name: 'ethereum',
     layer: 'ethereum',
-    infura: `https://mainnet.infura.io/v3/${infuraProjectID}`,
+    rpc: rpcsFor(1)[0],
     explorer: { name: 'Etherscan', domain: 'https://etherscan.io' },
     marketplace: { name: 'OpenSea', domain: 'https://opensea.io', assetPath: '/assets/ethereum'},
     movesMax: 4000
@@ -12,7 +16,7 @@ export default {
   5: {
     name: 'goerli',
     layer: 'ethereum',
-    infura: `https://goerli.infura.io/v3/${infuraProjectID}`,
+    rpc: rpcsFor(5)[0],
     explorer: {
       name: 'Etherscan',
       domain: 'https://goerli.etherscan.io' },
@@ -36,7 +40,7 @@ export default {
   10: {
     name: 'optimism',
     layer: 'optimism',
-    infura: `https://optimism-mainnet.infura.io/v3/${infuraProjectID}`,
+    rpc: rpcsFor(10)[0],
     explorer: {
       name: 'Etherscan',
       domain: 'https://optimistic.etherscan.io'
@@ -62,7 +66,7 @@ export default {
   420: {
     name: 'optimism-goerli',
     layer: 'optimism',
-    infura: `https://optimism-goerli.infura.io/v3/${infuraProjectID}`,
+    rpc: rpcsFor(420)[0],
     explorer: {
       name: 'Etherscan',
       domain: 'https://blockscout.com/optimism/goerli'
