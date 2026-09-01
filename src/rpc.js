@@ -81,7 +81,7 @@ class PooledProvider extends ethers.providers.JsonRpcProvider {
         }
         // backoff with jitter; every attempt also moves to the next endpoint
         const wait = Math.min(2000, 150 * 2 ** attempt) + Math.random() * 120
-        await new Promise((r) => setTimeout(r, wait))
+        await new Promise((resolve) => setTimeout(resolve, wait))
       }
       throw lastErr || new Error('all endpoints failed')
     } finally {
@@ -151,19 +151,22 @@ export async function anyOf (fn, chainId = 1) {
 /** Whole-range logs, from whichever endpoint will serve them. */
 export async function getAllLogs (address, abi, filterName, chainId = 1, fromBlock = 0) {
   const errors = []
-  for (const p of providersFor(chainId)) {
+  for (const url of rpcsFor(chainId)) {
+    const p = new PooledProvider([url], { concurrency: 2 })
     try {
       const c = new ethers.Contract(address, abi, p)
       const logs = await c.queryFilter(c.filters[filterName](), fromBlock)
-      return { logs, via: p.connection.url, mode: 'wide' }
-    } catch (e) { errors.push(`${p.connection.url}: ${e.message.slice(0, 60)}`) }
+      return { logs, via: url, mode: 'wide' }
+    } catch (e) { errors.push(`${url}: ${e.message.slice(0, 60)}`) }
   }
   throw new Error('no endpoint served the full log range — ' + errors.slice(0, 2).join(' | '))
 }
 
 /** Current holders via ERC721Enumerable — plain eth_call work every endpoint serves. */
 export async function enumerateOwners (address, abi, chainId = 1, batch = 25) {
-  return anyOf(async (p) => {
+  // Through the pool, not a raw endpoint: two calls per token means a few
+  // hundred for a full collection, and unthrottled that is an instant 429.
+  const run = async (p) => {
     const c = new ethers.Contract(address, abi, p)
     const total = (await c.totalSupply()).toNumber()
     const ids = []
@@ -178,7 +181,8 @@ export async function enumerateOwners (address, abi, chainId = 1, batch = 25) {
       owners.forEach((owner, k) => out.push({ tokenId: ids[i + k], owner }))
     }
     return out
-  }, chainId)
+  }
+  return run(readProvider(chainId))
 }
 
 /**
