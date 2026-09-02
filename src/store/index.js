@@ -4,7 +4,7 @@ import NFTContractDeploy from '../../contracts/Straylight.js'
 import ControllerDeploy from '../../contracts/Minting.js'
 // web3
 import { ethers } from 'ethers'
-import { readProvider, rpcsFor, getAllLogs } from '../rpc'
+import { readProvider, rpcsFor, getAllLogs, lookupAddresses } from '../rpc'
 import Web3Modal from 'web3modal'
 // Wallet Connect - directly import .js file since import breaks `vite build`
 // see: https://github.com/vitejs/vite/issues/7257
@@ -73,6 +73,38 @@ async function allLogs (filterName, network, fromBlock) {
     fromBlock
   )
   return logs
+}
+
+/**
+ * Collect reverse-lookup requests made within one tick and resolve them
+ * together, so a page of owners costs two eth_calls rather than four each.
+ */
+const ENS_BATCH_WINDOW_MS = 20
+const ENS_BATCH_MAX = 100
+let ensQueue = new Set()
+let ensWaiters = []
+let ensTimer = null
+
+function queueEnsLookup (addr) {
+  return new Promise((resolve, reject) => {
+    ensQueue.add(addr)
+    ensWaiters.push({ resolve, reject })
+    if (ensQueue.size >= ENS_BATCH_MAX) return flushEnsQueue()
+    if (!ensTimer) ensTimer = setTimeout(flushEnsQueue, ENS_BATCH_WINDOW_MS)
+  })
+}
+
+function flushEnsQueue () {
+  clearTimeout(ensTimer)
+  ensTimer = null
+  const addresses = [...ensQueue]
+  const waiters = ensWaiters
+  ensQueue = new Set()
+  ensWaiters = []
+  lookupAddresses(addresses, 1).then(
+    (names) => waiters.forEach((w) => w.resolve(names)),
+    (err) => waiters.forEach((w) => w.reject(err))
+  )
 }
 
 export default createStore({
@@ -973,8 +1005,11 @@ export default createStore({
         // fetch new...
         // if (!provider) await dispatch('init')
         // lookup on mainnet
-        const provider = readProvider(1)
-        const ens = await provider.lookupAddress(address)
+        // Batched: many Addr components resolve at once, and lookupAddress
+        // costs about four calls each. queueEnsLookup collects the ones asked
+        // for in the same tick into a single multicall. The OpenSea fallback
+        // below is untouched.
+        const ens = (await queueEnsLookup(address))[address] ?? null
 
         // fetch from opensea...
         let openSea
