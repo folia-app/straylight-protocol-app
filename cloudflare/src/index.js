@@ -18,8 +18,15 @@ export default {
   async fetch (request, env) {
     const url = new URL(request.url)
 
-    if (url.pathname.startsWith('/api/')) {
-      const rest = url.pathname.slice('/api/'.length)
+    // Both prefixes reach the same functions. /api/ is the redirect declared
+    // in netlify.toml; /.netlify/functions/ is the path Netlify also serves
+    // implicitly, and it is the one baked into published urls -- so it has
+    // to answer too. Only the declared redirect was ported originally,
+    // which left those published urls returning the SPA shell.
+    const PREFIXES = ['/api/', '/.netlify/functions/']
+    const prefix = PREFIXES.find(p => url.pathname.startsWith(p))
+    if (prefix) {
+      const rest = url.pathname.slice(prefix.length)
       const name = rest.split('/')[0]
       const fn = FUNCTIONS[name]
       if (!fn) return new Response('Not Found', { status: 404 })
