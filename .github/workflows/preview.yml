@@ -39,7 +39,8 @@ jobs:
           node-version: '22'
 
       - name: Install
-        run: yarn install --frozen-lockfile
+        # npm, not yarn: this repo's lockfile is package-lock.json.
+        run: npm ci
 
       - name: Build
         env:

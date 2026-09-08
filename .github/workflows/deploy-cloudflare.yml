@@ -36,12 +36,17 @@ jobs:
           node-version: '22'
 
       - name: Install
-        # Git dependencies in these repos build themselves in a postinstall
-        # (viper webpacks its bundle, doaw-contracts compiles). Skipping
-        # scripts leaves the package without the entry point its main field
-        # names, and the build fails on a missing module rather than on the
-        # real cause.
-        run: yarn install --frozen-lockfile
+        # npm, not yarn: this repo's lockfile is package-lock.json. Running
+        # `yarn install --frozen-lockfile` here found no yarn.lock and, rather
+        # than failing, resolved every range fresh on each build -- so the
+        # lockfile in git described a tree that was never the one deployed.
+        #
+        # Scripts are left enabled deliberately. Git dependencies in these repos
+        # build themselves in a postinstall (viper webpacks its bundle,
+        # doaw-contracts compiles); skipping that leaves a package without the
+        # entry point its main field names, and the build fails on a missing
+        # module rather than on the real cause.
+        run: npm ci
 
       - name: Build
         env:
